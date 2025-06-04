@@ -5,9 +5,12 @@ EditorBuildSettings:
   m_ObjectHideFlags: 0
   serializedVersion: 2
   m_Scenes:
-  - enabled: 1
+  - enabled: 0
     path: Assets/_Thang/Garage_Car.unity
     guid: dba3c70d4ccd94d4c93c5e9869cfffcc
+  - enabled: 1
+    path: Assets/_Quan/Scene Ui.unity
+    guid: e2677bba64eb3974ebe4fb0a32ea64d2
   - enabled: 1
     path: Assets/_Thang/Test_Car.unity
     guid: 06196c17dd9d92f4dadedfc670b56691
