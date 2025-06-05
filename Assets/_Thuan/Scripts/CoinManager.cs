@@ -1,11 +1,13 @@
 ﻿using UnityEngine;
 using TMPro;
+using UnityEngine.SceneManagement;
+using System.Collections;
 
 public class CoinManager : MonoBehaviour
 {
     public static CoinManager Instance;
 
-    [Header("UI References")]
+    [Header("UI References - Sẽ được tự động tìm lại")]
     public TextMeshProUGUI coinText; // Text hiển thị số coin trên UI
 
     private int currentCoins;
@@ -13,7 +15,7 @@ public class CoinManager : MonoBehaviour
 
     private void Awake()
     {
-        // Singleton pattern
+        // Singleton pattern với DontDestroyOnLoad
         if (Instance == null)
         {
             Instance = this;
@@ -23,12 +25,70 @@ public class CoinManager : MonoBehaviour
         else
         {
             Destroy(gameObject);
+            return;
         }
+
+        // Đăng ký event khi scene load
+        SceneManager.sceneLoaded += OnSceneLoaded;
     }
 
     private void Start()
     {
+        FindCoinText();
         UpdateCoinUI();
+    }
+
+    // Được gọi mỗi khi load scene mới
+    private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
+    {
+        StartCoroutine(DelayedSetup());
+    }
+
+    // Delay để đảm bảo UI đã được tạo
+    private IEnumerator DelayedSetup()
+    {
+        yield return new WaitForEndOfFrame();
+        FindCoinText();
+        UpdateCoinUI();
+    }
+
+    // Tự động tìm lại UI text
+    private void FindCoinText()
+    {
+        if (coinText == null)
+        {
+            // Tìm theo tên GameObject
+            GameObject coinTextObj = GameObject.Find("CoinText");
+            if (coinTextObj != null)
+            {
+                coinText = coinTextObj.GetComponent<TextMeshProUGUI>();
+            }
+
+            // Nếu không tìm thấy, thử tìm theo tag
+            if (coinText == null)
+            {
+                GameObject coinObj = GameObject.FindWithTag("CoinUI");
+                if (coinObj != null)
+                {
+                    coinText = coinObj.GetComponent<TextMeshProUGUI>();
+                }
+            }
+
+            // Nếu vẫn không tìm thấy, tìm bất kỳ TextMeshProUGUI nào có text là số
+            if (coinText == null)
+            {
+                TextMeshProUGUI[] allTexts = FindObjectsOfType<TextMeshProUGUI>();
+                foreach (var text in allTexts)
+                {
+                    // Tìm text có tên chứa "coin" (không phân biệt hoa thường)
+                    if (text.name.ToLower().Contains("coin"))
+                    {
+                        coinText = text;
+                        break;
+                    }
+                }
+            }
+        }
     }
 
     /// <summary>
@@ -36,7 +96,7 @@ public class CoinManager : MonoBehaviour
     /// </summary>
     private void LoadCoins()
     {
-        currentCoins = PlayerPrefs.GetInt(COIN_KEY, 0); // Mặc định 0 coin nếu chưa có
+        currentCoins = PlayerPrefs.GetInt(COIN_KEY, 0);
         Debug.Log("Đã tải: " + currentCoins + " coins");
     }
 
@@ -46,7 +106,7 @@ public class CoinManager : MonoBehaviour
     private void SaveCoins()
     {
         PlayerPrefs.SetInt(COIN_KEY, currentCoins);
-        PlayerPrefs.Save(); // Đảm bảo dữ liệu được lưu ngay lập tức
+        PlayerPrefs.Save();
         Debug.Log("Đã lưu: " + currentCoins + " coins");
     }
 
@@ -87,15 +147,17 @@ public class CoinManager : MonoBehaviour
         }
     }
 
-  
-    // số coin hiện tại
-
+    /// <summary>
+    /// Lấy số coin hiện tại
+    /// </summary>
     public int GetCoins()
     {
         return currentCoins;
     }
 
+    /// <summary>
     /// Đặt lại coin về 0 (reset game)
+    /// </summary>
     public void ResetCoins()
     {
         currentCoins = 0;
@@ -104,8 +166,9 @@ public class CoinManager : MonoBehaviour
         Debug.Log("Đã reset coins về 0");
     }
 
-    
-    //  hiển thị coin
+    /// <summary>
+    /// Cập nhật UI hiển thị coin với null check
+    /// </summary>
     private void UpdateCoinUI()
     {
         if (coinText != null)
@@ -122,5 +185,19 @@ public class CoinManager : MonoBehaviour
     public bool HasEnoughCoins(int amount)
     {
         return currentCoins >= amount;
+    }
+
+    /// <summary>
+    /// Cập nhật UI từ bên ngoài (nếu cần)
+    /// </summary>
+    public void RefreshUI()
+    {
+        FindCoinText();
+        UpdateCoinUI();
+    }
+
+    private void OnDestroy()
+    {
+        SceneManager.sceneLoaded -= OnSceneLoaded;
     }
 }

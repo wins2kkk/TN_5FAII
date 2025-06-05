@@ -2,6 +2,8 @@
 using UnityEngine.UI;
 using System;
 using TMPro;
+using UnityEngine.SceneManagement;
+using System.Collections;
 
 public class WaypointManager : MonoBehaviour
 {
@@ -12,21 +14,21 @@ public class WaypointManager : MonoBehaviour
     public Transform player;
     public Camera playerCamera;
 
-    [Header("UI Elements")]
+    [Header("UI Elements - Sẽ được tự động tìm lại")]
     public GameObject waypointUI;
     public TextMeshProUGUI distanceText;
     public RectTransform waypointIndicator;
 
     [Header("Indicator Images")]
-    public Sprite onScreenSprite;  // Hình ảnh khi trong màn hình
-    public Sprite offScreenSprite; // Hình ảnh khi ngoài rìa màn hình
-    private Image indicatorImage;  // Component Image của indicator
+    public Sprite onScreenSprite;
+    public Sprite offScreenSprite;
+    private Image indicatorImage;
 
     [Header("Settings")]
     public float arrivalDistance = 3f;
     public bool showDistance = true;
 
-    // Current waypoint
+    // Current waypoint - Data được giữ lại
     private GameObject currentWaypoint;
     private Vector3 currentTargetPosition;
     private bool isWaypointActive = false;
@@ -34,21 +36,88 @@ public class WaypointManager : MonoBehaviour
 
     private void Awake()
     {
-        // Singleton pattern
+        // Singleton pattern với DontDestroyOnLoad
         if (Instance == null)
         {
             Instance = this;
             DontDestroyOnLoad(gameObject);
-
-            // Lấy Image component từ waypoint indicator
-            if (waypointIndicator != null)
-            {
-                indicatorImage = waypointIndicator.GetComponent<Image>();
-            }
         }
         else
         {
             Destroy(gameObject);
+            return;
+        }
+
+        // Đăng ký event khi scene load
+        SceneManager.sceneLoaded += OnSceneLoaded;
+    }
+
+    private void Start()
+    {
+        SetupReferences();
+    }
+
+    // Được gọi mỗi khi load scene mới
+    private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
+    {
+        StartCoroutine(DelayedSetup());
+    }
+
+    // Delay để đảm bảo UI đã được tạo
+    private IEnumerator DelayedSetup()
+    {
+        yield return new WaitForEndOfFrame();
+        FindUIReferences();
+        SetupReferences();
+    }
+
+    // Tự động tìm lại UI references
+    private void FindUIReferences()
+    {
+        // Tìm player và camera
+        if (player == null)
+        {
+            GameObject playerObj = GameObject.FindWithTag("Player");
+            if (playerObj != null) player = playerObj.transform;
+        }
+
+        if (playerCamera == null)
+        {
+            playerCamera = Camera.main;
+            if (playerCamera == null)
+                playerCamera = FindObjectOfType<Camera>();
+        }
+
+        // Tìm UI elements
+        if (waypointUI == null)
+            waypointUI = GameObject.Find("WaypointUI");
+
+        if (distanceText == null)
+        {
+            GameObject distObj = GameObject.Find("DistanceText");
+            if (distObj != null) distanceText = distObj.GetComponent<TextMeshProUGUI>();
+        }
+
+        if (waypointIndicator == null)
+        {
+            GameObject indicatorObj = GameObject.Find("WaypointIndicator");
+            if (indicatorObj != null) waypointIndicator = indicatorObj.GetComponent<RectTransform>();
+        }
+    }
+
+    // Setup references sau khi tìm được
+    private void SetupReferences()
+    {
+        // Lấy Image component từ waypoint indicator
+        if (waypointIndicator != null && indicatorImage == null)
+        {
+            indicatorImage = waypointIndicator.GetComponent<Image>();
+        }
+
+        // Hiển thị lại UI nếu có waypoint đang active
+        if (isWaypointActive && waypointUI != null)
+        {
+            waypointUI.SetActive(true);
         }
     }
 
@@ -61,7 +130,7 @@ public class WaypointManager : MonoBehaviour
         }
     }
 
-    // Tạo waypoint - Method chính bạn sẽ dùng
+    // Tạo waypoint - Method chính
     public GameObject CreatePointer(Vector3 targetPosition, Action onReached = null)
     {
         // Xóa waypoint cũ nếu có
@@ -84,7 +153,6 @@ public class WaypointManager : MonoBehaviour
             waypointUI.SetActive(true);
         }
 
-       // Debug.Log($"Waypoint created at {targetPosition}");
         return currentWaypoint;
     }
 
@@ -122,11 +190,9 @@ public class WaypointManager : MonoBehaviour
 
         isWaypointActive = false;
         onReachedCallback = null;
-
-       // Debug.Log("Waypoint removed");
     }
 
-    // Cập nhật UI
+    // Cập nhật UI với null checks
     private void UpdateWaypointUI()
     {
         if (player == null || playerCamera == null) return;
@@ -158,14 +224,14 @@ public class WaypointManager : MonoBehaviour
 
         if (isVisible)
         {
-            // Trong tầm nhìn - đổi sang hình ảnh on-screen và không xoay
+            // Trong tầm nhìn
             ChangeIndicatorImage(true);
             waypointIndicator.position = screenPoint;
-            waypointIndicator.rotation = Quaternion.identity; // Không xoay khi trong màn hình
+            waypointIndicator.rotation = Quaternion.identity;
         }
         else
         {
-            // Ngoài tầm nhìn - đổi sang hình ảnh off-screen và xoay theo hướng
+            // Ngoài tầm nhìn
             ChangeIndicatorImage(false);
             ShowOffScreenIndicator(screenPoint);
         }
@@ -178,7 +244,6 @@ public class WaypointManager : MonoBehaviour
 
         if (isOnScreen)
         {
-            // Trong màn hình
             if (onScreenSprite != null)
             {
                 indicatorImage.sprite = onScreenSprite;
@@ -186,7 +251,6 @@ public class WaypointManager : MonoBehaviour
         }
         else
         {
-            // Ngoài rìa màn hình
             if (offScreenSprite != null)
             {
                 indicatorImage.sprite = offScreenSprite;
@@ -199,7 +263,6 @@ public class WaypointManager : MonoBehaviour
     {
         Vector3 center = new Vector3(Screen.width / 2f, Screen.height / 2f, 0);
 
-        // Nếu waypoint ở phía sau camera, đảo ngược vị trí
         if (screenPoint.z < 0)
         {
             screenPoint.x = Screen.width - screenPoint.x;
@@ -209,29 +272,24 @@ public class WaypointManager : MonoBehaviour
         Vector3 direction = (screenPoint - center).normalized;
         float margin = 50f;
 
-        // Tính tọa độ trên rìa màn hình
         float x, y;
 
-        // Tìm điểm giao với rìa màn hình
         float absX = Mathf.Abs(direction.x);
         float absY = Mathf.Abs(direction.y);
 
         if (absX * Screen.height > absY * Screen.width)
         {
-            // Chạm rìa trái hoặc phải
             x = direction.x > 0 ? Screen.width - margin : margin;
             y = center.y + direction.y * (x - center.x) / direction.x;
         }
         else
         {
-            // Chạm rìa trên hoặc dưới
             y = direction.y > 0 ? Screen.height - margin : margin;
             x = center.x + direction.x * (y - center.y) / direction.y;
         }
 
         waypointIndicator.position = new Vector3(x, y, 0);
 
-        // Xoay theo hướng waypoint
         float angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
         waypointIndicator.rotation = Quaternion.AngleAxis(angle + 90f, Vector3.forward);
     }
@@ -247,31 +305,31 @@ public class WaypointManager : MonoBehaviour
         {
             Debug.Log("Arrived at waypoint!");
 
-            // Gọi callback nếu có
             onReachedCallback?.Invoke();
-
-            // Xóa waypoint
             RemoveWaypoint();
         }
     }
 
-    // Kiểm tra có waypoint đang hoạt động không
+    // Utility methods
     public bool HasActiveWaypoint()
     {
         return isWaypointActive;
     }
 
-    // Lấy khoảng cách đến waypoint hiện tại
     public float GetDistanceToWaypoint()
     {
         if (!isWaypointActive || player == null) return -1f;
         return Vector3.Distance(player.position, currentTargetPosition);
     }
 
-    // Method để thay đổi sprite từ bên ngoài
     public void SetIndicatorSprites(Sprite onScreen, Sprite offScreen)
     {
         onScreenSprite = onScreen;
         offScreenSprite = offScreen;
+    }
+
+    private void OnDestroy()
+    {
+        SceneManager.sceneLoaded -= OnSceneLoaded;
     }
 }

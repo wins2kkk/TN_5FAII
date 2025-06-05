@@ -1,12 +1,14 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
+using UnityEngine.SceneManagement;
+using System.Collections;
 
 public class QuestManager : MonoBehaviour
 {
     public static QuestManager instance;
-    WaypointManager waypointManager;
 
+    [Header("UI References - Sẽ được tự động tìm lại")]
     public GameObject QuestlogoPanel;
     public GameObject PanelQuest;
     public GameObject PanelSucces;
@@ -15,49 +17,154 @@ public class QuestManager : MonoBehaviour
     public Button acceptButton;
     public Button declineButton;
     public TextMeshProUGUI timerText;
-    public TextMeshProUGUI successRewardText; 
+    public TextMeshProUGUI successRewardText;
 
-
+    [Header("Quest Data - Được giữ lại")]
     private QuestData currentQuest;
     private float timeRemaining;
     private bool questActive = false;
 
     private void Awake()
     {
-        instance = this;
-        PanelQuest.SetActive(false);
-        timerText.gameObject.SetActive(false);
-    }
-
-    public void ShowQuestPopup(QuestData quest)
-    {
-        if (questActive)
+        // Singleton pattern với DontDestroyOnLoad
+        if (instance == null)
         {
-           
+            instance = this;
+            DontDestroyOnLoad(gameObject);
+        }
+        else
+        {
+            Destroy(gameObject);
             return;
         }
 
-        currentQuest = quest;
-        questNametext.text = quest.name;
-        descriptionText.text = quest.description + "\nThưởng: " + quest.coinReward + " coin\nThời gian: " + quest.timeLimit + "s";
-        PanelQuest.SetActive(true);
-    }
-
-
-    public void HideQuestPopup()
-    {
-        PanelQuest.SetActive(false);
+        // Đăng ký event khi scene load
+        SceneManager.sceneLoaded += OnSceneLoaded;
     }
 
     private void Start()
     {
-        acceptButton.onClick.AddListener(AcceptQuest);
-        declineButton.onClick.AddListener(() => QuestlogoPanel.SetActive(false));
+        SetupUI();
+    }
+
+    // Được gọi mỗi khi load scene mới
+    private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
+    {
+        StartCoroutine(DelayedSetup());
+    }
+
+    // Delay một chút để đảm bảo UI đã được tạo
+    private IEnumerator DelayedSetup()
+    {
+        yield return new WaitForEndOfFrame();
+        FindUIReferences();
+        SetupUI();
+    }
+
+    // Tự động tìm lại UI references
+    private void FindUIReferences()
+    {
+        // Tìm theo tên GameObject
+        if (QuestlogoPanel == null)
+            QuestlogoPanel = GameObject.Find("QuestlogoPanel");
+
+        if (PanelQuest == null)
+            PanelQuest = GameObject.Find("PanelQuest");
+
+        if (PanelSucces == null)
+            PanelSucces = GameObject.Find("PanelSucces");
+
+        // Tìm Text components
+        if (descriptionText == null)
+        {
+            GameObject descObj = GameObject.Find("DescriptionText");
+            if (descObj != null) descriptionText = descObj.GetComponent<TextMeshProUGUI>();
+        }
+
+        if (questNametext == null)
+        {
+            GameObject nameObj = GameObject.Find("QuestNameText");
+            if (nameObj != null) questNametext = nameObj.GetComponent<TextMeshProUGUI>();
+        }
+
+        if (timerText == null)
+        {
+            GameObject timerObj = GameObject.Find("TimerText");
+            if (timerObj != null) timerText = timerObj.GetComponent<TextMeshProUGUI>();
+        }
+
+        if (successRewardText == null)
+        {
+            GameObject rewardObj = GameObject.Find("SuccessRewardText");
+            if (rewardObj != null) successRewardText = rewardObj.GetComponent<TextMeshProUGUI>();
+        }
+
+        // Tìm Buttons
+        if (acceptButton == null)
+        {
+            GameObject acceptObj = GameObject.Find("AcceptButton");
+            if (acceptObj != null) acceptButton = acceptObj.GetComponent<Button>();
+        }
+
+        if (declineButton == null)
+        {
+            GameObject declineObj = GameObject.Find("DeclineButton");
+            if (declineObj != null) declineButton = declineObj.GetComponent<Button>();
+        }
+    }
+
+    // Setup UI sau khi tìm được references
+    private void SetupUI()
+    {
+        if (PanelQuest != null)
+            PanelQuest.SetActive(false);
+
+        if (timerText != null)
+            timerText.gameObject.SetActive(false);
+
+        // Setup button listeners
+        if (acceptButton != null)
+        {
+            acceptButton.onClick.RemoveAllListeners();
+            acceptButton.onClick.AddListener(AcceptQuest);
+        }
+
+        if (declineButton != null)
+        {
+            declineButton.onClick.RemoveAllListeners();
+            declineButton.onClick.AddListener(() => {
+                if (QuestlogoPanel != null)
+                    QuestlogoPanel.SetActive(false);
+            });
+        }
+    }
+
+    public void ShowQuestPopup(QuestData quest)
+    {
+        if (questActive) return;
+
+        currentQuest = quest;
+
+        if (questNametext != null)
+            questNametext.text = quest.name;
+
+        if (descriptionText != null)
+            descriptionText.text = quest.description + "\nThưởng: " + quest.coinReward + " coin\nThời gian: " + quest.timeLimit + "s";
+
+        if (PanelQuest != null)
+            PanelQuest.SetActive(true);
+    }
+
+    public void HideQuestPopup()
+    {
+        if (PanelQuest != null)
+            PanelQuest.SetActive(false);
     }
 
     private void AcceptQuest()
     {
-        QuestlogoPanel.SetActive(false);
+        if (QuestlogoPanel != null)
+            QuestlogoPanel.SetActive(false);
         StartQuest();
     }
 
@@ -67,7 +174,9 @@ public class QuestManager : MonoBehaviour
 
         questActive = true;
         timeRemaining = currentQuest.timeLimit;
-        timerText.gameObject.SetActive(true);
+
+        if (timerText != null)
+            timerText.gameObject.SetActive(true);
 
         switch (currentQuest.questType)
         {
@@ -85,25 +194,31 @@ public class QuestManager : MonoBehaviour
         if (!questActive) return;
 
         timeRemaining -= Time.deltaTime;
-        timerText.text = "Thời gian: " + Mathf.CeilToInt(timeRemaining) + "s";
+
+        if (timerText != null)
+            timerText.text = "Thời gian: " + Mathf.CeilToInt(timeRemaining) + "s";
 
         if (timeRemaining <= 0)
         {
             questActive = false;
-            timerText.gameObject.SetActive(false);
 
-            // Xoá point khi hết tg
+            if (timerText != null)
+                timerText.gameObject.SetActive(false);
+
             if (WaypointManager.Instance != null)
                 WaypointManager.Instance.RemoveWaypoint();
 
             Debug.Log("❌ Hết thời gian làm nhiệm vụ!");
         }
     }
-    
+
     public void AcpQuestlogo()
     {
-        QuestlogoPanel.SetActive(true);
-        PanelQuest.SetActive(false);
+        if (QuestlogoPanel != null)
+            QuestlogoPanel.SetActive(true);
+
+        if (PanelQuest != null)
+            PanelQuest.SetActive(false);
     }
 
     public void CompleteQuest()
@@ -111,33 +226,31 @@ public class QuestManager : MonoBehaviour
         if (!questActive || currentQuest == null) return;
 
         questActive = false;
-        timerText.gameObject.SetActive(false);
 
-        // Thêm coin thông qua CoinManager
+        if (timerText != null)
+            timerText.gameObject.SetActive(false);
+
         if (CoinManager.Instance != null)
         {
             CoinManager.Instance.AddCoins(currentQuest.coinReward);
 
-            // Cập nhật text hiển thị phần thưởng
             if (successRewardText != null)
             {
                 successRewardText.text = "Bạn đã nhận được " + currentQuest.coinReward + " coin!";
             }
         }
 
-        // Xóa waypoint
-        //if (WaypointManager.Instance != null)
-        //{
-        //    WaypointManager.Instance.RemoveWaypoint();
-        //}
-
-         //Hiển thị panel thành công
-        PanelSucces.SetActive(true);
-
-       // Debug.Log("✅ Hoàn thành nhiệm vụ: " + currentQuest.questName + " | Nhận " + currentQuest.coinReward + " coin");
+        if (PanelSucces != null)
+            PanelSucces.SetActive(true);
     }
+
     public bool IsQuestActive()
     {
         return questActive;
+    }
+
+    private void OnDestroy()
+    {
+        SceneManager.sceneLoaded -= OnSceneLoaded;
     }
 }

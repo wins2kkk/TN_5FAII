@@ -5,13 +5,13 @@ EditorBuildSettings:
   m_ObjectHideFlags: 0
   serializedVersion: 2
   m_Scenes:
-  - enabled: 0
-    path: Assets/_Thang/Garage_Car.unity
-    guid: dba3c70d4ccd94d4c93c5e9869cfffcc
   - enabled: 1
-    path: Assets/_Quan/Scene Ui.unity
-    guid: e2677bba64eb3974ebe4fb0a32ea64d2
+    path: Assets/_Bai_Hoan_Thien/Login.unity
+    guid: 3f5480120a55dcd4db888ced9be6659e
   - enabled: 1
-    path: Assets/_Thang/Test_Car.unity
-    guid: 06196c17dd9d92f4dadedfc670b56691
+    path: Assets/_Bai_Hoan_Thien/Menu.unity
+    guid: 4db57bb73cd757e438ab05943d0df0bc
+  - enabled: 1
+    path: Assets/_Bai_Hoan_Thien/Map_ThanhPho.unity
+    guid: bbdc4b1b1e97663418b971a920983560
   m_configObjects: {}
