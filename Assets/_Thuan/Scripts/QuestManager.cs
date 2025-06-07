@@ -26,7 +26,6 @@ public class QuestManager : MonoBehaviour
 
     private void Awake()
     {
-        // Singleton pattern với DontDestroyOnLoad
         if (instance == null)
         {
             instance = this;
@@ -34,12 +33,8 @@ public class QuestManager : MonoBehaviour
         }
         else
         {
-            Destroy(gameObject);
-            return;
+            Destroy(gameObject); // Ngăn tạo bản sao khi load lại scene
         }
-
-        // Đăng ký event khi scene load
-        SceneManager.sceneLoaded += OnSceneLoaded;
     }
 
     private void Start()
@@ -241,7 +236,11 @@ public class QuestManager : MonoBehaviour
         }
 
         if (PanelSucces != null)
+        {
             PanelSucces.SetActive(true);
+            StartCoroutine(HideSuccessPanel());
+        }
+
     }
 
     public bool IsQuestActive()
@@ -253,4 +252,12 @@ public class QuestManager : MonoBehaviour
     {
         SceneManager.sceneLoaded -= OnSceneLoaded;
     }
+    private IEnumerator HideSuccessPanel()
+    {
+        yield return new WaitForSeconds(2f);
+
+        if (PanelSucces != null)
+            PanelSucces.SetActive(false);
+    }
+
 }

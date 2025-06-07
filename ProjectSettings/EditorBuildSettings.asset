@@ -12,6 +12,9 @@ EditorBuildSettings:
     path: Assets/_Bai_Hoan_Thien/Menu.unity
     guid: 4db57bb73cd757e438ab05943d0df0bc
   - enabled: 1
+    path: Assets/_Bai_Hoan_Thien/Chon_maps.unity
+    guid: e287089a4b461a642acef35d7ec32ec7
+  - enabled: 1
     path: Assets/_Bai_Hoan_Thien/Map_ThanhPho.unity
     guid: bbdc4b1b1e97663418b971a920983560
   m_configObjects: {}
