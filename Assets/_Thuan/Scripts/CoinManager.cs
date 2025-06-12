@@ -158,13 +158,13 @@ public class CoinManager : MonoBehaviour
     /// <summary>
     /// Đặt lại coin về 0 (reset game)
     /// </summary>
-    public void ResetCoins()
-    {
-        currentCoins = 0;
-        SaveCoins();
-        UpdateCoinUI();
-        Debug.Log("Đã reset coins về 0");
-    }
+    //public void ResetCoins()
+    //{
+    //    currentCoins = 0;
+    //    SaveCoins();
+    //    UpdateCoinUI();
+    //    Debug.Log("Đã reset coins về 0");
+    //}
 
     /// <summary>
     /// Cập nhật UI hiển thị coin với null check

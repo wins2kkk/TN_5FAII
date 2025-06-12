@@ -2,5 +2,6 @@
 {
     ParkCar,
     Delivery,
-    DoXang
+    DoXang,
+    ThuThapCoin
 }

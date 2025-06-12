@@ -8,6 +8,9 @@ TagManager:
   - DeliveryZone
   - PickupZone
   - CoinUI
+  - WaypointUI
+  - DistanceText
+  - WaypointIndicator
   layers:
   - Default
   - TransparentFX

@@ -9,15 +9,17 @@ public class QuestManager : MonoBehaviour
     public static QuestManager instance;
 
     [Header("UI References - Sẽ được tự động tìm lại")]
-    public GameObject QuestlogoPanel;
     public GameObject PanelQuest;
-    public GameObject PanelSucces;
+    public GameObject QuestlogoPanel;
+   // public GameObject PanelSucces;
     public TextMeshProUGUI descriptionText;
     public TextMeshProUGUI questNametext;
     public Button acceptButton;
     public Button declineButton;
+    public Button openQuestButton; // nút gắn AcpQuestlogo
     public TextMeshProUGUI timerText;
     public TextMeshProUGUI successRewardText;
+    public TextMeshProUGUI faileText;
 
     [Header("Quest Data - Được giữ lại")]
     private QuestData currentQuest;
@@ -30,113 +32,172 @@ public class QuestManager : MonoBehaviour
         {
             instance = this;
             DontDestroyOnLoad(gameObject);
+            SceneManager.sceneLoaded += OnSceneLoaded;
+            Debug.Log("✅ QuestManager created and registered for scene events");
         }
         else
         {
-            Destroy(gameObject); // Ngăn tạo bản sao khi load lại scene
+            Destroy(gameObject);
         }
     }
 
     private void Start()
     {
-        SetupUI();
+        StartCoroutine(InitialSetup());
     }
 
-    // Được gọi mỗi khi load scene mới
+    private IEnumerator InitialSetup()
+    {
+        yield return new WaitForEndOfFrame();
+        yield return new WaitForSeconds(0.1f);
+
+        FindUIReferences();
+        SetupUI();
+        Debug.Log("✅ Initial setup completed");
+    }
+
     private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
     {
+        Debug.Log($"🔄 Scene loaded: {scene.name}");
         StartCoroutine(DelayedSetup());
     }
 
-    // Delay một chút để đảm bảo UI đã được tạo
     private IEnumerator DelayedSetup()
     {
         yield return new WaitForEndOfFrame();
+        yield return new WaitForEndOfFrame();
+        yield return new WaitForSeconds(0.2f);
+
         FindUIReferences();
         SetupUI();
+        Debug.Log("✅ Delayed setup completed");
     }
 
-    // Tự động tìm lại UI references
     private void FindUIReferences()
     {
-        // Tìm theo tên GameObject
+        Debug.Log("🔍 Finding UI References...");
+
         if (QuestlogoPanel == null)
-            QuestlogoPanel = GameObject.Find("QuestlogoPanel");
+        {
+            QuestlogoPanel = GameObject.Find("QuestlogoPanel") ?? FindInactiveGameObject("QuestlogoPanel");
+        }
 
         if (PanelQuest == null)
-            PanelQuest = GameObject.Find("PanelQuest");
-
-        if (PanelSucces == null)
-            PanelSucces = GameObject.Find("PanelSucces");
-
-        // Tìm Text components
-        if (descriptionText == null)
         {
-            GameObject descObj = GameObject.Find("DescriptionText");
-            if (descObj != null) descriptionText = descObj.GetComponent<TextMeshProUGUI>();
+            PanelQuest = GameObject.Find("PanelQuest") ?? FindInactiveGameObject("PanelQuest");
         }
 
-        if (questNametext == null)
-        {
-            GameObject nameObj = GameObject.Find("QuestNameText");
-            if (nameObj != null) questNametext = nameObj.GetComponent<TextMeshProUGUI>();
-        }
+        //if (PanelSucces == null)
+        //{
+        //    PanelSucces = GameObject.Find("PanelSucces") ?? FindInactiveGameObject("PanelSucces");
+        //}
 
-        if (timerText == null)
-        {
-            GameObject timerObj = GameObject.Find("TimerText");
-            if (timerObj != null) timerText = timerObj.GetComponent<TextMeshProUGUI>();
-        }
+        FindTextComponent(ref descriptionText, "DescriptionText", "Description Text", "Desc Text");
+        FindTextComponent(ref questNametext, "QuestNameText", "Quest Name Text", "QuestName");
+        FindTextComponent(ref timerText, "TimerText", "Timer Text", "Timer");
+        FindTextComponent(ref successRewardText, "SuccessRewardText", "Success Reward Text", "RewardText");
+        FindTextComponent(ref faileText, "faileText");
 
-        if (successRewardText == null)
-        {
-            GameObject rewardObj = GameObject.Find("SuccessRewardText");
-            if (rewardObj != null) successRewardText = rewardObj.GetComponent<TextMeshProUGUI>();
-        }
+        FindButtonComponent(ref acceptButton, "AcceptButton", "Accept Button", "Accept");
+        FindButtonComponent(ref declineButton, "DeclineButton", "Decline Button", "Decline");
+        FindButtonComponent(ref openQuestButton, "OpenQuestButton", "QuestLogoBtn", "OpenQuest");
 
-        // Tìm Buttons
-        if (acceptButton == null)
-        {
-            GameObject acceptObj = GameObject.Find("AcceptButton");
-            if (acceptObj != null) acceptButton = acceptObj.GetComponent<Button>();
-        }
 
-        if (declineButton == null)
+        Debug.Log($"UI References Found: " +
+                  $"QuestPanel: {(PanelQuest != null ? "✅" : "❌")}, " +
+                  $"Timer: {(timerText != null ? "✅" : "❌")}, " +
+                  $"Accept: {(acceptButton != null ? "✅" : "❌")}");
+    }
+
+    private GameObject FindInactiveGameObject(string name)
+    {
+        Transform[] allTransforms = Resources.FindObjectsOfTypeAll<Transform>();
+        foreach (Transform t in allTransforms)
         {
-            GameObject declineObj = GameObject.Find("DeclineButton");
-            if (declineObj != null) declineButton = declineObj.GetComponent<Button>();
+            if (t.gameObject.name == name && t.gameObject.scene.isLoaded)
+            {
+                return t.gameObject;
+            }
+        }
+        return null;
+    }
+
+    private void FindTextComponent(ref TextMeshProUGUI component, params string[] possibleNames)
+    {
+        if (component != null) return;
+
+        foreach (string name in possibleNames)
+        {
+            GameObject obj = GameObject.Find(name) ?? FindInactiveGameObject(name);
+
+            if (obj != null)
+            {
+                component = obj.GetComponent<TextMeshProUGUI>();
+                if (component != null) break;
+            }
         }
     }
 
-    // Setup UI sau khi tìm được references
+    private void FindButtonComponent(ref Button component, params string[] possibleNames)
+    {
+        if (component != null) return;
+
+        foreach (string name in possibleNames)
+        {
+            GameObject obj = GameObject.Find(name) ?? FindInactiveGameObject(name);
+
+            if (obj != null)
+            {
+                component = obj.GetComponent<Button>();
+                if (component != null) break;
+            }
+        }
+    }
+
     private void SetupUI()
     {
+        Debug.Log("⚙️ Setting up UI...");
+
         if (PanelQuest != null)
             PanelQuest.SetActive(false);
 
         if (timerText != null)
             timerText.gameObject.SetActive(false);
 
-        // Setup button listeners
-        if (acceptButton != null)
-        {
-            acceptButton.onClick.RemoveAllListeners();
-            acceptButton.onClick.AddListener(AcceptQuest);
-        }
+        SetupButton(acceptButton, AcceptQuest, "Accept");
+        SetupButton(declineButton, () => {
+            if (QuestlogoPanel != null)
+                QuestlogoPanel.SetActive(false);
+        }, "Decline");
+        SetupButton(openQuestButton, AcpQuestlogo, "OpenQuest");
 
-        if (declineButton != null)
+        Debug.Log("✅ UI Setup completed");
+    }
+
+    private void SetupButton(Button button, System.Action callback, string buttonName)
+    {
+        if (button != null)
         {
-            declineButton.onClick.RemoveAllListeners();
-            declineButton.onClick.AddListener(() => {
-                if (QuestlogoPanel != null)
-                    QuestlogoPanel.SetActive(false);
-            });
+            button.onClick.RemoveAllListeners();
+            button.onClick.AddListener(() => callback());
+            Debug.Log($"✅ {buttonName} button configured");
         }
+    }
+
+    public void RefreshUI()
+    {
+        StartCoroutine(DelayedSetup());
     }
 
     public void ShowQuestPopup(QuestData quest)
     {
         if (questActive) return;
+
+        if (PanelQuest == null)
+        {
+            FindUIReferences();
+            SetupUI();
+        }
 
         currentQuest = quest;
 
@@ -181,6 +242,9 @@ public class QuestManager : MonoBehaviour
             case QuestType.Delivery:
                 FindObjectOfType<DeliveryQuest>()?.StartQuest();
                 break;
+            case QuestType.ThuThapCoin:
+                FindObjectOfType<ThuThapVatPham>()?.StartQuest();
+                break;
         }
     }
 
@@ -201,7 +265,12 @@ public class QuestManager : MonoBehaviour
                 timerText.gameObject.SetActive(false);
 
             if (WaypointManager.Instance != null)
+            {
+                faileText.text = "Hết thời gian nhiệm vụ thất bại !";
+            }
                 WaypointManager.Instance.RemoveWaypoint();
+            StartCoroutine(HideSuccessPanel());
+
 
             Debug.Log("❌ Hết thời gian làm nhiệm vụ!");
         }
@@ -209,6 +278,12 @@ public class QuestManager : MonoBehaviour
 
     public void AcpQuestlogo()
     {
+        if (QuestlogoPanel == null || PanelQuest == null)
+        {
+            RefreshUI();
+            return;
+        }
+
         if (QuestlogoPanel != null)
             QuestlogoPanel.SetActive(true);
 
@@ -231,16 +306,17 @@ public class QuestManager : MonoBehaviour
 
             if (successRewardText != null)
             {
-                successRewardText.text = "Bạn đã nhận được " + currentQuest.coinReward + " coin!";
+                successRewardText.text = "Nhiệm vụ hoàn thành bạn đã nhận được " + currentQuest.coinReward + " coin!";
             }
-        }
-
-        if (PanelSucces != null)
-        {
-            PanelSucces.SetActive(true);
             StartCoroutine(HideSuccessPanel());
+
         }
 
+        //if (PanelSucces != null)
+        //{
+        //    PanelSucces.SetActive(true);
+        //    StartCoroutine(HideSuccessPanel());
+        //}
     }
 
     public bool IsQuestActive()
@@ -251,13 +327,22 @@ public class QuestManager : MonoBehaviour
     private void OnDestroy()
     {
         SceneManager.sceneLoaded -= OnSceneLoaded;
+        Debug.Log("🗑️ QuestManager destroyed and unregistered events");
     }
+
     private IEnumerator HideSuccessPanel()
     {
         yield return new WaitForSeconds(2f);
 
-        if (PanelSucces != null)
-            PanelSucces.SetActive(false);
+        //if (PanelSucces != null)
+        //    PanelSucces.SetActive(false);
+
+        if (successRewardText != null)
+            successRewardText.text = "";
+
+        if (faileText != null)
+            faileText.text = "";
+
     }
 
 }

@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 1128509701249967322}
   - component: {fileID: 1173725652414218162}
   - component: {fileID: 3307987349011422180}
+  - component: {fileID: 8147539689209184686}
   m_Layer: 0
   m_Name: Point
   m_TagString: Untagged
@@ -99,3 +100,22 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   iconObject: {fileID: 8448521548518912915}
   labelText: {fileID: 0}
+--- !u!114 &8147539689209184686
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8448521548518912915}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: dbf9db670c1df4bb2843b82560ce5409, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  icon: {fileID: 21300000, guid: 4c3c50e875ff1604b9a0c2e061e6d756, type: 3}
+  size: {x: 20, y: 20}
+  rotateWithObject: 0
+  upAxis: {x: 0, y: 1, z: 0}
+  initialIconRotation: 0
+  clampIconInBorder: 1
+  clampDistance: 100
