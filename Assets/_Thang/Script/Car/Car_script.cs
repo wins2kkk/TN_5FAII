@@ -16,7 +16,7 @@ public class Car_script : MonoBehaviour
     {
         Keyboard,
         Button
-    };
+    }
     public ControlMode control;
 
     [Header("Wheel GameObject Meshes")]
@@ -44,10 +44,10 @@ public class Car_script : MonoBehaviour
     float tireAngle;
     float vertical = 0f;
     float horizontal = 0f;
-    bool handBrake = false;
+    bool handBrakeInput = false;
+    bool handBrakeEffects = false;
     Rigidbody carRigidbody;
 
-    //speed
     [Header("Boost System")]
     public float boostMultiplier = 1.5f;
     public float maxEnergy = 100f;
@@ -59,12 +59,6 @@ public class Car_script : MonoBehaviour
     private bool isBoosting = false;
     private bool wasBoostingLastFrame = false;
 
-
-
-
-
-
-
     [Header("Sounds & Effects")]
     public ParticleSystem[] smokeEffects;
     private bool smokeEffectEnabled;
@@ -74,15 +68,27 @@ public class Car_script : MonoBehaviour
     public List<Transform> skidWheelPositions; // Gắn Transform bánh xe tạo hiệu ứng
     private List<TrailRenderer> skidTrails = new List<TrailRenderer>();
 
-    [Header("Brake Sound")]
-    public AudioSource brakeAudioSource;
-    public AudioClip brakeClip;
+    [Header("Car Audio")]
+    public AudioClip engineClip;     // Âm thanh khi xe chạy
+    public AudioClip boostClip;      // Âm thanh khi tăng tốc (shift)
+    public AudioClip brakeClip;      // Âm thanh khi phanh
+    private AudioSource carAudioSource; // AudioSource cho âm thanh xe
+    private float enginePitchMin = 0.8f; // Pitch tối thiểu cho âm thanh động cơ
+    private float enginePitchMax = 1.5f; // Pitch tối đa cho âm thanh động cơ
+    private float minVolume = 0.2f;      // Âm lượng khi xe đứng im
+    private float maxVolume = 1f;        // Âm lượng khi xe chạy tối đa
+    private const float minSpeedForBoost = 0.0f; // Ngưỡng tốc độ để boost hoạt động
+    private const float minSpeedForBrakeEffects = 40f; // Ngưỡng tốc độ để hiệu ứng/âm thanh phanh hoạt động
 
-
-    // drift xe
-    // Thêm bi?n lưu thông s? friction g?c
+    // Drift xe
     private WheelFrictionCurve originalSidewaysFrictionBackLeft;
     private WheelFrictionCurve originalSidewaysFrictionBackRight;
+
+    [SerializeField] private float flipUpOffset = 3f;
+    [SerializeField] private float flipBackOffset = 5f;
+    [SerializeField] private float flipCooldown = 3f;
+    private float lastFlipTime = -10f;
+
     void Start()
     {
         carRigidbody = GetComponent<Rigidbody>();
@@ -91,7 +97,7 @@ public class Car_script : MonoBehaviour
             carRigidbody.centerOfMass = COM.localPosition;
         }
 
-        // Lưu l?i friction g?c c?a bánh sau đ? ph?c h?i khi nh? phanh
+        // Lưu lại friction gốc của bánh sau để phục hồi khi nhả phanh
         originalSidewaysFrictionBackLeft = BackWheelLeftCollider.sidewaysFriction;
         originalSidewaysFrictionBackRight = BackWheelRightCollider.sidewaysFriction;
 
@@ -112,6 +118,15 @@ public class Car_script : MonoBehaviour
             energySlider.value = currentEnergy;
         }
 
+        // Khởi tạo AudioSource cho xe
+        carAudioSource = gameObject.AddComponent<AudioSource>();
+        carAudioSource.loop = true; // Âm thanh động cơ lặp lại
+        carAudioSource.playOnAwake = false;
+        carAudioSource.clip = engineClip;
+        carAudioSource.volume = minVolume; // Bắt đầu với âm lượng nhỏ
+        // Kiểm tra AudioManager
+        if (AudioManager.Instance == null)
+            Debug.LogError("AudioManager.Instance is null! Ensure AudioManager exists in the scene.");
     }
 
     void Update()
@@ -120,8 +135,9 @@ public class Car_script : MonoBehaviour
         CalculateCarMovement();
         CalculateSteering();
         UpdateWheelMeshes();
+        HandleBoost(); // Gọi xử lý boost
+        UpdateCarAudio(); // Gọi xử lý âm thanh
 
-        HandleBoost(); // gọi xử lý boost
 
 
     }
@@ -134,63 +150,67 @@ public class Car_script : MonoBehaviour
             vertical = Input.GetAxisRaw("Vertical");
         }
     }
+
     void CalculateCarMovement()
     {
         carSpeed = carRigidbody.velocity.magnitude;
-        carSpeed = Mathf.Round(carSpeed * 3.6f);
+        carSpeedConverted = Mathf.Round(carSpeed * 3.6f);
 
-        // Apply Braking
-        if (Input.GetKey(KeyCode.Space))
-            handBrake = true;
-        else
-            handBrake = false;
-        if (handBrake)
+        // Kiểm tra input phanh
+        handBrakeInput = Input.GetKey(KeyCode.Space);
+        // Chỉ kích hoạt hiệu ứng phanh khi tốc độ > minSpeedForBrakeEffects
+        handBrakeEffects = handBrakeInput && carSpeedConverted > minSpeedForBrakeEffects;
+        if (handBrakeInput)
         {
             motorTorque = 0;
             ApplyBrake();
-
-            // Gi?m friction bên đ? drift
             DriftOn();
 
-            if (!smokeEffectEnabled)
+            if (carSpeedConverted > 10f) // <--- CHỈ hiệu ứng nếu tốc độ > 10km/h
             {
-                EnableSmokeEffect(true);
-                smokeEffectEnabled = true;
+                if (!smokeEffectEnabled)
+                {
+                    EnableSmokeEffect(true);
+                    smokeEffectEnabled = true;
+                }
+                EnableSkidTrails(true);
+                // PlayBrakeSound();
             }
-            PlayBrakeSound();
+            else
+            {
+                EnableSmokeEffect(false);
+                EnableSkidTrails(false);
+                smokeEffectEnabled = false;
+            }
         }
         else
         {
             ReleaseBrake();
-
-            // Ph?c h?i friction
             DriftOff();
 
-            if (carSpeedConverted < maximumSpeed) 
+            if (carSpeedConverted < maximumSpeed)
             {
                 float boost = isBoosting ? boostMultiplier : 1f;
                 motorTorque = maximumMotorTorque * vertical * boost;
-
             }
             else
             {
                 motorTorque = 0;
             }
-                
-
 
             if (smokeEffectEnabled)
             {
                 EnableSmokeEffect(false);
+                EnableSkidTrails(false);
                 smokeEffectEnabled = false;
             }
         }
-        StopBrakeSound();
+
+
         ApplyMotorTorque();
-        EnableSkidTrails(handBrake);
-
-
+        EnableSkidTrails(handBrakeEffects);
     }
+
     void EnableSkidTrails(bool enable)
     {
         foreach (TrailRenderer trail in skidTrails)
@@ -204,7 +224,6 @@ public class Car_script : MonoBehaviour
         tireAngle = maximumSteeringAngle * horizontal;
         FrontWheelLeftCollider.steerAngle = tireAngle;
         FrontWheelRightCollider.steerAngle = tireAngle;
-
     }
 
     void ApplyMotorTorque()
@@ -228,7 +247,6 @@ public class Car_script : MonoBehaviour
         }
     }
 
-
     void ApplyBrake()
     {
         FrontWheelLeftCollider.brakeTorque = brakePower;
@@ -247,48 +265,47 @@ public class Car_script : MonoBehaviour
 
     void UpdateWheelMeshes()
     {
-        UpdateWheelPose(FrontWheelLeftCollider, FrontWheelLeft);
-        UpdateWheelPose(FrontWheelRightCollider, FrontWheelRight);
-        UpdateWheelPose(BackWheelLeftCollider, BackWheelLeft);
-        UpdateWheelPose(BackWheelRightCollider, BackWheelRight);
+        UpdateWheelOrientation(FrontWheelLeftCollider, FrontWheelLeft);
+        UpdateWheelOrientation(FrontWheelRightCollider, FrontWheelRight);
+        UpdateWheelOrientation(BackWheelLeftCollider, BackWheelLeft);
+        UpdateWheelOrientation(BackWheelRightCollider, BackWheelRight);
     }
 
-    void UpdateWheelPose(WheelCollider collider, GameObject mesh)
+    void UpdateWheelOrientation(WheelCollider collider, GameObject mesh)
     {
         Vector3 pos;
-        Quaternion quat;
-        collider.GetWorldPose(out pos, out quat);
+        Quaternion rot;
+        collider.GetWorldPose(out pos, out rot);
         mesh.transform.position = pos;
-        mesh.transform.rotation = quat; 
+        mesh.transform.rotation = rot;
     }
 
     private void EnableSmokeEffect(bool enable)
     {
-        foreach (ParticleSystem smokeEffect in smokeEffects)
+        foreach (ParticleSystem smoke in smokeEffects)
         {
             if (enable)
             {
-                smokeEffect.Play();
+                smoke.Play();
             }
             else
             {
-                smokeEffect.Stop();
+                smoke.Stop();
             }
         }
     }
 
     void DriftOn()
     {
-        WheelFrictionCurve sidewaysFriction = BackWheelLeftCollider.sidewaysFriction;
-        sidewaysFriction.stiffness = 0.65f;  // Giảm nhẹ để lết, không giảm quá sâu
-        BackWheelLeftCollider.sidewaysFriction = sidewaysFriction;
+        WheelFrictionCurve wheelFriction = BackWheelLeftCollider.sidewaysFriction;
+        wheelFriction.stiffness = 0.65f; // Giảm độ bám dính để drift
+        BackWheelLeftCollider.sidewaysFriction = wheelFriction;
 
-        sidewaysFriction = BackWheelRightCollider.sidewaysFriction;
-        sidewaysFriction.stiffness = 0.65f;
-        BackWheelRightCollider.sidewaysFriction = sidewaysFriction;
+        wheelFriction = BackWheelRightCollider.sidewaysFriction;
+        wheelFriction.stiffness = 0.65f;
+        BackWheelRightCollider.sidewaysFriction = wheelFriction;
 
-        // Thay vì brakePower lớn, chỉ dùng brakePower nhỏ cho handbrake để bánh lết chứ ko đứng hẳn
-        float driftBrakePower = brakePower * 10f;  // 50% lực thắng
+        float driftBrakePower = brakePower * 0.5f; // Lực phanh giảm khi drift
         FrontWheelLeftCollider.brakeTorque = 0;
         FrontWheelRightCollider.brakeTorque = 0;
         BackWheelLeftCollider.brakeTorque = driftBrakePower;
@@ -299,49 +316,21 @@ public class Car_script : MonoBehaviour
     {
         BackWheelLeftCollider.sidewaysFriction = originalSidewaysFrictionBackLeft;
         BackWheelRightCollider.sidewaysFriction = originalSidewaysFrictionBackRight;
-
         ReleaseBrake();
-    }
-
-
-    /// play stop thang oto
-    /// 
-    void PlayBrakeSound()
-    {
-        if (brakeAudioSource != null && brakeClip != null)
-        {
-            if (!brakeAudioSource.isPlaying)
-            {
-                brakeAudioSource.clip = brakeClip;
-                brakeAudioSource.loop = true;
-                brakeAudioSource.Play();
-            }
-        }
-    }
-
-    void StopBrakeSound()
-    {
-        if (brakeAudioSource != null && brakeAudioSource.isPlaying)
-        {
-            brakeAudioSource.Stop();
-        }
     }
 
     void HandleBoost()
     {
         bool shiftHeld = Input.GetKey(KeyCode.LeftShift) || Input.GetKey(KeyCode.RightShift);
 
-        // Điều kiện: chỉ được boost khi nhấn Shift, đang đi tiến, và năng lượng đã đầy
-        bool canStartBoost = shiftHeld && vertical > 0 && currentEnergy >= maxEnergy;
+        // Điều kiện: chỉ được boost khi nhấn Shift, đang đi tiến, năng lượng đầy, và xe đang di chuyển
+        bool canStartBoost = shiftHeld && vertical > 0 && currentEnergy >= maxEnergy && carSpeedConverted > minSpeedForBoost;
 
-        // Nếu đang boost
         if (isBoosting)
         {
-            // Trừ năng lượng
             currentEnergy -= energyDrainRate * Time.deltaTime;
             currentEnergy = Mathf.Max(0, currentEnergy);
 
-            // Khi hết năng lượng thì dừng boost
             if (currentEnergy <= 0f)
             {
                 isBoosting = false;
@@ -350,20 +339,18 @@ public class Car_script : MonoBehaviour
         }
         else
         {
-            // Nếu chưa boost mà điều kiện đủ, bắt đầu boost
             if (canStartBoost)
             {
+                Debug.Log("Boost activated: currentEnergy = " + currentEnergy);
                 isBoosting = true;
             }
             else
             {
-                // Hồi năng lượng khi không boost
                 currentEnergy += energyRechargeRate * Time.deltaTime;
                 currentEnergy = Mathf.Min(maxEnergy, currentEnergy);
             }
         }
 
-        // Cập nhật hiệu ứng boost
         if (boostEffect != null)
         {
             if (isBoosting && !boostEffect.isPlaying)
@@ -372,7 +359,6 @@ public class Car_script : MonoBehaviour
                 boostEffect.Stop();
         }
 
-        // Cập nhật thanh năng lượng
         if (energySlider != null)
         {
             energySlider.value = currentEnergy;
@@ -381,7 +367,66 @@ public class Car_script : MonoBehaviour
         wasBoostingLastFrame = isBoosting;
     }
 
+    //reset Tranfom
+    public void FlipCarByButton()
+    {
+        if (Time.time - lastFlipTime < flipCooldown)
+        {
+            Debug.Log("⏳ Chờ cooldown lật xe...");
+            return;
+        }
 
+        if (carRigidbody != null)
+        {
+            lastFlipTime = Time.time;
+
+            carRigidbody.isKinematic = true;
+            carRigidbody.velocity = Vector3.zero;
+            carRigidbody.angularVelocity = Vector3.zero;
+
+            Vector3 backDir = -transform.forward;
+            Vector3 newPos = transform.position + backDir * flipBackOffset + Vector3.up * flipUpOffset;
+
+            if (Physics.Raycast(newPos, Vector3.down, out RaycastHit hit, 10f))
+            {
+                newPos.y = hit.point.y + 1.5f;
+            }
+
+            transform.position = newPos;
+            transform.rotation = Quaternion.Euler(0f, transform.eulerAngles.y, 0f);
+
+            StartCoroutine(ReactivatePhysics(0.1f));
+            Debug.Log("🚗 Xe đã được lật lại qua Button.");
+        }
+    }
+
+    IEnumerator ReactivatePhysics(float delay)
+    {
+        yield return new WaitForSeconds(delay);
+        carRigidbody.isKinematic = false;
+    }
+
+
+
+    void UpdateCarAudio()
+    {
+        if (engineClip == null || AudioManager.Instance == null) return;
+
+        float speedRatio = carSpeedConverted / maximumSpeed;
+        float targetPitch = Mathf.Lerp(enginePitchMin, enginePitchMax, speedRatio);
+
+        // Đồng bộ engine với VFX volume
+        AudioManager.Instance.PlayLoopingEngine(carAudioSource, engineClip, targetPitch);
+
+        // Phanh
+        if (handBrakeEffects && brakeClip != null && carSpeedConverted > minSpeedForBrakeEffects)
+        {
+            AudioManager.Instance.PlayEffect(brakeClip);
+        }
+        // Boost
+        else if (isBoosting && boostClip != null && carSpeedConverted > minSpeedForBoost)
+        {
+            AudioManager.Instance.PlayEffect(boostClip);
+        }
+    }
 }
-
-

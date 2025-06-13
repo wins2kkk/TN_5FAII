@@ -1,4 +1,4 @@
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -8,10 +8,22 @@ public class CarSelect : MonoBehaviour
     public GameObject allCarsContainer;
     private GameObject[] allCars;
     private int currentIndex = 0;
+    public Car_shop carSelectionManager; // Tham chiếu đến CarSelectionManager
 
     void Start()
     {
+        if (allCarsContainer == null)
+        {
+            Debug.LogError("allCarsContainer is not assigned!");
+            return;
+        }
+
         allCars = new GameObject[allCarsContainer.transform.childCount];
+        if (allCars.Length == 0)
+        {
+            Debug.LogError("No cars found under allCarsContainer!");
+            return;
+        }
 
         for (int i = 0; i < allCarsContainer.transform.childCount; i++)
         {
@@ -22,42 +34,72 @@ public class CarSelect : MonoBehaviour
         if (PlayerPrefs.HasKey("SelectedCarIndex"))
         {
             currentIndex = PlayerPrefs.GetInt("SelectedCarIndex");
+            if (currentIndex >= allCars.Length)
+            {
+                currentIndex = 0; // Reset nếu chỉ số vượt quá số lượng xe
+                PlayerPrefs.SetInt("SelectedCarIndex", currentIndex);
+                PlayerPrefs.Save();
+            }
         }
 
         ShowCurrentCar();
+        if (carSelectionManager != null)
+            carSelectionManager.UpdateUI();
+        Debug.Log("Current Car Index: " + currentIndex); // Kiểm tra xe hiện tại
     }
 
     void ShowCurrentCar()
     {
+        if (allCars == null || allCars.Length == 0) return;
+
         foreach (GameObject car in allCars)
         {
-            car.SetActive(false);
+            if (car != null) car.SetActive(false);
         }
 
-        allCars[currentIndex].SetActive(true);
+        if (currentIndex >= 0 && currentIndex < allCars.Length && allCars[currentIndex] != null)
+        {
+            allCars[currentIndex].SetActive(true);
+        }
     }
-
 
     public void NextCar()
     {
+        if (allCars == null || allCars.Length == 0) return;
+
         currentIndex = (currentIndex + 1) % allCars.Length;
         ShowCurrentCar();
+        if (carSelectionManager != null)
+            carSelectionManager.OnCarChanged();
+        Debug.Log("Moved to Car Index: " + currentIndex); // Kiểm tra khi chuyển tiếp
     }
 
     public void PreviousCar()
     {
+        if (allCars == null || allCars.Length == 0) return;
+
         currentIndex = (currentIndex - 1 + allCars.Length) % allCars.Length;
         ShowCurrentCar();
+        if (carSelectionManager != null)
+            carSelectionManager.OnCarChanged();
+        Debug.Log("Moved to Car Index: " + currentIndex); // Kiểm tra khi lùi
     }
 
     public void OnYesButtonClick(string sceneName)
     {
+        if (allCars == null || allCars.Length == 0) return;
+
         PlayerPrefs.SetInt("SelectedCarIndex", currentIndex);
         PlayerPrefs.Save();
 
-        Debug.Log("Selected Car Saved");
+        Debug.Log("Selected Car Saved: " + currentIndex);
 
         SceneManager.LoadScene(sceneName);
     }
 
+    // Phương thức để lấy chỉ số xe hiện tại
+    public int GetCurrentCarIndex()
+    {
+        return currentIndex;
+    }
 }
