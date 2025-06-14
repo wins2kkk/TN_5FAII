@@ -1,0 +1,11 @@
+Model Information:
+* title:	TB Mini Double (2000mm)
+* source:	https://sketchfab.com/3d-models/tb-mini-double-2000mm-5f276ffe27d4478ab5e98b7509b6e153
+* author:	Boplan® Group (https://sketchfab.com/boplan)
+
+Model License:
+* license type:	CC-BY-NC-ND-4.0 (http://creativecommons.org/licenses/by-nc-nd/4.0/)
+* requirements:	Author must be credited. No commercial use. Modified versions can not be distributed.
+
+If you use this 3D model in your project be sure to copy paste this credit wherever you share it:
+This work is based on "TB Mini Double (2000mm)" (https://sketchfab.com/3d-models/tb-mini-double-2000mm-5f276ffe27d4478ab5e98b7509b6e153) by Boplan® Group (https://sketchfab.com/boplan) licensed under CC-BY-NC-ND-4.0 (http://creativecommons.org/licenses/by-nc-nd/4.0/)

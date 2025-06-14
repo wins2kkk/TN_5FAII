@@ -1,0 +1,11 @@
+Model Information:
+* title:	Marble, multi-tiered, street fountain
+* source:	https://sketchfab.com/3d-models/marble-multi-tiered-street-fountain-f967465f7bb54297904b7445dcfbe057
+* author:	Kirill (https://sketchfab.com/Kirillwq)
+
+Model License:
+* license type:	CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)
+* requirements:	Author must be credited. Commercial use is allowed.
+
+If you use this 3D model in your project be sure to copy paste this credit wherever you share it:
+This work is based on "Marble, multi-tiered, street fountain" (https://sketchfab.com/3d-models/marble-multi-tiered-street-fountain-f967465f7bb54297904b7445dcfbe057) by Kirill (https://sketchfab.com/Kirillwq) licensed under CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)

@@ -1,0 +1,11 @@
+Model Information:
+* title:	Ukrainian Bastion-01 MLRS
+* source:	https://sketchfab.com/3d-models/ukrainian-bastion-01-mlrs-ff96de5f8d8b4bc2bcdf7ad51750ca7c
+* author:	42manako (https://sketchfab.com/42manako)
+
+Model License:
+* license type:	CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)
+* requirements:	Author must be credited. Commercial use is allowed.
+
+If you use this 3D model in your project be sure to copy paste this credit wherever you share it:
+This work is based on "Ukrainian Bastion-01 MLRS" (https://sketchfab.com/3d-models/ukrainian-bastion-01-mlrs-ff96de5f8d8b4bc2bcdf7ad51750ca7c) by 42manako (https://sketchfab.com/42manako) licensed under CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)

@@ -1,0 +1,11 @@
+Model Information:
+* title:	Russian Su-25
+* source:	https://sketchfab.com/3d-models/russian-su-25-947ef770b49742c3aa439177daabcf51
+* author:	42manako (https://sketchfab.com/42manako)
+
+Model License:
+* license type:	CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)
+* requirements:	Author must be credited. Commercial use is allowed.
+
+If you use this 3D model in your project be sure to copy paste this credit wherever you share it:
+This work is based on "Russian Su-25" (https://sketchfab.com/3d-models/russian-su-25-947ef770b49742c3aa439177daabcf51) by 42manako (https://sketchfab.com/42manako) licensed under CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)

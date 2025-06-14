@@ -1,0 +1,11 @@
+Model Information:
+* title:	Ordnance Quick Fire 25 Pounder
+* source:	https://sketchfab.com/3d-models/ordnance-quick-fire-25-pounder-b01ddd2143cc4cc9bc387530d5133e1d
+* author:	artfletch (https://sketchfab.com/artfletch)
+
+Model License:
+* license type:	CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)
+* requirements:	Author must be credited. Commercial use is allowed.
+
+If you use this 3D model in your project be sure to copy paste this credit wherever you share it:
+This work is based on "Ordnance Quick Fire 25 Pounder" (https://sketchfab.com/3d-models/ordnance-quick-fire-25-pounder-b01ddd2143cc4cc9bc387530d5133e1d) by artfletch (https://sketchfab.com/artfletch) licensed under CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)

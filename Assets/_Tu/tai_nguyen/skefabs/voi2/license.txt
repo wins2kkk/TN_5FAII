@@ -1,0 +1,11 @@
+Model Information:
+* title:	Home_Decor
+* source:	https://sketchfab.com/3d-models/home-decor-1a6275805a1e405f8e335a115078c87b
+* author:	denj666 (https://sketchfab.com/denj666)
+
+Model License:
+* license type:	CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)
+* requirements:	Author must be credited. Commercial use is allowed.
+
+If you use this 3D model in your project be sure to copy paste this credit wherever you share it:
+This work is based on "Home_Decor" (https://sketchfab.com/3d-models/home-decor-1a6275805a1e405f8e335a115078c87b) by denj666 (https://sketchfab.com/denj666) licensed under CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)
