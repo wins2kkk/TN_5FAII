@@ -41,7 +41,7 @@ public class MapObject : MonoBehaviour
         sprRect.sizeDelta = mme.size;
         rt = panelGO.GetComponent<RectTransform>();
         mmc = controller;
-        miniMapTarget = mmc.target;
+        miniMapTarget = mmc.currentTarget;
         SetPositionAndRotation();
 
     }
@@ -58,7 +58,7 @@ public class MapObject : MonoBehaviour
         cornerss = new Vector3[4];
         rt.GetWorldCorners(cornerss);
         screenPos = RectTransformUtility.WorldToScreenPoint(mapCamera, owner.transform.position);
-        if (linkedMiniMapEntity.clampInBorder && Mathf.Abs(Vector3.Distance(owner.transform.position, mmc.target.transform.position)) < linkedMiniMapEntity.clampDist)
+        if (linkedMiniMapEntity.clampInBorder && Mathf.Abs(Vector3.Distance(owner.transform.position, mmc.currentTarget.transform.position)) < linkedMiniMapEntity.clampDist)
         {
             ClampIconColliderWise();
         }

@@ -1,7 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.SceneManagement;
 
 public class CarSelect : MonoBehaviour
 {
@@ -9,6 +8,7 @@ public class CarSelect : MonoBehaviour
     private GameObject[] allCars;
     private int currentIndex = 0;
     public Car_shop carSelectionManager; // Tham chiếu đến CarSelectionManager
+    public GameObject confirmationImage; // Hình ảnh hiển thị khi xác nhận chọn xe
 
     void Start()
     {
@@ -85,16 +85,24 @@ public class CarSelect : MonoBehaviour
         Debug.Log("Moved to Car Index: " + currentIndex); // Kiểm tra khi lùi
     }
 
-    public void OnYesButtonClick(string sceneName)
+    public void OnYesButtonClick()
     {
         if (allCars == null || allCars.Length == 0) return;
 
         PlayerPrefs.SetInt("SelectedCarIndex", currentIndex);
         PlayerPrefs.Save();
 
-        Debug.Log("Selected Car Saved: " + currentIndex);
+        // Hiển thị hình ảnh xác nhận
+        if (confirmationImage != null)
+        {
+            confirmationImage.SetActive(true);
+        }
+        else
+        {
+            Debug.LogWarning("Confirmation Image is not assigned!");
+        }
 
-        SceneManager.LoadScene(sceneName);
+        Debug.Log("Selected Car Saved: " + currentIndex);
     }
 
     // Phương thức để lấy chỉ số xe hiện tại

@@ -18707,8 +18707,12 @@ MonoBehaviour:
   skidWheelPositions:
   - {fileID: 695236962}
   - {fileID: 1638013379}
-  brakeAudioSource: {fileID: 0}
+  engineClip: {fileID: 0}
+  boostClip: {fileID: 0}
   brakeClip: {fileID: 0}
+  flipUpOffset: 3
+  flipBackOffset: 5
+  flipCooldown: 3
 --- !u!205 &775583832
 LODGroup:
   m_ObjectHideFlags: 0
@@ -19009,7 +19013,7 @@ Transform:
   m_GameObject: {fileID: 775583828}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0.7071068, z: -0, w: 0.7071068}
-  m_LocalPosition: {x: 260.9, y: 292, z: 4044}
+  m_LocalPosition: {x: 240.6, y: -0.7, z: 188.9}
   m_LocalScale: {x: 0.90431, y: 0.90431, z: 0.90431}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -23394,11 +23398,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b502eb14077918c4b85824a5cfb768e6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  moveSmoothness: 5000
-  rotationSmoothness: 5000
-  moveOffset: {x: 0, y: 2.41, z: -6.54}
-  rotationOffset: {x: 0, y: 1.05, z: 0}
-  carTarget: {fileID: 775583833}
 --- !u!81 &1202714558
 AudioListener:
   m_ObjectHideFlags: 0

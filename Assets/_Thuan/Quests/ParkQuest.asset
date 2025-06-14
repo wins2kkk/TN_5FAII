@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   questName: "\u0110\u1ED7 Xe"
   questType: 0
-  timeLimit: 5
+  timeLimit: 70
   coinReward: 50
   description: "T\u1EDBi n\u01A1i tr\xEAn b\u1EA3n \u0111\u1ED3 v\xE0 \u0111\u1ED7
     xe v\xE0o \u0111\xFAng v\u1ECB tr\xED"
