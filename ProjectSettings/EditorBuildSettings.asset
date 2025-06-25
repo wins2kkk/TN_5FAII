@@ -12,6 +12,12 @@ EditorBuildSettings:
     path: Assets/_Bai_Hoan_Thien/Menu.unity
     guid: 4db57bb73cd757e438ab05943d0df0bc
   - enabled: 1
+    path: Assets/_Tu/scences_map_load/loadding/loading.unity
+    guid: 14131f41264e58241a2a1aa8c2261b5f
+  - enabled: 1
     path: Assets/_Bai_Hoan_Thien/Thanh_Pho2.unity
     guid: e4d572a1d648d1347896e9bdf4aab5ff
+  - enabled: 1
+    path: Assets/_Tu/scences_map_load/map/map city 2.unity
+    guid: 6c2ce140b041b2744ad7c073b28ffe9e
   m_configObjects: {}
