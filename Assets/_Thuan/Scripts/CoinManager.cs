@@ -107,7 +107,7 @@ public class CoinManager : MonoBehaviour
     {
         PlayerPrefs.SetInt(COIN_KEY, currentCoins);
         PlayerPrefs.Save();
-        Debug.Log("Đã lưu: " + currentCoins + " coins");
+        //Debug.Log("Đã lưu: " + currentCoins + " coins");
     }
 
     /// <summary>
@@ -121,7 +121,7 @@ public class CoinManager : MonoBehaviour
             currentCoins += amount;
             SaveCoins();
             UpdateCoinUI();
-            Debug.Log("+ " + amount + " coins! Tổng: " + currentCoins);
+           // Debug.Log("+ " + amount + " coins! Tổng: " + currentCoins);
         }
     }
 

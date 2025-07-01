@@ -84,7 +84,7 @@ public class WaypointManager : MonoBehaviour
             // Nếu tìm được đủ UI elements thì dừng
             if (waypointUI != null && distanceText != null && waypointIndicator != null)
             {
-                if (debugMode) Debug.Log($"Found all UI elements after {attempts + 1} attempts");
+                //if (debugMode) Debug.Log($"Found all UI elements after {attempts + 1} attempts");
                 break;
             }
 
@@ -100,7 +100,7 @@ public class WaypointManager : MonoBehaviour
 
         SetupReferences();
     }
-
+    
     // Tự động tìm lại UI references với nhiều phương pháp
     private void FindUIReferences()
     {

@@ -8,4 +8,5 @@ public class QuestData : ScriptableObject
     public float timeLimit = 60f;
     public int coinReward = 50;
     public string description = "Nhiệm vụ mặc định";
+    public int lapCount = 3;
 }

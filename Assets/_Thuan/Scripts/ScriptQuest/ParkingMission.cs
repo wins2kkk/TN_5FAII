@@ -34,7 +34,7 @@ public class ParkingMission : MonoBehaviour
         if (carObject != null)
         {
             carTransform = carObject.transform;
-            Debug.Log($"Found active car: {carTransform.name}");
+            //Debug.Log($"Found active car: {carTransform.name}");
         }
         else
         {

@@ -11,6 +11,14 @@ TagManager:
   - WaypointUI
   - DistanceText
   - WaypointIndicator
+  - Road
+  - SnapEnd
+  - SnapStart
+  - path
+  - gameManager
+  - AI
+  - toDestroy
+  - Waypoint
   layers:
   - Default
   - TransparentFX

@@ -36,7 +36,7 @@ public class DeliveryQuest : MonoBehaviour
         if (playerObject != null)
         {
             player = playerObject.transform;
-            Debug.Log($"Found player: {player.name}");
+           // Debug.Log($"Found player: {player.name}");
         }
         else
         {

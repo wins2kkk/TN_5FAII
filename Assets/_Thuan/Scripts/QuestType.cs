@@ -3,5 +3,8 @@
     ParkCar,
     Delivery,
     DoXang,
-    ThuThapCoin
+    ThuThapCoin,
+    BanTocDo,
+    duaxe,
+    DuaAI
 }

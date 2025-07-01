@@ -4,17 +4,23 @@ using UnityEngine.SceneManagement;
 
 public class LevelButton : MonoBehaviour
 {
-    public string levelName;         // Tên màn chơi
+    public string levelName = "Thanh_Pho2";
+    // Tên màn chơi
     public Button button;            // Nút bấm màn chơi
+
     public GameObject lockIcon;      // Icon khóa hiển thị nếu màn bị khóa
+    
 
     void Start()
     {
-        // Mở khóa màn đầu tiên nếu chưa có dữ liệu
         if (!PlayerPrefs.HasKey(levelName))
         {
-            PlayerPrefs.SetInt(levelName, levelName == "Login" ? 1 : 0);
+            // Nếu đây là màn đầu tiên (Thanh_Pho2), mở sẵn
+            PlayerPrefs.SetInt(levelName, 1);
+            PlayerPrefs.Save();
         }
+
+
 
         int isUnlocked = PlayerPrefs.GetInt(levelName);
 

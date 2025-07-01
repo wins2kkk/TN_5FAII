@@ -1,46 +1,17 @@
 using UnityEngine;
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine.SceneManagement;
 using UnityEngine.UI;
-using System;
 
 public class levelMenu : MonoBehaviour
 {
-    public Button[] buttons;
-    //   public GameObject LevelButtons;
+    public Button[] buttons; // Gán các nút Level1 -> Level4 vào
+
     private void Awake()
     {
-        //ButtonsToArray();
-
-        int unlockedLevel = PlayerPrefs.GetInt("UnlockedLevel", 1);
-
         for (int i = 0; i < buttons.Length; i++)
         {
-            buttons[i].interactable = false;
+            string levelName = "Level" + (i + 1);
+            bool isUnlocked = PlayerPrefs.GetInt(levelName, levelName == "Level1" ? 1 : 0) == 1;
+            buttons[i].interactable = isUnlocked;
         }
-        for (int i = 0; i < unlockedLevel; i++)
-        {
-            buttons[i].interactable = true;
-        }
-
-
     }
-
-    public void OpenLevel(int levelId)
-    {
-        string levelName = "Level" + levelId;
-        SceneManager.LoadScene(levelName);
-    }
-
-    //void ButtonsToArray()
-    //{
-    //    int childCount = LevelButtons.transform.childCount;
-    //    buttons = new Button[childCount];
-    //    for (int i = 0; i < childCount; i++)
-    //    {
-
-    //        buttons[i] = LevelButtons.transform.GetChild(i).gameObject.GetComponent<Button>();
-    //    }
-    //}
 }

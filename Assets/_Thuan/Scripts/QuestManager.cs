@@ -53,12 +53,12 @@ public class QuestManager : MonoBehaviour
 
         FindUIReferences();
         SetupUI();
-        Debug.Log("✅ Initial setup completed");
+        //Debug.Log("✅ Initial setup completed");
     }
 
     private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
     {
-        Debug.Log($"🔄 Scene loaded: {scene.name}");
+        //Debug.Log($"🔄 Scene loaded: {scene.name}");
         StartCoroutine(DelayedSetup());
     }
 
@@ -70,12 +70,12 @@ public class QuestManager : MonoBehaviour
 
         FindUIReferences();
         SetupUI();
-        Debug.Log("✅ Delayed setup completed");
+        //Debug.Log("✅ Delayed setup completed");
     }
 
     private void FindUIReferences()
     {
-        Debug.Log("🔍 Finding UI References...");
+        //Debug.Log("🔍 Finding UI References...");
 
         if (QuestlogoPanel == null)
         {
@@ -103,10 +103,10 @@ public class QuestManager : MonoBehaviour
         FindButtonComponent(ref openQuestButton, "OpenQuestButton", "QuestLogoBtn", "OpenQuest");
 
 
-        Debug.Log($"UI References Found: " +
-                  $"QuestPanel: {(PanelQuest != null ? "✅" : "❌")}, " +
-                  $"Timer: {(timerText != null ? "✅" : "❌")}, " +
-                  $"Accept: {(acceptButton != null ? "✅" : "❌")}");
+       // Debug.Log($"UI References Found: " +
+                 // $"QuestPanel: {(PanelQuest != null ? "✅" : "❌")}, " +
+                //  $"Timer: {(timerText != null ? "✅" : "❌")}, " +
+                //  $"Accept: {(acceptButton != null ? "✅" : "❌")}");
     }
 
     private GameObject FindInactiveGameObject(string name)
@@ -156,7 +156,7 @@ public class QuestManager : MonoBehaviour
 
     private void SetupUI()
     {
-        Debug.Log("⚙️ Setting up UI...");
+       //Debug.Log("⚙️ Setting up UI...");
 
         if (PanelQuest != null)
             PanelQuest.SetActive(false);
@@ -171,7 +171,7 @@ public class QuestManager : MonoBehaviour
         }, "Decline");
         SetupButton(openQuestButton, AcpQuestlogo, "OpenQuest");
 
-        Debug.Log("✅ UI Setup completed");
+       // Debug.Log("✅ UI Setup completed");
     }
 
     private void SetupButton(Button button, System.Action callback, string buttonName)
@@ -180,7 +180,7 @@ public class QuestManager : MonoBehaviour
         {
             button.onClick.RemoveAllListeners();
             button.onClick.AddListener(() => callback());
-            Debug.Log($"✅ {buttonName} button configured");
+          //  Debug.Log($"✅ {buttonName} button configured");
         }
     }
 
@@ -245,6 +245,17 @@ public class QuestManager : MonoBehaviour
             case QuestType.ThuThapCoin:
                 FindObjectOfType<ThuThapVatPham>()?.StartQuest();
                 break;
+            case QuestType.BanTocDo:
+                FindObjectOfType<BanTocDo>()?.StartMission();
+                break;
+            case QuestType.duaxe:
+                StartLapRaceQuest();
+                break;
+            case QuestType.DuaAI:
+                RaceManager.Instance.StartRaceMission(currentQuest);
+                break;
+
+
         }
     }
 
@@ -255,7 +266,16 @@ public class QuestManager : MonoBehaviour
         timeRemaining -= Time.deltaTime;
 
         if (timerText != null)
-            timerText.text = "Thời gian: " + Mathf.CeilToInt(timeRemaining) + "s";
+        {
+            int minutes = Mathf.FloorToInt(timeRemaining / 60f);
+            int seconds = Mathf.FloorToInt(timeRemaining % 60f);
+            timerText.text = $"Thời gian còn lại: {minutes:00}:{seconds:00}";
+        }
+        if (timeRemaining < 10f)
+            timerText.color = Color.red;
+        else
+            timerText.color = Color.white;
+
 
         if (timeRemaining <= 0)
         {
@@ -274,6 +294,23 @@ public class QuestManager : MonoBehaviour
 
             Debug.Log("❌ Hết thời gian làm nhiệm vụ!");
         }
+    }
+    private void StartLapRaceQuest()
+    {
+        // Lưu lại dữ liệu nhiệm vụ để scene đua dùng
+        PlayerPrefs.SetInt("LapMission_Active", 1);
+        PlayerPrefs.SetInt("LapMission_Laps", currentQuest.lapCount); // 👈 nếu có lapCount
+        PlayerPrefs.SetFloat("LapMission_Time", currentQuest.timeLimit);
+        PlayerPrefs.SetFloat("LapMission_Reward", currentQuest.coinReward);
+
+        // Ghi lại tên scene cũ để quay về
+        PlayerPrefs.SetString("LapMission_ReturnScene", SceneManager.GetActiveScene().name);
+
+        // Chuyển scene sang LapRaceScene (đặt đúng tên scene của bạn)
+        // LevelLoader.Instance.LoadSceneByName("Lap");
+        SceneManager.LoadScene("Lap");
+        //LevelLoader.LoadScene("Lap");
+
     }
 
     public void AcpQuestlogo()
