@@ -33,7 +33,7 @@ public class SpeedometerUI : MonoBehaviour
     void UpdateNeedle(float speed)
     {
         desiredPosition = startRotation - endRotation;
-        float speedPercent = Mathf.Clamp01(speed / 180f);  // 180 là KPH tối đa bạn muốn hiển thị
+        float speedPercent = Mathf.Clamp01(speed / 300f);  // 180 là KPH tối đa bạn muốn hiển thị
         float targetRotationZ = startRotation - speedPercent * desiredPosition;
 
         // Mượt hóa bằng Lerp

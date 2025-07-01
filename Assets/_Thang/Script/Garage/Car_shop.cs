@@ -9,10 +9,12 @@ public class Car_shop : MonoBehaviour
     public GameObject selectButton; // Nút chọn
     public GameObject successPanel; // Panel mua thành công
     public GameObject failPanel; // Panel không mua thành công
-    private int[] carPrices = { 0, 2, 5 }; // Giá xe: xe 1 (0 xu), xe 2 (200 xu), xe 3 (500 xu)
-    private bool[] carOwned; // Mảng trạng thái sở hữu xe
 
-    private const string CAR_OWNED_KEY_PREFIX = "CarOwned_"; // Key để lưu trong PlayerPrefs
+    // Cập nhật: Thêm giá tiền cho 7 xe
+    private int[] carPrices = { 0, 2, 5, 10, 25, 40, 80 };
+    private bool[] carOwned;
+
+    private const string CAR_OWNED_KEY_PREFIX = "CarOwned_";
 
     void Awake()
     {
@@ -29,13 +31,13 @@ public class Car_shop : MonoBehaviour
         {
             buyButton.SetActive(false);
             selectButton.SetActive(true);
-            coinText.text = currentCoins.ToString(); // Hiển thị số xu hiện tại khi đã sở hữu
+            coinText.text = currentCoins.ToString();
         }
         else
         {
-            buyButton.SetActive(true); // Hiển thị nút "Mua" khi chưa sở hữu
+            buyButton.SetActive(true);
             selectButton.SetActive(false);
-            coinText.text = carPrices[currentIndex].ToString(); // Hiển thị giá xe
+            coinText.text = carPrices[currentIndex].ToString();
         }
         Debug.Log("Xe " + currentIndex + " - Owned: " + carOwned[currentIndex] + " - Giá: " + coinText.text);
     }
@@ -66,7 +68,7 @@ public class Car_shop : MonoBehaviour
         successPanel.SetActive(true);
         yield return new WaitForSeconds(2f);
         successPanel.SetActive(false);
-        UpdateUI(); // Cập nhật lại UI sau khi mua thành công
+        UpdateUI();
     }
 
     private IEnumerator ShowFailPanel()
@@ -80,7 +82,7 @@ public class Car_shop : MonoBehaviour
     {
         for (int i = 0; i < carOwned.Length; i++)
         {
-            carOwned[i] = PlayerPrefs.GetInt(CAR_OWNED_KEY_PREFIX + i, i == 0 ? 1 : 0) == 1; // Xe 1 sở hữu mặc định
+            carOwned[i] = PlayerPrefs.GetInt(CAR_OWNED_KEY_PREFIX + i, i == 0 ? 1 : 0) == 1;
         }
     }
 

@@ -20,4 +20,10 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/_Tu/scences_map_load/map/map city 2.unity
     guid: 6c2ce140b041b2744ad7c073b28ffe9e
+  - enabled: 0
+    path: Assets/_Thang/Garage_Car1.unity
+    guid: dba3c70d4ccd94d4c93c5e9869cfffcc
+  - enabled: 0
+    path: Assets/_Thang/Test_Car.unity
+    guid: 06196c17dd9d92f4dadedfc670b56691
   m_configObjects: {}

@@ -1,25 +1,10 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
-public class menu : MonoBehaviour
+public class SceneMenuManager : MonoBehaviour
 {
-    //public GameObject mainMenuPanel;
-    //public GameObject gameUIPanel;
-
-    //public void OnStartButtonClicked()
-    //{
-    //    if (mainMenuPanel != null) mainMenuPanel.SetActive(false);
-    //    if (gameUIPanel != null) gameUIPanel.SetActive(true);
-    //}
-    //public void HideGameUIPanel()
-    //{
-    //    if (gameUIPanel != null)
-    //    {
-    //        gameUIPanel.SetActive(false); // Ẩn panel
-    //    }
-    //}
-
     public GameObject[] allPanels;
 
     public void ShowPanel(GameObject panelToShow)
@@ -31,5 +16,37 @@ public class menu : MonoBehaviour
 
         if (panelToShow != null)
             panelToShow.SetActive(true);
+    }
+
+    public void HideAllPanels()
+    {
+        foreach (GameObject panel in allPanels)
+        {
+            panel.SetActive(false);
+        }
+    }
+
+    public void TogglePanel(GameObject panelToToggle)
+    {
+        foreach (GameObject panel in allPanels)
+        {
+            if (panel != panelToToggle)
+                panel.SetActive(false);
+        }
+
+        if (panelToToggle != null)
+            panelToToggle.SetActive(!panelToToggle.activeSelf);
+    }
+
+    public void LoadSceneByName(string sceneName)
+    {
+        if (!string.IsNullOrEmpty(sceneName))
+        {
+            SceneManager.LoadScene(sceneName);
+        }
+        else
+        {
+            Debug.LogWarning("Tên scene không hợp lệ!");
+        }
     }
 }
