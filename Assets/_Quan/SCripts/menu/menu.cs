@@ -42,7 +42,9 @@ public class SceneMenuManager : MonoBehaviour
     {
         if (!string.IsNullOrEmpty(sceneName))
         {
-            SceneManager.LoadScene(sceneName);
+            //SceneManager.LoadScene(sceneName);
+            PlayerPrefs.SetString("SceneToLoad", sceneName);
+            SceneManager.LoadScene("Loading");
         }
         else
         {

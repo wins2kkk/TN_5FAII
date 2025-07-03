@@ -14,8 +14,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   questName: "Thu th\u1EADp v\u1EADt ph\u1EA9m"
   questType: 3
-  timeLimit: 100
-  coinReward: 1000
+  timeLimit: 200
+  coinReward: 2000
   description: "B\u1EA1n h\xE3y \u0111i thu th\u1EADp 5 v\u1EADt ph\u1EA9m xu\u1EA5t
     hi\u1EC7n ng\u1EABu nhi\xEAn tr\xEAn \u0111\u01B0\u1EDDng \u0111i"
   lapCount: 3

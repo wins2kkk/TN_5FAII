@@ -11,7 +11,7 @@ public class QuestManager : MonoBehaviour
     [Header("UI References - Sẽ được tự động tìm lại")]
     public GameObject PanelQuest;
     public GameObject QuestlogoPanel;
-   // public GameObject PanelSucces;
+    public GameObject PanelSucces; // 👈 Bỏ comment để hiển thị thông báo
     public TextMeshProUGUI descriptionText;
     public TextMeshProUGUI questNametext;
     public Button acceptButton;
@@ -20,6 +20,8 @@ public class QuestManager : MonoBehaviour
     public TextMeshProUGUI timerText;
     public TextMeshProUGUI successRewardText;
     public TextMeshProUGUI faileText;
+    public Button HuyNV;
+
 
     [Header("Quest Data - Được giữ lại")]
     private QuestData currentQuest;
@@ -56,12 +58,6 @@ public class QuestManager : MonoBehaviour
         //Debug.Log("✅ Initial setup completed");
     }
 
-    private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
-    {
-        //Debug.Log($"🔄 Scene loaded: {scene.name}");
-        StartCoroutine(DelayedSetup());
-    }
-
     private IEnumerator DelayedSetup()
     {
         yield return new WaitForEndOfFrame();
@@ -87,10 +83,11 @@ public class QuestManager : MonoBehaviour
             PanelQuest = GameObject.Find("PanelQuest") ?? FindInactiveGameObject("PanelQuest");
         }
 
-        //if (PanelSucces == null)
-        //{
-        //    PanelSucces = GameObject.Find("PanelSucces") ?? FindInactiveGameObject("PanelSucces");
-        //}
+        // 👈 Tìm PanelSucces để hiển thị thông báo
+        if (PanelSucces == null)
+        {
+            PanelSucces = GameObject.Find("PanelSucces") ?? FindInactiveGameObject("PanelSucces");
+        }
 
         FindTextComponent(ref descriptionText, "DescriptionText", "Description Text", "Desc Text");
         FindTextComponent(ref questNametext, "QuestNameText", "Quest Name Text", "QuestName");
@@ -101,12 +98,8 @@ public class QuestManager : MonoBehaviour
         FindButtonComponent(ref acceptButton, "AcceptButton", "Accept Button", "Accept");
         FindButtonComponent(ref declineButton, "DeclineButton", "Decline Button", "Decline");
         FindButtonComponent(ref openQuestButton, "OpenQuestButton", "QuestLogoBtn", "OpenQuest");
+        FindButtonComponent(ref HuyNV, "HuyNV", "HuyNV", "HuyNV");
 
-
-       // Debug.Log($"UI References Found: " +
-                 // $"QuestPanel: {(PanelQuest != null ? "✅" : "❌")}, " +
-                //  $"Timer: {(timerText != null ? "✅" : "❌")}, " +
-                //  $"Accept: {(acceptButton != null ? "✅" : "❌")}");
     }
 
     private GameObject FindInactiveGameObject(string name)
@@ -156,10 +149,14 @@ public class QuestManager : MonoBehaviour
 
     private void SetupUI()
     {
-       //Debug.Log("⚙️ Setting up UI...");
+        //Debug.Log("⚙️ Setting up UI...");
 
         if (PanelQuest != null)
             PanelQuest.SetActive(false);
+
+        // 👈 Đảm bảo PanelSucces bị ẩn ban đầu
+        if (PanelSucces != null)
+            PanelSucces.SetActive(false);
 
         if (timerText != null)
             timerText.gameObject.SetActive(false);
@@ -170,8 +167,10 @@ public class QuestManager : MonoBehaviour
                 QuestlogoPanel.SetActive(false);
         }, "Decline");
         SetupButton(openQuestButton, AcpQuestlogo, "OpenQuest");
+        SetupButton(HuyNV, HuyNhiemVU, "AbandonQuest");
 
-       // Debug.Log("✅ UI Setup completed");
+
+        // Debug.Log("✅ UI Setup completed");
     }
 
     private void SetupButton(Button button, System.Action callback, string buttonName)
@@ -180,13 +179,19 @@ public class QuestManager : MonoBehaviour
         {
             button.onClick.RemoveAllListeners();
             button.onClick.AddListener(() => callback());
-          //  Debug.Log($"✅ {buttonName} button configured");
+            //  Debug.Log($"✅ {buttonName} button configured");
         }
     }
 
     public void RefreshUI()
     {
         StartCoroutine(DelayedSetup());
+    }
+    private void HuyNhiemVU()
+    {
+        if (!questActive) return;
+
+        FailQuest("Bạn đã từ bỏ nhiệm vụ!");
     }
 
     public void ShowQuestPopup(QuestData quest)
@@ -202,7 +207,7 @@ public class QuestManager : MonoBehaviour
         currentQuest = quest;
 
         if (questNametext != null)
-            questNametext.text = quest.name;
+            questNametext.text = quest.questName;
 
         if (descriptionText != null)
             descriptionText.text = quest.description + "\nThưởng: " + quest.coinReward + " coin\nThời gian: " + quest.timeLimit + "s";
@@ -245,6 +250,9 @@ public class QuestManager : MonoBehaviour
             case QuestType.ThuThapCoin:
                 FindObjectOfType<ThuThapVatPham>()?.StartQuest();
                 break;
+            case QuestType.DoXang:
+                FindObjectOfType<FuelMission>()?.StartMission();
+                break;
             case QuestType.BanTocDo:
                 FindObjectOfType<BanTocDo>()?.StartMission();
                 break;
@@ -252,8 +260,9 @@ public class QuestManager : MonoBehaviour
                 StartLapRaceQuest();
                 break;
             case QuestType.DuaAI:
-                RaceManager.Instance.StartRaceMission(currentQuest);
+                StartDuaAI();
                 break;
+
 
 
         }
@@ -279,21 +288,14 @@ public class QuestManager : MonoBehaviour
 
         if (timeRemaining <= 0)
         {
-            questActive = false;
-
-            if (timerText != null)
-                timerText.gameObject.SetActive(false);
-
-            if (WaypointManager.Instance != null)
-            {
-                faileText.text = "Hết thời gian nhiệm vụ thất bại !";
-            }
-                WaypointManager.Instance.RemoveWaypoint();
-            StartCoroutine(HideSuccessPanel());
-
-
-            Debug.Log("❌ Hết thời gian làm nhiệm vụ!");
+            // 👈 Gọi FailQuest thay vì xử lý trực tiếp
+            FailQuest("Hết thời gian nhiệm vụ thất bại!");
         }
+        if (Input.GetKeyDown(KeyCode.F))
+        {
+            FailQuest("Bạn đã thất bại!");
+        }
+
     }
     private void StartLapRaceQuest()
     {
@@ -303,14 +305,21 @@ public class QuestManager : MonoBehaviour
         PlayerPrefs.SetFloat("LapMission_Time", currentQuest.timeLimit);
         PlayerPrefs.SetFloat("LapMission_Reward", currentQuest.coinReward);
 
-        // Ghi lại tên scene cũ để quay về
+        PlayerPrefs.SetString("LapMission_ReturnScene", SceneManager.GetActiveScene().name);
+        PlayerPrefs.SetString("SceneToLoad", "ChayLap");
+        SceneManager.LoadScene("Loading");
+
+    }
+    private void StartDuaAI()
+    {
+        PlayerPrefs.SetInt("LapMission_Active", 1);
+        PlayerPrefs.SetInt("LapMission_Laps", currentQuest.lapCount);
+        PlayerPrefs.SetFloat("LapMission_Time", currentQuest.timeLimit);
+        PlayerPrefs.SetFloat("LapMission_Reward", currentQuest.coinReward);
         PlayerPrefs.SetString("LapMission_ReturnScene", SceneManager.GetActiveScene().name);
 
-        // Chuyển scene sang LapRaceScene (đặt đúng tên scene của bạn)
-        // LevelLoader.Instance.LoadSceneByName("Lap");
-        SceneManager.LoadScene("Lap");
-        //LevelLoader.LoadScene("Lap");
-
+        PlayerPrefs.SetString("SceneToLoad", "DuaAi");
+        SceneManager.LoadScene("Loading");
     }
 
     public void AcpQuestlogo()
@@ -345,15 +354,35 @@ public class QuestManager : MonoBehaviour
             {
                 successRewardText.text = "Nhiệm vụ hoàn thành bạn đã nhận được " + currentQuest.coinReward + " coin!";
             }
-            StartCoroutine(HideSuccessPanel());
 
+            // 👈 Hiển thị panel thành công
+            if (PanelSucces != null)
+                PanelSucces.SetActive(true);
+
+            StartCoroutine(HideSuccessPanel());
         }
 
-        //if (PanelSucces != null)
-        //{
-        //    PanelSucces.SetActive(true);
-        //    StartCoroutine(HideSuccessPanel());
-        //}
+    }
+    public void FailQuest(string reason)
+    {
+        if (!questActive) return;
+
+        questActive = false;
+
+        Debug.Log("❌ Nhiệm vụ thất bại: " + reason);
+
+        if (timerText != null)
+            timerText.gameObject.SetActive(false);
+        WaypointManager.Instance?.RemoveWaypoint();
+
+        if (faileText != null)
+        {
+            faileText.text = reason;
+            faileText.gameObject.SetActive(true); // 👉 đảm bảo text hiện ra
+            StartCoroutine(HideSuccessPanel());
+        }
+
+      
     }
 
     public bool IsQuestActive()
@@ -371,8 +400,9 @@ public class QuestManager : MonoBehaviour
     {
         yield return new WaitForSeconds(2f);
 
-        //if (PanelSucces != null)
-        //    PanelSucces.SetActive(false);
+        // 👈 Ẩn panel sau 2 giây
+        if (PanelSucces != null)
+            PanelSucces.SetActive(false);
 
         if (successRewardText != null)
             successRewardText.text = "";
@@ -380,6 +410,22 @@ public class QuestManager : MonoBehaviour
         if (faileText != null)
             faileText.text = "";
 
+    }
+    private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
+    {
+        StartCoroutine(DelayedSetup());
+
+        if (questActive && currentQuest != null)
+        {
+            string currentScene = scene.name;
+            string returnScene = PlayerPrefs.GetString("LapMission_ReturnScene", "");
+
+            if (!string.IsNullOrEmpty(returnScene) && currentScene != returnScene)
+            {
+                Debug.Log("❌ Đổi scene nên nhiệm vụ thất bại");
+                FailQuest("Bạn đã rời khỏi khu vực nhiệm vụ!");
+            }
+        }
     }
 
 }

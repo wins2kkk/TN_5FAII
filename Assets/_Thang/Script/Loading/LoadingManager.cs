@@ -72,15 +72,20 @@ public class LoadingManager : MonoBehaviour
         }
     }
 
-    public void LoadGarageCar1Scene()
+    public void LoadGarageCar1()
     {
-        PlayerPrefs.SetString("SceneToLoad", "Garage_Car1");
+        PlayerPrefs.SetString("SceneToLoad", "Menu");
         SceneManager.LoadScene("Loading");
     }
 
-    public void LoadTestCarScene()
+    public void LoadThanh_pho()
     {
-        PlayerPrefs.SetString("SceneToLoad", "Test_Car");
+        PlayerPrefs.SetString("SceneToLoad", "Thanh_Pho2");
+        SceneManager.LoadScene("Loading");
+    }
+    public void LoadRaceLap()
+    {
+        PlayerPrefs.SetString("SceneToLoad", "ChayLap");
         SceneManager.LoadScene("Loading");
     }
 }

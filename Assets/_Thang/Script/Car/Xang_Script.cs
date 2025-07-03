@@ -23,7 +23,9 @@ public class Xang_Script : MonoBehaviour
     private Rigidbody rb;
     private Car_script carScript;
     private Color originalColor;
-    private bool isOutOfFuel = false;
+
+    // Thay đổi từ private thành public để CayXang có thể truy cập
+    [HideInInspector] public bool isOutOfFuel = false;
 
     void Start()
     {
@@ -46,7 +48,8 @@ public class Xang_Script : MonoBehaviour
             noFuelPanel.SetActive(false);
 
         if (refuelButton != null)
-            refuelButton.onClick.AddListener(Refuel);
+            refuelButton.onClick.AddListener(() => Refuel(50));
+
     }
 
     void Update()
@@ -100,13 +103,25 @@ public class Xang_Script : MonoBehaviour
         }
     }
 
-    public void Refuel()
+    public void Refuel(int cost = 50)
     {
+        bool hasEnough = CoinManager.Instance.HasEnoughCoins(cost);
+
+        if (hasEnough)
+        {
+            CoinManager.Instance.SpendCoins(cost);
+            Debug.Log($"✅ Đã trừ {cost} coin để đổ xăng.");
+        }
+        else
+        {
+            Debug.Log("⚠️ Không đủ coin, đổ xăng miễn phí.");
+        }
+
         currentFuel = maxFuel;
         isOutOfFuel = false;
 
         if (carScript != null)
-            carScript.maximumMotorTorque = 1500f; // hoặc giá trị mặc định của bạn
+            carScript.maximumMotorTorque = 1500f;
 
         if (noFuelPanel != null)
             noFuelPanel.SetActive(false);
@@ -114,4 +129,5 @@ public class Xang_Script : MonoBehaviour
         if (fuelSlider != null)
             fuelSlider.value = currentFuel;
     }
+
 }

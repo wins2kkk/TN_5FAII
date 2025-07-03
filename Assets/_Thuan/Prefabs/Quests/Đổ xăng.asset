@@ -15,5 +15,6 @@ MonoBehaviour:
   questName: "\u0110\u1ED5 X\u0103ng"
   questType: 2
   timeLimit: 60
-  coinReward: 50
+  coinReward: 400
   description: "\u0110i t\u1EDBi c\xE2y x\u0103ng v\xE0 \u0111\u1ED5 x\u0103ng"
+  lapCount: 3

@@ -6,24 +6,21 @@ EditorBuildSettings:
   serializedVersion: 2
   m_Scenes:
   - enabled: 1
-    path: Assets/_Thang/Garage_Car1.unity
-    guid: dba3c70d4ccd94d4c93c5e9869cfffcc
-  - enabled: 1
     path: Assets/_Thang/Loading.unity
     guid: ebb73a53c08d15549a62e3706f22f966
   - enabled: 1
-    path: Assets/_Thang/Test_Car.unity
-    guid: 06196c17dd9d92f4dadedfc670b56691
-  - enabled: 0
     path: Assets/_Bai_Hoan_Thien/Login.unity
     guid: 3f5480120a55dcd4db888ced9be6659e
-  - enabled: 0
+  - enabled: 1
     path: Assets/_Bai_Hoan_Thien/Menu.unity
     guid: 4db57bb73cd757e438ab05943d0df0bc
-  - enabled: 0
+  - enabled: 1
     path: Assets/_Bai_Hoan_Thien/Thanh_Pho2.unity
     guid: e4d572a1d648d1347896e9bdf4aab5ff
-  - enabled: 0
-    path: Assets/_Thuan/Scene/Lap.unity
-    guid: df75ff1783fc5f947b5d574dbc512f0e
+  - enabled: 1
+    path: Assets/_Bai_Hoan_Thien/ChayLap.unity
+    guid: f641e9b7783f96b43b36e53954a66c8b
+  - enabled: 1
+    path: Assets/_Bai_Hoan_Thien/DuaAi.unity
+    guid: 5ba87aaad78d11e4093228a5a47ae793
   m_configObjects: {}

@@ -11,7 +11,7 @@ public class Car_shop : MonoBehaviour
     public GameObject failPanel; // Panel không mua thành công
 
     // Cập nhật: Thêm giá tiền cho 7 xe
-    private int[] carPrices = { 0, 2, 5, 10, 25, 40, 80 };
+    private int[] carPrices = { 0, 1999, 3999, 5999, 7999, 10000, 15000 };
     private bool[] carOwned;
 
     private const string CAR_OWNED_KEY_PREFIX = "CarOwned_";

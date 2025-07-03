@@ -59,7 +59,7 @@ public class DeliveryQuest : MonoBehaviour
         if (distance <= radius)
         {
             if (!hasPickedUp) Pickup();
-            //else Deliver();
+            else Deliver();
         }
     }
 
@@ -99,14 +99,14 @@ public class DeliveryQuest : MonoBehaviour
         Debug.Log("📍 Đã nhận hàng!");
     }
 
-    //void Deliver()
-    //{
-    //    questActive = false;
-    //    HideIndicator(ref deliveryIndicator);
-    //    HideWaypoint();
-    //    QuestManager.instance?.CompleteQuest();
-    //    Debug.Log($"✅ Giao hàng thành công! Nhận {reward} xu.");
-    //}
+    void Deliver()
+    {
+        questActive = false;
+        HideIndicator(ref deliveryIndicator);
+        HideWaypoint();
+        QuestManager.instance?.CompleteQuest();
+       
+    }
 
     Transform GetRandomPoint(Transform[] points) => points[Random.Range(0, points.Length)];
 

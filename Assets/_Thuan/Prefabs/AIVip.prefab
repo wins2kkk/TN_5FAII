@@ -13592,36 +13592,17 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   maxSpeed: 90
-  acceleration: 4
-  brakeForce: 300
+  acceleration: 3
+  brakeForce: 5000
   maxSteerAngle: 45
   steerSpeed: 8
-  waypoints:
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  waypointReachDistance: 15
-  loopWaypoints: 1
-  waypointParent: {fileID: 7850283538694775343, guid: 4fa1de76ec759aa409e8099e710cc28d, type: 3}
   frontLeftWheel: {fileID: 5525015906036135}
   frontRightWheel: {fileID: 3339083121542237219}
   rearLeftWheel: {fileID: 7598637172177198284}
   rearRightWheel: {fileID: 2656241987891835447}
   wheelRotationSpeed: 360
   aiTag: AI
-  avoidDistance: 10
+  avoidDistance: 13
   avoidSlowFactor: 5
 --- !u!114 &-1015937881190097528
 MonoBehaviour:
@@ -13636,10 +13617,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   racerName: Player
-  trackWaypoints:
-  - {fileID: 0}
-  - {fileID: 0}
-  waypointReachDistance: 5
+  trackWaypoints: []
+  waypointReachDistance: 10
   totalLaps: 3
   showDebugInfo: 0
 --- !u!1 &6462094987126251341
