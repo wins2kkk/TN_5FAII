@@ -28,6 +28,10 @@ public class RaceManager : MonoBehaviour
     public GameObject winPanel;
     public GameObject losePanel;
 
+    [Header("Result Text - Sẽ được tự động tìm")]
+    public TextMeshProUGUI winResultText;
+    public TextMeshProUGUI loseResultText;
+
     [Header("Track Waypoints")]
     public Transform waypointParent;
 
@@ -39,6 +43,7 @@ public class RaceManager : MonoBehaviour
     private float raceTimeLeft;
     private bool raceStarted = false;
     private bool raceCompleted = false;
+    private int currentCoinReward = 0; // Lưu số coin reward
 
     private List<string> finishOrder = new List<string>();
     private Dictionary<string, int> racerLapCounts = new Dictionary<string, int>();
@@ -131,7 +136,48 @@ public class RaceManager : MonoBehaviour
             losePanel = GameObject.Find("LosePanel") ?? FindInactiveGameObject("LosePanel");
         }
 
+        // ✅ Tìm result text trong win/lose panels
+        if (winPanel != null && winResultText == null)
+        {
+            winResultText = FindTextInPanel(winPanel, "WinResultText", "ResultText", "WinText", "MessageText");
+        }
+
+        if (losePanel != null && loseResultText == null)
+        {
+            loseResultText = FindTextInPanel(losePanel, "LoseResultText", "ResultText", "LoseText", "MessageText");
+        }
+
         Debug.Log($"✅ UI Found: Timer:{timerText != null}, Lap:{lapText != null}, Position:{positionText != null}, Countdown:{countdownText != null}");
+        Debug.Log($"✅ Result Text Found: Win:{winResultText != null}, Lose:{loseResultText != null}");
+    }
+
+    // ✅ Tìm text trong panel
+    TextMeshProUGUI FindTextInPanel(GameObject panel, params string[] possibleNames)
+    {
+        // Tìm trong children của panel
+        foreach (string name in possibleNames)
+        {
+            Transform child = panel.transform.Find(name);
+            if (child != null)
+            {
+                TextMeshProUGUI text = child.GetComponent<TextMeshProUGUI>();
+                if (text != null)
+                {
+                    Debug.Log($"✅ Found result text: {name} in {panel.name}");
+                    return text;
+                }
+            }
+        }
+
+        // Tìm trong tất cả children
+        TextMeshProUGUI[] allTexts = panel.GetComponentsInChildren<TextMeshProUGUI>(true);
+        if (allTexts.Length > 0)
+        {
+            Debug.Log($"✅ Found first text component in {panel.name}");
+            return allTexts[0];
+        }
+
+        return null;
     }
 
     // Helper method để tìm UI component
@@ -198,15 +244,36 @@ public class RaceManager : MonoBehaviour
 
     void HandleTimeUp()
     {
+        Debug.Log("⏰ Hết thời gian!");
+
+        // ✅ Dừng race trước khi xử lý
+        raceStarted = false;
+        raceCompleted = true;
+
         var positions = CalculateRacerPositions();
         if (positions.Count > 0)
         {
             string winner = positions[0].racerName;
-            CompleteMission(winner == "Player", $"Time up - {winner} leads!");
+            bool playerWon = winner == "Player";
+
+            if (playerWon)
+            {
+                // ✅ Hiển thị win panel trước khi complete mission
+                ShowWinPanel($"Nhiệm vụ thành công!\nBạn đã thắng cuộc đua!\nNhận được {currentCoinReward} coin!");
+                CompleteMission(true, "Nhiệm vụ thành công! Bạn đã thắng cuộc đua!");
+            }
+            else
+            {
+                // ✅ Hiển thị lose panel trước khi complete mission
+                ShowLosePanel($"Hết thời gian!\nBạn không dành được vị trí số 1!\nNhiệm vụ thất bại!");
+                CompleteMission(false, "Hết thời gian! Nhiệm vụ thất bại!");
+            }
         }
         else
         {
-            CompleteMission(false, "Time up - No winner found");
+            // ✅ Hiển thị lose panel khi không có racer nào
+            ShowLosePanel($"Hết thời gian!\nKhông có dữ liệu racer!\nNhiệm vụ thất bại!");
+            CompleteMission(false, "Hết thời gian! Nhiệm vụ thất bại!");
         }
     }
 
@@ -249,6 +316,9 @@ public class RaceManager : MonoBehaviour
     public void StartRaceMission(QuestData questData)
     {
         Debug.Log("🏁 Bắt đầu race mission!");
+
+        // ✅ Lưu coin reward
+        currentCoinReward = questData.coinReward;
 
         // Reset trạng thái
         raceStarted = false;
@@ -527,20 +597,54 @@ public class RaceManager : MonoBehaviour
 
         if (playerIsFirst)
         {
-            if (winPanel != null) winPanel.SetActive(true);
+            // ✅ Player thắng
+            ShowWinPanel($"Nhiệm vụ thành công!\nBạn đã giành vị trí số 1!\nNhận được {currentCoinReward} coin!");
             CompleteMission(true, "Player won the race!");
         }
         else if (playerFinished)
         {
-            if (losePanel != null) losePanel.SetActive(true);
+            // ✅ Player hoàn thành nhưng không phải top 1
+            ShowLosePanel($"Bạn không dành được vị trí số 1!\nNhiệm vụ thất bại!");
             CompleteMission(false, "Player finished, but not first.");
         }
         else
         {
-            // Nếu AI về đích
-            Debug.Log($"AI {racerName} finished. Waiting for Player...");
+            // Nếu AI về đích trước
+            ShowLosePanel($"Bạn không dành được vị trí số 1!\nNhiệm vụ thất bại!");
+            CompleteMission(false, "AI finished first.");
         }
+    }
 
+    // ✅ Hiển thị win panel với text
+    void ShowWinPanel(string message)
+    {
+        if (winPanel != null)
+        {
+            winPanel.SetActive(true);
+
+            if (winResultText != null)
+            {
+                winResultText.text = message;
+            }
+
+            Debug.Log($"🏆 Win Panel: {message}");
+        }
+    }
+
+    // ✅ Hiển thị lose panel với text
+    void ShowLosePanel(string message)
+    {
+        if (losePanel != null)
+        {
+            losePanel.SetActive(true);
+
+            if (loseResultText != null)
+            {
+                loseResultText.text = message;
+            }
+
+            Debug.Log($"💀 Lose Panel: {message}");
+        }
     }
 
     public void CompleteMission(bool success, string reason)
@@ -562,14 +666,15 @@ public class RaceManager : MonoBehaviour
 
         // Cleanup sau delay
         StartCoroutine(DelayedCleanup());
-        StartCoroutine(ReturnToMenu());
     }
+
     IEnumerator ReturnToMenu()
     {
         yield return new WaitForSeconds(7f);
         PlayerPrefs.SetString("SceneToLoad", "Thanh_Pho2");
-        SceneManager.LoadScene("Loading"); // ← không cần LoadingManager
+        SceneManager.LoadScene("Loading");
     }
+
     private IEnumerator DelayedCleanup()
     {
         yield return new WaitForSeconds(3f);
@@ -653,4 +758,3 @@ public class RaceManager : MonoBehaviour
         return positions;
     }
 }
-

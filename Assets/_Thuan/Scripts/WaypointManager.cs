@@ -27,6 +27,10 @@ public class WaypointManager : MonoBehaviour
     [Header("Settings")]
     public float arrivalDistance = 3f;
     public bool showDistance = true;
+    public bool autoFindPlayer = true; // Tự động tìm player
+    public bool autoFindCamera = true; // Tự động tìm camera
+    public string cameraTag = "MainCamera"; // Tag của camera muốn dùng
+    public string cameraName = ""; // Tên camera muốn dùng (để trống nếu dùng tag)
 
     [Header("Debug Info")]
     public bool debugMode = true;
@@ -36,6 +40,11 @@ public class WaypointManager : MonoBehaviour
     private Vector3 currentTargetPosition;
     private bool isWaypointActive = false;
     private Action onReachedCallback;
+
+    // Cache để tránh tìm kiếm liên tục
+    private GameObject lastFoundPlayer;
+    private float lastPlayerCheckTime;
+    private const float playerCheckInterval = 0.5f; // Check mỗi 0.5 giây
 
     private void Awake()
     {
@@ -58,12 +67,146 @@ public class WaypointManager : MonoBehaviour
     private void Start()
     {
         SetupReferences();
+        FindPlayerByTag(); // Tìm player ngay từ đầu
+    }
+
+    // Tìm player theo tag với cache
+    private void FindPlayerByTag()
+    {
+        if (!autoFindPlayer) return;
+
+        // Nếu player hiện tại vẫn còn active và đúng tag thì không cần tìm lại
+        if (player != null && player.gameObject != null &&
+            player.gameObject.activeInHierarchy &&
+            player.CompareTag("Player"))
+        {
+            return;
+        }
+
+        // Tìm player mới
+        GameObject playerObj = GameObject.FindWithTag("Player");
+        if (playerObj != null)
+        {
+            // Chỉ cập nhật nếu tìm được player khác
+            if (playerObj != lastFoundPlayer)
+            {
+                player = playerObj.transform;
+                lastFoundPlayer = playerObj;
+
+                if (debugMode)
+                    Debug.Log($"Found new Player: {playerObj.name}");
+
+                // Tìm camera của player mới
+                FindPlayerCamera();
+            }
+        }
+        else
+        {
+            if (debugMode && player == null)
+                Debug.LogWarning("No GameObject with tag 'Player' found!");
+        }
+    }
+
+    // Tìm camera của player
+    private void FindPlayerCamera()
+    {
+        if (!autoFindCamera) return;
+
+        Camera foundCamera = null;
+
+        // Ưu tiên 1: Tìm theo tên camera nếu có chỉ định
+        if (!string.IsNullOrEmpty(cameraName))
+        {
+            GameObject camObj = GameObject.Find(cameraName);
+            if (camObj != null)
+            {
+                foundCamera = camObj.GetComponent<Camera>();
+                if (foundCamera != null && debugMode)
+                    Debug.Log($"Found camera by name: {foundCamera.name}");
+            }
+        }
+
+        // Ưu tiên 2: Tìm camera trong player có tag chỉ định
+        if (foundCamera == null && player != null)
+        {
+            Camera[] playerCameras = player.GetComponentsInChildren<Camera>();
+            foreach (Camera cam in playerCameras)
+            {
+                if (cam.CompareTag(cameraTag))
+                {
+                    foundCamera = cam;
+                    if (debugMode)
+                        Debug.Log($"Found camera in player with tag '{cameraTag}': {cam.name}");
+                    break;
+                }
+            }
+
+            // Nếu không tìm được theo tag, lấy camera đầu tiên trong player
+            if (foundCamera == null && playerCameras.Length > 0)
+            {
+                foundCamera = playerCameras[0];
+                if (debugMode)
+                    Debug.Log($"Using first camera in player: {foundCamera.name}");
+            }
+        }
+
+        // Ưu tiên 3: Tìm camera theo tag trong scene
+        if (foundCamera == null)
+        {
+            GameObject camObj = GameObject.FindWithTag(cameraTag);
+            if (camObj != null)
+            {
+                foundCamera = camObj.GetComponent<Camera>();
+                if (foundCamera != null && debugMode)
+                    Debug.Log($"Found camera by tag '{cameraTag}': {foundCamera.name}");
+            }
+        }
+
+        // Ưu tiên 4: Tìm camera có enabled và active
+        if (foundCamera == null)
+        {
+            Camera[] allCameras = FindObjectsOfType<Camera>();
+            foreach (Camera cam in allCameras)
+            {
+                if (cam.enabled && cam.gameObject.activeInHierarchy)
+                {
+                    foundCamera = cam;
+                    if (debugMode)
+                        Debug.Log($"Using first active camera: {foundCamera.name}");
+                    break;
+                }
+            }
+        }
+
+        // Ưu tiên 5: Fallback - main camera
+        if (foundCamera == null)
+        {
+            foundCamera = Camera.main;
+            if (foundCamera != null && debugMode)
+                Debug.Log($"Using Camera.main: {foundCamera.name}");
+        }
+
+        // Cập nhật reference
+        if (foundCamera != null)
+        {
+            playerCamera = foundCamera;
+        }
+        else
+        {
+            Debug.LogWarning("No suitable camera found!");
+        }
     }
 
     // Được gọi mỗi khi load scene mới
     private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
     {
         if (debugMode) Debug.Log($"Scene loaded: {scene.name}");
+
+        // Reset player reference khi đổi scene
+        player = null;
+        playerCamera = null;
+        lastFoundPlayer = null;
+
         StartCoroutine(DelayedSetup());
     }
 
@@ -80,11 +223,11 @@ public class WaypointManager : MonoBehaviour
         while (attempts < maxAttempts)
         {
             FindUIReferences();
+            FindPlayerByTag(); // Tìm player trong quá trình setup
 
             // Nếu tìm được đủ UI elements thì dừng
             if (waypointUI != null && distanceText != null && waypointIndicator != null)
             {
-                //if (debugMode) Debug.Log($"Found all UI elements after {attempts + 1} attempts");
                 break;
             }
 
@@ -100,30 +243,12 @@ public class WaypointManager : MonoBehaviour
 
         SetupReferences();
     }
-    
+
     // Tự động tìm lại UI references với nhiều phương pháp
     private void FindUIReferences()
     {
         // Tìm player và camera
-        if (player == null)
-        {
-            GameObject playerObj = GameObject.FindWithTag("Player");
-            if (playerObj != null)
-            {
-                player = playerObj.transform;
-                if (debugMode) Debug.Log("Found Player: " + playerObj.name);
-            }
-        }
-
-        if (playerCamera == null)
-        {
-            playerCamera = Camera.main;
-            if (playerCamera == null)
-                playerCamera = FindObjectOfType<Camera>();
-
-            if (playerCamera != null && debugMode)
-                Debug.Log("Found Camera: " + playerCamera.name);
-        }
+        FindPlayerByTag();
 
         // Tìm UI elements với nhiều cách khác nhau
         FindWaypointUI();
@@ -337,6 +462,19 @@ public class WaypointManager : MonoBehaviour
 
     private void Update()
     {
+        // Tìm player định kỳ nếu cần
+        if (autoFindPlayer && Time.time - lastPlayerCheckTime > playerCheckInterval)
+        {
+            FindPlayerByTag();
+            lastPlayerCheckTime = Time.time;
+        }
+
+        // Tìm camera nếu mất reference hoặc camera bị disable
+        if (autoFindCamera && (playerCamera == null || !playerCamera.enabled || !playerCamera.gameObject.activeInHierarchy))
+        {
+            FindPlayerCamera();
+        }
+
         if (isWaypointActive)
         {
             UpdateWaypointUI();
@@ -347,6 +485,12 @@ public class WaypointManager : MonoBehaviour
     // Tạo waypoint - Method chính
     public GameObject CreatePointer(Vector3 targetPosition, Action onReached = null)
     {
+        // Đảm bảo có player trước khi tạo waypoint
+        if (player == null)
+        {
+            FindPlayerByTag();
+        }
+
         // Xóa waypoint cũ nếu có
         RemoveWaypoint();
 
@@ -415,7 +559,12 @@ public class WaypointManager : MonoBehaviour
     // Cập nhật UI với null checks
     private void UpdateWaypointUI()
     {
-        if (player == null || playerCamera == null) return;
+        if (player == null || playerCamera == null)
+        {
+            // Thử tìm lại nếu mất reference
+            FindPlayerByTag();
+            return;
+        }
 
         // Tính khoảng cách
         float distance = Vector3.Distance(player.position, currentTargetPosition);
@@ -517,7 +666,11 @@ public class WaypointManager : MonoBehaviour
     // Kiểm tra đã đến nơi chưa
     private void CheckArrivalDistance()
     {
-        if (player == null) return;
+        if (player == null)
+        {
+            FindPlayerByTag();
+            return;
+        }
 
         float distance = Vector3.Distance(player.position, currentTargetPosition);
 
@@ -538,7 +691,14 @@ public class WaypointManager : MonoBehaviour
 
     public float GetDistanceToWaypoint()
     {
-        if (!isWaypointActive || player == null) return -1f;
+        if (!isWaypointActive) return -1f;
+
+        if (player == null)
+        {
+            FindPlayerByTag();
+            if (player == null) return -1f;
+        }
+
         return Vector3.Distance(player.position, currentTargetPosition);
     }
 
@@ -548,10 +708,90 @@ public class WaypointManager : MonoBehaviour
         offScreenSprite = offScreen;
     }
 
-    // Manual refresh UI - có thể gọi từ ngoài
+    // Manual methods để force refresh
     public void RefreshUIReferences()
     {
         StartCoroutine(DelayedSetup());
+    }
+
+    public void RefreshPlayerReference()
+    {
+        player = null;
+        lastFoundPlayer = null;
+        FindPlayerByTag();
+    }
+
+    // Method để set player manually nếu cần
+    public void SetPlayer(Transform newPlayer)
+    {
+        player = newPlayer;
+        lastFoundPlayer = newPlayer?.gameObject;
+        FindPlayerCamera();
+
+        if (debugMode && newPlayer != null)
+            Debug.Log($"Manually set player to: {newPlayer.name}");
+    }
+
+    // Method để bật/tắt auto find player
+    public void SetAutoFindPlayer(bool enable)
+    {
+        autoFindPlayer = enable;
+        if (enable)
+        {
+            FindPlayerByTag();
+        }
+    }
+
+    // Method để set camera manually nếu cần
+    public void SetCamera(Camera newCamera)
+    {
+        playerCamera = newCamera;
+
+        if (debugMode && newCamera != null)
+            Debug.Log($"Manually set camera to: {newCamera.name}");
+    }
+
+    // Method để bật/tắt auto find camera
+    public void SetAutoFindCamera(bool enable)
+    {
+        autoFindCamera = enable;
+        if (enable)
+        {
+            FindPlayerCamera();
+        }
+    }
+
+    // Method để set camera tag và name
+    public void SetCameraPreference(string tagName, string cameraName = "")
+    {
+        this.cameraTag = tagName;
+        this.cameraName = cameraName;
+
+        if (autoFindCamera)
+        {
+            FindPlayerCamera();
+        }
+    }
+
+    // Method để refresh camera reference
+    public void RefreshCameraReference()
+    {
+        playerCamera = null;
+        FindPlayerCamera();
+    }
+
+    // Method để list tất cả cameras trong scene (debug)
+    public void ListAllCameras()
+    {
+        if (!debugMode) return;
+
+        Debug.Log("=== ALL CAMERAS IN SCENE ===");
+        Camera[] allCameras = FindObjectsOfType<Camera>();
+        for (int i = 0; i < allCameras.Length; i++)
+        {
+            Camera cam = allCameras[i];
+            Debug.Log($"Camera {i}: {cam.name} - Tag: {cam.tag} - Enabled: {cam.enabled} - Active: {cam.gameObject.activeInHierarchy}");
+        }
     }
 
     private void OnDestroy()

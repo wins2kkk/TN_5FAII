@@ -5584,7 +5584,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   racerName: Player
   trackWaypoints: []
-  waypointReachDistance: 10
+  waypointReachDistance: 13
   totalLaps: 3
   showDebugInfo: 0
 --- !u!1 &871001732978124499
