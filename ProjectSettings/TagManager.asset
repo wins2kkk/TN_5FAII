@@ -19,8 +19,7 @@ TagManager:
   - AI
   - toDestroy
   - Waypoint
-  - BackgroundMusicSource
-  - EffectsSource
+  - Arrow
   layers:
   - Default
   - TransparentFX
