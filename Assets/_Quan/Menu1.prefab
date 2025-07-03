@@ -5124,6 +5124,11 @@ MonoBehaviour:
   maximumSpeed: 140
   brakePower: 5000
   COM: {fileID: 1680125833067166837}
+  normalGrip: 2.5
+  driftGrip: 0.8
+  frontWheelGrip: 3
+  rearWheelGrip: 2
+  speedMethod: 0
   carSpeed: 0
   carSpeedConverted: 0
   handBrakeEffects: 0
@@ -6467,6 +6472,11 @@ MonoBehaviour:
   maximumSpeed: 140
   brakePower: 500
   COM: {fileID: 4469089661835751958}
+  normalGrip: 2.5
+  driftGrip: 0.8
+  frontWheelGrip: 3
+  rearWheelGrip: 2
+  speedMethod: 0
   carSpeed: 0
   carSpeedConverted: 0
   handBrakeEffects: 0
@@ -10284,6 +10294,11 @@ MonoBehaviour:
   maximumSpeed: 140
   brakePower: 500
   COM: {fileID: 86123546669972413}
+  normalGrip: 2.5
+  driftGrip: 0.8
+  frontWheelGrip: 3
+  rearWheelGrip: 2
+  speedMethod: 0
   carSpeed: 0
   carSpeedConverted: 0
   handBrakeEffects: 0
@@ -14326,6 +14341,11 @@ MonoBehaviour:
   maximumSpeed: 140
   brakePower: 500
   COM: {fileID: 5218342012939964600}
+  normalGrip: 2.5
+  driftGrip: 0.8
+  frontWheelGrip: 3
+  rearWheelGrip: 2
+  speedMethod: 0
   carSpeed: 0
   carSpeedConverted: 0
   handBrakeEffects: 0
@@ -15046,6 +15066,7 @@ MonoBehaviour:
   displayNameText: {fileID: 6708138444891549727}
   playerIdText: {fileID: 5968147625533363271}
   emailText: {fileID: 4934558499299984941}
+  avatarImage: {fileID: 0}
 --- !u!1 &3248285103424378063
 GameObject:
   m_ObjectHideFlags: 0
@@ -17182,7 +17203,7 @@ RectTransform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 712039334335521472}
-  m_Father: {fileID: 7666911127251122750}
+  m_Father: {fileID: 7029249491719097596}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 1}
   m_AnchorMax: {x: 0.5, y: 1}
@@ -24106,14 +24127,12 @@ RectTransform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 2555260444611898696}
+  - {fileID: 4397830859577673224}
   - {fileID: 6937835922900552319}
   - {fileID: 7029249491719097596}
   - {fileID: 3954025349921615367}
   - {fileID: 4537817827294116883}
   - {fileID: 5141036111097329875}
-  - {fileID: 4397830859577673224}
-  - {fileID: 3231438517668123265}
-  - {fileID: 7457850947993280978}
   - {fileID: 3019050265715867662}
   - {fileID: 498620088411293459}
   m_Father: {fileID: 7194649603874502330}
@@ -25105,7 +25124,7 @@ RectTransform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 8824608523985694145}
-  m_Father: {fileID: 7666911127251122750}
+  m_Father: {fileID: 7029249491719097596}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 1}
   m_AnchorMax: {x: 0.5, y: 1}
@@ -26563,6 +26582,11 @@ MonoBehaviour:
   maximumSpeed: 140
   brakePower: 5000
   COM: {fileID: 8352113105890815282}
+  normalGrip: 2.5
+  driftGrip: 0.8
+  frontWheelGrip: 3
+  rearWheelGrip: 2
+  speedMethod: 0
   carSpeed: 0
   carSpeedConverted: 0
   handBrakeEffects: 0
@@ -31479,6 +31503,8 @@ RectTransform:
   - {fileID: 4114007580025623694}
   - {fileID: 5017652832498672318}
   - {fileID: 3876194532094225462}
+  - {fileID: 3231438517668123265}
+  - {fileID: 7457850947993280978}
   m_Father: {fileID: 7666911127251122750}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
@@ -32225,6 +32251,11 @@ MonoBehaviour:
   maximumSpeed: 140
   brakePower: 5000
   COM: {fileID: 123110939691236023}
+  normalGrip: 2.5
+  driftGrip: 0.8
+  frontWheelGrip: 3
+  rearWheelGrip: 2
+  speedMethod: 0
   carSpeed: 0
   carSpeedConverted: 0
   handBrakeEffects: 0
@@ -38660,6 +38691,7 @@ MonoBehaviour:
   speedSlider: {fileID: 7288219481054537740}
   engineSlider: {fileID: 1613672070765080530}
   steerSlider: {fileID: 1010994078651196161}
+  selectButton: {fileID: 0}
 --- !u!1 &8302500388653302038
 GameObject:
   m_ObjectHideFlags: 0
@@ -42959,6 +42991,11 @@ MonoBehaviour:
   maximumSpeed: 140
   brakePower: 5000
   COM: {fileID: 8902201000722337979}
+  normalGrip: 2.5
+  driftGrip: 0.8
+  frontWheelGrip: 3
+  rearWheelGrip: 2
+  speedMethod: 0
   carSpeed: 0
   carSpeedConverted: 0
   handBrakeEffects: 0
@@ -43618,7 +43655,7 @@ RectTransform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 9160330152903114978}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 0.85148, y: 0.85148, z: 0.85148}
   m_ConstrainProportionsScale: 0

@@ -74,6 +74,10 @@ public class UserInfoDisplay : MonoBehaviour
     {
         Debug.LogError("Không lấy được thông tin tài khoản: " + error.GenerateErrorReport());
     }
+    public void RefreshUserInfo()
+    {
+        GetAccountInfoFromPlayFab(); // gọi lại như khi Start()
+    }
 }
 
     

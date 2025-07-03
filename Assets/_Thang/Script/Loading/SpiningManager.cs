@@ -253,22 +253,23 @@ public class SpiningManager : MonoBehaviour
         // Cập nhật text countdown
         if (countdownText != null)
         {
-            if (freeSpinCount > 0)
+            if (freeSpinCount > 0 || DateTime.Now >= nextSpinTime)
             {
-                countdownText.text = $"Lượt quay miễn phí: {freeSpinCount}";
-            }
-            else if (DateTime.Now >= nextSpinTime)
-            {
-                countdownText.text = "Quay Thôi Nào!";
+                countdownText.gameObject.SetActive(false); // Ẩn khi có lượt quay
             }
             else
             {
+                countdownText.gameObject.SetActive(true); // Hiện khi đang cooldown
                 TimeSpan timeLeft = nextSpinTime - DateTime.Now;
-                countdownText.text = $"Còn lại: {timeLeft.TotalSeconds:F0}s";
+                string minutes = Mathf.FloorToInt((float)timeLeft.TotalSeconds / 60).ToString("00");
+                string seconds = Mathf.FloorToInt((float)timeLeft.TotalSeconds % 60).ToString("00");
+                countdownText.text = $"Còn lại: {minutes}:{seconds}";
             }
         }
 
-        
+
+
+
 
         // Thay đổi màu nút dựa trên trạng thái
         if (spinButton.interactable)

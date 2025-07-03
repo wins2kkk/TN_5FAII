@@ -51,4 +51,13 @@ public class SceneMenuManager : MonoBehaviour
             Debug.LogWarning("Tên scene không hợp lệ!");
         }
     }
+    public void ExitGame()
+    {
+        Debug.Log("Thoát game...");
+        Application.Quit();
+
+#if UNITY_EDITOR
+        UnityEditor.EditorApplication.isPlaying = false;
+#endif
+    }
 }

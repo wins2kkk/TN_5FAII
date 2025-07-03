@@ -14,16 +14,20 @@ public class AccountSettingsPanel : MonoBehaviour
     public Button saveButton;
     public Image avatarPreview;
     public TextMeshProUGUI displayNameText;
+    //public TextMeshProUGUI Name;
+    //public Image avatar;
+    public GameObject accountSettingsPanel;
+
 
     [Header("Settings")]
     public Vector2 buttonSize = new Vector2(120, 120);
     public float buttonSpacing = 15f;
-    public int columnsCount = 3;
+    public int columnsCount = 4;
 
     private string selectedAvatar = "";
     private bool isSaving = false;
 
-    private List<string> avatarNames = new List<string> { "avatar1", "avatar2", "avatar3", "avatar4", "avatar5" };
+    private List<string> avatarNames = new List<string> { "avatar1", "avatar2", "avatar3", "avatar4", "avatar5", "avatar6", "avatar7", "avatar8", "avatar9" };
 
     void OnEnable()
     {
@@ -81,8 +85,9 @@ public class AccountSettingsPanel : MonoBehaviour
             result =>
             {
                 Debug.Log("Tên cập nhật thành công!");
-                if (displayNameText != null)
+                if (displayNameText  != null)
                     displayNameText.text = newDisplayName;
+                   // Name.text = newDisplayName;
 
                 success = true;
                 completed = true;
@@ -142,22 +147,31 @@ public class AccountSettingsPanel : MonoBehaviour
         callback(success);
     }
 
-    IEnumerator FinalizeSave(bool success)
-    {
-        yield return new WaitForSeconds(0.2f);
-        isSaving = false;
-        saveButton.interactable = true;
+   IEnumerator FinalizeSave(bool success)
+{
+    yield return new WaitForSeconds(0.2f);
+    isSaving = false;
+    saveButton.interactable = true;
 
-        if (success)
+    if (success)
+    {
+        Debug.Log("Lưu thành công!");
+
+        // Tự động cập nhật UI ngoài nếu tồn tại
+        UserInfoDisplay infoDisplay = FindObjectOfType<UserInfoDisplay>();
+        if (infoDisplay != null)
         {
-            Debug.Log("Lưu thành công!");
-            ClosePanel();
+            infoDisplay.RefreshUserInfo();
         }
-        else
-        {
-            Debug.LogWarning("Lưu thất bại!");
-        }
+
+        
     }
+    else
+    {
+        Debug.LogWarning("Lưu thất bại!");
+    }
+}
+
 
     void ClosePanel()
     {
@@ -246,6 +260,13 @@ public class AccountSettingsPanel : MonoBehaviour
             imgRect.offsetMin = new Vector2(8, 8);
             imgRect.offsetMax = new Vector2(-8, -8);
         }
+        // Auto-size container width for 4 avatars + spacing + padding
+        float totalWidth = (buttonSize.x * columnsCount) + (buttonSpacing * (columnsCount - 1)) + 20; // 20 là padding trái/phải
+        avatarGridPanel.GetComponent<RectTransform>().SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, totalWidth);
+
+        // Căn giữa
+        avatarGridPanel.GetComponent<RectTransform>().anchoredPosition = Vector2.zero;
+
     }
 
     public void OnAvatarSelected(string avatarName)
@@ -258,6 +279,7 @@ public class AccountSettingsPanel : MonoBehaviour
             if (sprite != null)
             {
                 avatarPreview.sprite = sprite;
+                //avatar.sprite = sprite;
             }
         }
 
@@ -268,5 +290,15 @@ public class AccountSettingsPanel : MonoBehaviour
         }
 
         Debug.Log($"Avatar selected: {avatarName}");
+    }
+    public void ShowSettingsPanel()
+    {
+        if (accountSettingsPanel != null)
+            accountSettingsPanel.SetActive(true);
+    }
+    public void HideSettingsPanel()
+    {
+        if (accountSettingsPanel != null)
+            accountSettingsPanel.SetActive(false);
     }
 }
