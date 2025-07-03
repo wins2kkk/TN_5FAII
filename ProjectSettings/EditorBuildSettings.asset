@@ -20,7 +20,10 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/_Bai_Hoan_Thien/ChayLap.unity
     guid: f641e9b7783f96b43b36e53954a66c8b
-  - enabled: 1
+  - enabled: 0
     path: Assets/_Bai_Hoan_Thien/DuaAi.unity
     guid: 5ba87aaad78d11e4093228a5a47ae793
+  - enabled: 0
+    path: Assets/_Quan/MenuQ.unity
+    guid: 60eecea6fe197f94e883b92e667b059f
   m_configObjects: {}
