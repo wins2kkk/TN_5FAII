@@ -2555,6 +2555,54 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 3350902069193114790, guid: cf53df2683583ea4e84d03c36e4300ea, type: 3}
   m_PrefabInstance: {fileID: 2001099796653802179}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &1950810321
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1950810323}
+  - component: {fileID: 1950810322}
+  m_Layer: 0
+  m_Name: GameObject (1)
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &1950810322
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1950810321}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 242b97583e13bd547a6ca9eda0284472, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  loadingSlider: {fileID: 0}
+  loadingText: {fileID: 0}
+  loadingPanel: {fileID: 0}
+  minimumLoadTime: 2
+--- !u!4 &1950810323
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1950810321}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 1052.5411, y: 470.48697, z: 13.971975}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!4 &1971044377 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 3350902069193114790, guid: cf53df2683583ea4e84d03c36e4300ea, type: 3}
@@ -2629,51 +2677,6 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 2953943eb6ab8e24081b12ab3f22a4b3, type: 3}
---- !u!1 &2052114812
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 2052114814}
-  - component: {fileID: 2052114815}
-  m_Layer: 0
-  m_Name: GameObject
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &2052114814
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2052114812}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -24.366371, y: 1.991153, z: -0.41994336}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 0}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &2052114815
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2052114812}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 9fdb08b60e368f443bc3e59aaf679830, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  allPanels: []
 --- !u!1001 &2088269514
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -9901,27 +9904,6 @@ Transform:
   - {fileID: 2801947791574621143}
   m_Father: {fileID: 5012971199025992546}
   m_LocalEulerAnglesHint: {x: 0, y: 180, z: 0}
---- !u!224 &495878284889006211
-RectTransform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7314390061018803055}
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 2.8339453, y: 1.6457292, z: 2.8339453}
-  m_ConstrainProportionsScale: 0
-  m_Children:
-  - {fileID: 7852121634812517233}
-  - {fileID: 8839677404393347623}
-  m_Father: {fileID: 4528291704095199408}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0.5, y: 0.5}
-  m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 991.881, y: -380.16342}
-  m_SizeDelta: {x: 100, y: 100}
-  m_Pivot: {x: 0.5, y: 0.5}
 --- !u!23 &501921295108777357
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -14291,7 +14273,7 @@ GameObject:
   - component: {fileID: 1097058417622081846}
   m_Layer: 5
   m_Name: BackgroundVolumeSlider
-  m_TagString: Untagged
+  m_TagString: BackgroundMusicSource
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -53282,12 +53264,13 @@ RectTransform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 8824859881517338594}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 0.35286495, y: 0.6076334, z: 0.35286495}
   m_ConstrainProportionsScale: 0
   m_Children:
-  - {fileID: 495878284889006211}
+  - {fileID: 7852121634812517233}
+  - {fileID: 8839677404393347623}
   - {fileID: 3927905585036128687}
   m_Father: {fileID: 7544818102405672641}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -59772,7 +59755,7 @@ GameObject:
   - component: {fileID: 4265086918090057063}
   - component: {fileID: 9028303944190249758}
   m_Layer: 5
-  m_Name: AN-Panel
+  m_Name: CloseSettingsButton
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -60477,19 +60460,6 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!114 &5054709594470405892
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8369981123248897883}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 9fdb08b60e368f443bc3e59aaf679830, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  allPanels: []
 --- !u!33 &5056432499508488499
 MeshFilter:
   m_ObjectHideFlags: 0
@@ -64715,7 +64685,7 @@ GameObject:
   - component: {fileID: 2223571491150268586}
   - component: {fileID: 6741287036669838944}
   m_Layer: 5
-  m_Name: Seting
+  m_Name: ShowSettingsButton
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -65715,8 +65685,8 @@ AudioSource:
   m_Enabled: 1
   serializedVersion: 4
   OutputAudioMixerGroup: {fileID: -7949541471305461621, guid: 15a5e62bb840e824498e46e702a9e162, type: 2}
-  m_audioClip: {fileID: 0}
-  m_PlayOnAwake: 1
+  m_audioClip: {fileID: 8300000, guid: 49744360cea8ce14ab0420eff6b7f7d3, type: 3}
+  m_PlayOnAwake: 0
   m_Volume: 1
   m_Pitch: 1
   Loop: 1
@@ -72130,6 +72100,9 @@ MonoBehaviour:
   effectsVolume: 1
   backgroundVolumeSlider: {fileID: 1097058417622081846}
   effectsVolumeSlider: {fileID: 3175668371230384745}
+  settingsPanel: {fileID: 8824859881517338594}
+  showSettingsButton: {fileID: 6741287036669838944}
+  closeSettingsButton: {fileID: 9028303944190249758}
 --- !u!23 &6511768708250025002
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -73391,19 +73364,7 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 2223571491150268586}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 5054709594470405892}
-        m_TargetAssemblyTypeName: menu, Assembly-CSharp
-        m_MethodName: HideGameUIPanel
-        m_Mode: 1
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
+      m_Calls: []
 --- !u!4 &6748681279391970836
 Transform:
   m_ObjectHideFlags: 0
@@ -76240,22 +76201,6 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!1 &7314390061018803055
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 495878284889006211}
-  m_Layer: 5
-  m_Name: Music
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
 --- !u!114 &7316243547449985172
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -79405,18 +79350,18 @@ RectTransform:
   m_GameObject: {fileID: 1378792170944007399}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 3.4291303, y: 3.4291303, z: 3.4291303}
+  m_LocalScale: {x: 9.717968, y: 5.6434197, z: 9.717968}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 7227175984814713849}
   - {fileID: 9171787159799874992}
   - {fileID: 7471215475562176756}
   - {fileID: 2359549761456861446}
-  m_Father: {fileID: 495878284889006211}
+  m_Father: {fileID: 4528291704095199408}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -354.03625, y: 345.05}
+  m_AnchoredPosition: {x: -11.438324, y: 187.69542}
   m_SizeDelta: {x: 160, y: 20}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1 &7858686269117678802
@@ -91562,7 +91507,6 @@ GameObject:
   - component: {fileID: 7333459364981577341}
   - component: {fileID: 6510261497670199794}
   - component: {fileID: 6117198089674425228}
-  - component: {fileID: 5054709594470405892}
   m_Layer: 0
   m_Name: AudioManager (1)
   m_TagString: Untagged
@@ -92234,10 +92178,10 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 2052114815}
-        m_TargetAssemblyTypeName: menu, Assembly-CSharp
-        m_MethodName: LoadSceneByName
-        m_Mode: 5
+      - m_Target: {fileID: 1950810322}
+        m_TargetAssemblyTypeName: LoadingManager, Assembly-CSharp
+        m_MethodName: LoadGarageCar1Scene
+        m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
           m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
@@ -98676,7 +98620,7 @@ GameObject:
   - component: {fileID: 7042010918521041479}
   - component: {fileID: 203369416193583489}
   m_Layer: 5
-  m_Name: Panel_Seting
+  m_Name: SettingsPanel
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -98706,18 +98650,18 @@ RectTransform:
   m_GameObject: {fileID: 9064322424015759193}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 3.4291303, y: 3.4291303, z: 3.4291303}
+  m_LocalScale: {x: 9.717968, y: 5.6434197, z: 9.717968}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 5480042197749799497}
   - {fileID: 4054560913503195443}
   - {fileID: 4391929713106080641}
   - {fileID: 4741907863580672886}
-  m_Father: {fileID: 495878284889006211}
+  m_Father: {fileID: 4528291704095199408}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -354.03625, y: 264.64}
+  m_AnchoredPosition: {x: -11.438324, y: 55.36241}
   m_SizeDelta: {x: 160, y: 20}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!199 &8842792324853057313
@@ -100043,19 +99987,7 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 4265086918090057063}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 5054709594470405892}
-        m_TargetAssemblyTypeName: menu, Assembly-CSharp
-        m_MethodName: HideGameUIPanel
-        m_Mode: 1
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
+      m_Calls: []
 --- !u!1001 &9030291285286980512
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -104986,7 +104918,7 @@ GameObject:
   - component: {fileID: 3175668371230384745}
   m_Layer: 5
   m_Name: EffectsVolumeSlider
-  m_TagString: Untagged
+  m_TagString: EffectsSource
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -105708,8 +105640,8 @@ SceneRoots:
   - {fileID: 825265289}
   - {fileID: 1077846064}
   - {fileID: 1479240244}
-  - {fileID: 2052114814}
   - {fileID: 7333459364981577341}
   - {fileID: 2423077747945205579}
   - {fileID: 7544818102405672641}
   - {fileID: 7046590814741542941}
+  - {fileID: 1950810323}

@@ -27,20 +27,12 @@ public class CarSelect : MonoBehaviour
     public Slider engineSlider;
     public Slider steerSlider;
 
+    // ✅ UI Elements cho việc chọn xe - THÊM DÒNG NÀY
+    public GameObject selectButton;  // Nút "Chọn"
+
     ///UI slider Thong tin Xe   
     void Start()
     {
-        // Nếu bạn muốn set tạm bằng code:
-        //carStatsArray = new CarStats[7]
-        //{
-        //new CarStats { speed = 0.5f, engine = 0.6f, steer = 0.4f },
-        //new CarStats { speed = 0.6f, engine = 0.7f, steer = 0.3f },
-        //new CarStats { speed = 0.7f, engine = 0.8f, steer = 0.5f },
-        //new CarStats { speed = 0.8f, engine = 0.9f, steer = 0.6f },
-        //new CarStats { speed = 0.9f, engine = 1.0f, steer = 0.7f },
-        //new CarStats { speed = 0.4f, engine = 0.5f, steer = 0.2f },
-        //new CarStats { speed = 1.0f, engine = 0.8f, steer = 0.9f },
-        //};
         if (allCarsContainer == null)
         {
             Debug.LogError("allCarsContainer is not assigned!");
@@ -74,7 +66,7 @@ public class CarSelect : MonoBehaviour
         ShowCurrentCar();
         if (carSelectionManager != null)
             carSelectionManager.UpdateUI();
-        Debug.Log("Current Car Index: " + currentIndex); // Kiểm tra xe hiện tại
+        Debug.Log("Start - Current Car Index: " + currentIndex); // Kiểm tra xe hiện tại
     }
 
     void ShowCurrentCar()
@@ -91,17 +83,41 @@ public class CarSelect : MonoBehaviour
             allCars[currentIndex].SetActive(true);
         }
         UpdateStatSliders(); // cập nhật thanh slider
+        UpdateSelectionUI(); // cập nhật UI chọn xe
     }
+
+    // ✅ THÊM: Cập nhật UI dựa trên xe đã được chọn hay chưa
+    void UpdateSelectionUI()
+    {
+        // Kiểm tra xe hiện tại có phải xe đã lưu không
+        int savedCarIndex = PlayerPrefs.GetInt("SelectedCarIndex", -1);
+        bool isCurrentCarSelected = (savedCarIndex == currentIndex);
+
+        Debug.Log("UpdateSelectionUI - Current Index: " + currentIndex + ", Saved Index: " + savedCarIndex + ", Is Selected: " + isCurrentCarSelected);
+
+        // Hiện/ẩn nút chọn
+        if (selectButton != null)
+        {
+            selectButton.SetActive(!isCurrentCarSelected);
+            Debug.Log("Select Button Active: " + selectButton.activeSelf);
+        }
+        else
+        {
+            Debug.LogWarning("selectButton is NULL! Please assign it in Inspector.");
+        }
+    }
+
     void UpdateStatSliders()
     {
         if (carStatsArray == null || currentIndex >= carStatsArray.Length) return;
 
         CarStats stats = carStatsArray[currentIndex];
 
-        speedSlider.value = stats.speed;
-        engineSlider.value = stats.engine;
-        steerSlider.value = stats.steer;
+        if (speedSlider != null) speedSlider.value = stats.speed;
+        if (engineSlider != null) engineSlider.value = stats.engine;
+        if (steerSlider != null) steerSlider.value = stats.steer;
     }
+
     public void NextCar()
     {
         if (allCars == null || allCars.Length == 0) return;
@@ -110,7 +126,7 @@ public class CarSelect : MonoBehaviour
         ShowCurrentCar();
         if (carSelectionManager != null)
             carSelectionManager.OnCarChanged();
-        Debug.Log("Moved to Car Index: " + currentIndex); // Kiểm tra khi chuyển tiếp
+        Debug.Log("NextCar - Moved to Car Index: " + currentIndex);
     }
 
     public void PreviousCar()
@@ -121,34 +137,61 @@ public class CarSelect : MonoBehaviour
         ShowCurrentCar();
         if (carSelectionManager != null)
             carSelectionManager.OnCarChanged();
-        Debug.Log("Moved to Car Index: " + currentIndex); // Kiểm tra khi lùi
+        Debug.Log("PreviousCar - Moved to Car Index: " + currentIndex);
     }
 
-    public void OnYesButtonClick(string sceneName)
+    // ✅ PHIÊN BẢN MỚI: Chỉ lưu xe và ẩn nút chọn
+    public void OnYesButtonClick()
     {
-        if (allCars == null || allCars.Length == 0) return;
+        Debug.Log("=== OnYesButtonClick ĐƯỢC GỌI ===");
 
+        if (allCars == null || allCars.Length == 0)
+        {
+            Debug.LogError("allCars is null or empty!");
+            return;
+        }
+
+        Debug.Log("Trước khi lưu - Current Index: " + currentIndex);
+
+        // Lưu xe đã chọn
         PlayerPrefs.SetInt("SelectedCarIndex", currentIndex);
         PlayerPrefs.Save();
 
-        Debug.Log("Selected Car Saved: " + currentIndex);
+        Debug.Log("=== XE ĐÃ ĐƯỢC LƯU ===");
+        Debug.Log("Current Car Index được lưu: " + currentIndex);
+        Debug.Log("Tên xe: " + (allCars[currentIndex] != null ? allCars[currentIndex].name : "null"));
+        Debug.Log("PlayerPrefs SelectedCarIndex sau khi lưu: " + PlayerPrefs.GetInt("SelectedCarIndex"));
+        Debug.Log("=====================");
 
-        // Chuyển scene nếu tên hợp lệ
-        if (!string.IsNullOrEmpty(sceneName))
+        // Ẩn nút "Chọn"
+        if (selectButton != null)
         {
-            SceneManager.LoadScene(sceneName);
+            selectButton.SetActive(false);
+            Debug.Log("Đã ẩn nút Select Button");
         }
         else
         {
-            Debug.LogWarning("Scene name is null or empty!");
+            Debug.LogWarning("selectButton is NULL!");
         }
-    }
 
+        // Ẩn confirmation panel nếu có
+        if (confirmationImage != null)
+        {
+            confirmationImage.SetActive(false);
+            Debug.Log("Đã ẩn confirmation panel");
+        }
+
+        // Cập nhật UI trong car selection manager
+        if (carSelectionManager != null)
+            carSelectionManager.UpdateUI();
+
+        // Cập nhật lại UI selection
+        UpdateSelectionUI();
+    }
 
     // Phương thức để lấy chỉ số xe hiện tại
     public int GetCurrentCarIndex()
     {
         return currentIndex;
     }
-   
 }

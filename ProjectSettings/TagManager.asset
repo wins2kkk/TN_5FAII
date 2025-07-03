@@ -19,6 +19,8 @@ TagManager:
   - AI
   - toDestroy
   - Waypoint
+  - BackgroundMusicSource
+  - EffectsSource
   layers:
   - Default
   - TransparentFX
