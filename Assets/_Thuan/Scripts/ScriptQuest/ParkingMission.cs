@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections;
+using TMPro;
 
 public class ParkingMission : MonoBehaviour
 {
@@ -15,8 +16,9 @@ public class ParkingMission : MonoBehaviour
     private bool missionCompleted = false;
     private Collider parkingCollider;
     private float timer = 0f;
+    public TextMeshProUGUI parkingTimerText; // Text hiển thị thời gian đỗ
 
-    private void Awake()
+private void Awake()
     {
         parkingCollider = GetComponent<Collider>();
         parkingCollider.enabled = false;
@@ -70,7 +72,17 @@ public class ParkingMission : MonoBehaviour
         if (IsCarFullyInside())
         {
             timer += Time.deltaTime;
+
+            // ⬇️ Hiển thị thời gian còn lại
+            float timeLeft = Mathf.Max(0, stayTime - timer);
+            if (parkingTimerText != null)
+            {
+                parkingTimerText.text = $"Đang đỗ: {timeLeft:F1}s";
+                parkingTimerText.gameObject.SetActive(true);
+            }
+
             Debug.Log($"Xe đang đỗ đúng... {timer:F1}s");
+
             if (timer >= stayTime)
             {
                 CompleteMission();
@@ -78,8 +90,14 @@ public class ParkingMission : MonoBehaviour
         }
         else
         {
-            timer = 0f; // Reset timer nếu xe không nằm hoàn toàn trong khu vực
+            timer = 0f;
+            if (parkingTimerText != null)
+            {
+                parkingTimerText.text = "";
+                parkingTimerText.gameObject.SetActive(false);
+            }
         }
+
     }
 
     private void OnTriggerExit(Collider other)
@@ -89,6 +107,12 @@ public class ParkingMission : MonoBehaviour
             timer = 0f; // Reset timer khi xe ra khỏi khu vực
             Debug.Log("Xe đã rời khỏi khu vực đỗ");
         }
+        if (parkingTimerText != null)
+        {
+            parkingTimerText.text = "";
+            parkingTimerText.gameObject.SetActive(false);
+        }
+
     }
 
     // Kiểm tra đơn giản: xe có nằm hoàn toàn trong khu vực không
@@ -114,5 +138,11 @@ public class ParkingMission : MonoBehaviour
         WaypointManager.Instance?.RemoveWaypoint();
         Debug.Log("✅ Đỗ xe thành công!");
         QuestManager.instance?.CompleteQuest();
+        if (parkingTimerText != null)
+        {
+            parkingTimerText.text = "";
+            parkingTimerText.gameObject.SetActive(false);
+        }
+
     }
 }

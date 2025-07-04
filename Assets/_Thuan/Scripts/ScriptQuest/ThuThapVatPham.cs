@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections.Generic;
+using TMPro;
 
 public class ThuThapVatPham : MonoBehaviour
 {
@@ -7,7 +8,9 @@ public class ThuThapVatPham : MonoBehaviour
     public string playerTag = "Player";
     public GameObject collectablePrefab;
     public int numberOfItems = 5;
-  //  public int reward = 100;
+    public TextMeshProUGUI collectText; // 👈 Text hiển thị số lượng vật phẩm thu thập
+
+    //  public int reward = 100;
     public Transform[] itemSpawnPoints;
 
     private Transform player;
@@ -40,6 +43,12 @@ public class ThuThapVatPham : MonoBehaviour
 
         ClearItems();
         itemsCollected = 0;
+        if (collectText != null)
+        {
+            collectText.text = $"Đã thu thập: {itemsCollected}/{numberOfItems}";
+            collectText.gameObject.SetActive(true); // 👈 Hiện text khi bắt đầu
+        }
+
         questActive = true;
 
         for (int i = 0; i < numberOfItems; i++)
@@ -63,6 +72,8 @@ public class ThuThapVatPham : MonoBehaviour
             itemsCollected++;
 
             Debug.Log($"✅ Đã thu thập {itemsCollected}/{numberOfItems}");
+            if (collectText != null)
+                collectText.text = $"Đã thu thập: {itemsCollected}/{numberOfItems}";
 
             if (itemsCollected == numberOfItems)
             {
@@ -79,6 +90,8 @@ public class ThuThapVatPham : MonoBehaviour
         itemsCollected++;
 
         Debug.Log($"✅ Đã thu thập {itemsCollected}/{numberOfItems}");
+        if (collectText != null)
+            collectText.text = $"Đã thu thập: {itemsCollected}/{numberOfItems}";
 
         if (itemsCollected >= numberOfItems)
         {
@@ -94,6 +107,12 @@ public class ThuThapVatPham : MonoBehaviour
 
         // Gọi hệ thống quản lý nhiệm vụ nếu có
         QuestManager.instance?.CompleteQuest();
+        if (collectText != null)
+        {
+            collectText.text = "";
+            collectText.gameObject.SetActive(false); // 👈 Ẩn text khi xong
+        }
+
     }
 
     void ClearItems()

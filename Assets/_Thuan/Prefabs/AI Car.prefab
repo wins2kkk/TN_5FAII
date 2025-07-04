@@ -17755,6 +17755,7 @@ GameObject:
   - component: {fileID: 3823949093530783281}
   - component: {fileID: 7488227591577593901}
   - component: {fileID: 8197893266932337776}
+  - component: {fileID: -7571266104797301579}
   m_Layer: 0
   m_Name: AI Car
   m_TagString: AI
@@ -17856,6 +17857,25 @@ MonoBehaviour:
   waypointReachDistance: 13
   totalLaps: 3
   showDebugInfo: 0
+--- !u!114 &-7571266104797301579
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6602276369883314897}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: dbf9db670c1df4bb2843b82560ce5409, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  icon: {fileID: 21300000, guid: 9abce3e87c5b94d899d1dbbdc1b9a2ff, type: 3}
+  size: {x: 20, y: 20}
+  rotateWithObject: 0
+  upAxis: {x: 0, y: 1, z: 0}
+  initialIconRotation: 0
+  clampIconInBorder: 1
+  clampDistance: 100
 --- !u!1 &6655996717681441036
 GameObject:
   m_ObjectHideFlags: 0

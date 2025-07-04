@@ -41,7 +41,6 @@ public class BanTocDo : MonoBehaviour
         if (carObj != null)
         {
             carTransform = carObj.transform;
-           // Debug.Log($"🚘 Đã tìm thấy xe: {carTransform.name}");
         }
         else
         {
@@ -66,9 +65,11 @@ public class BanTocDo : MonoBehaviour
             trapZoneCollider.enabled = true;
 
         if (trapMeshRenderer != null)
-            trapMeshRenderer.enabled = true; // hiện mesh khi nhận nhiệm vụ
+            trapMeshRenderer.enabled = true;
 
+        // ✅ Tạo waypoint khi bắt đầu
         WaypointManager.Instance?.CreatePointer(speedTrapPoint.position, null);
+
         Debug.Log("🚀 Nhiệm vụ SpeedTrap đã bắt đầu");
     }
 
@@ -85,23 +86,47 @@ public class BanTocDo : MonoBehaviour
 
             if (speed >= requiredSpeed)
             {
-                CompleteMission();
+                CompleteMission(); // ✅ Đủ tốc độ mới hoàn thành
             }
             else
             {
                 Debug.Log("⚠️ Tốc độ không đủ. Cần >= " + requiredSpeed + " m/s");
-                StartCoroutine(ShowMessage("Tốc độ không đủ cần chạy nhanh hơn", 2f));
+                StartCoroutine(ShowMessage("Tốc độ không đủ, cần chạy nhanh hơn!", 2f));
+
+                // 🔁 Reset trap zone để người chơi có thể thử lại
+                StartCoroutine(ResetTrapZone());
             }
         }
     }
 
+    private IEnumerator ResetTrapZone()
+    {
+        if (trapZoneCollider != null)
+            trapZoneCollider.enabled = false;
+
+        yield return new WaitForSeconds(1f); // chờ xe ra khỏi trigger
+
+        if (!missionCompleted && trapZoneCollider != null)
+            trapZoneCollider.enabled = true;
+
+        Debug.Log("🔁 Vùng kiểm tra tốc độ đã reset, có thể thử lại.");
+    }
+
     private IEnumerator ShowMessage(string message, float delay)
     {
-        thongbao.text = message;
-        thongbao.gameObject.SetActive(true);
+        if (thongbao != null)
+        {
+            thongbao.text = message;
+            thongbao.gameObject.SetActive(true);
+        }
+
         yield return new WaitForSeconds(delay);
-        thongbao.text = "";
-        thongbao.gameObject.SetActive(false);
+
+        if (thongbao != null)
+        {
+            thongbao.text = "";
+            thongbao.gameObject.SetActive(false);
+        }
     }
 
     private void CompleteMission()
@@ -113,9 +138,11 @@ public class BanTocDo : MonoBehaviour
             trapZoneCollider.enabled = false;
 
         if (trapMeshRenderer != null)
-            trapMeshRenderer.enabled = false; // ẩn mesh khi hoàn thành
+            trapMeshRenderer.enabled = false;
 
+        // ✅ Chỉ xóa checkpoint khi hoàn thành
         WaypointManager.Instance?.RemoveWaypoint();
+
         Debug.Log("✅ Nhiệm vụ SpeedTrap hoàn thành!");
         QuestManager.instance?.CompleteQuest();
     }

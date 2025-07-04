@@ -22,6 +22,9 @@ public class CayXang : MonoBehaviour
     private bool hasShownPanel = false;
     private bool isRefueling = false;
 
+    public TextMeshProUGUI refuelTimeText; // 👈 Text hiển thị thời gian đổ
+
+
     private void Start()
     {
         if (confirmPanel != null) confirmPanel.SetActive(false);
@@ -120,12 +123,20 @@ public class CayXang : MonoBehaviour
             // Reset trạng thái hết xăng nếu có
             if (fuelScript.currentFuel > 0 && fuelScript.isOutOfFuel)
             {
-                // Gọi method Refuel để reset trạng thái
                 fuelScript.Refuel();
+            }
+
+            // 👇 Cập nhật UI thời gian còn lại
+            if (refuelTimeText != null)
+            {
+                float timeLeft = refillDuration - elapsed;
+                refuelTimeText.text = $"Đang đổ xăng: {timeLeft:F1}s";
+                refuelTimeText.gameObject.SetActive(true); // đảm bảo nó hiện
             }
 
             yield return null;
         }
+
 
         // Đảm bảo fuel được set đúng giá trị cuối
         if (isRefueling)
@@ -136,6 +147,9 @@ public class CayXang : MonoBehaviour
         }
 
         isRefueling = false;
+        if (refuelTimeText != null)
+            refuelTimeText.gameObject.SetActive(false); // ẩn sau khi xong
+
         Debug.Log("✅ Kết thúc quá trình đổ xăng");
     }
 
@@ -175,5 +189,11 @@ public class CayXang : MonoBehaviour
 
         if (confirmPanel != null)
             confirmPanel.SetActive(false);
+        if (refuelTimeText != null)
+        {
+            refuelTimeText.text = "";
+            refuelTimeText.gameObject.SetActive(false);
+        }
+
     }
 }

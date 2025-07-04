@@ -149,28 +149,26 @@ public class QuestManager : MonoBehaviour
 
     private void SetupUI()
     {
-        //Debug.Log("⚙️ Setting up UI...");
-
         if (PanelQuest != null)
             PanelQuest.SetActive(false);
 
-        // 👈 Đảm bảo PanelSucces bị ẩn ban đầu
         if (PanelSucces != null)
             PanelSucces.SetActive(false);
 
         if (timerText != null)
             timerText.gameObject.SetActive(false);
 
+        if (HuyNV != null)
+            HuyNV.gameObject.SetActive(false); // 👈 Ẩn nút hủy nhiệm vụ ban đầu
+
         SetupButton(acceptButton, AcceptQuest, "Accept");
         SetupButton(declineButton, () => {
             if (QuestlogoPanel != null)
                 QuestlogoPanel.SetActive(false);
         }, "Decline");
+
         SetupButton(openQuestButton, AcpQuestlogo, "OpenQuest");
-        SetupButton(HuyNV, HuyNhiemVU, "AbandonQuest");
-
-
-        // Debug.Log("✅ UI Setup completed");
+        SetupButton(HuyNV, HuyNhiemVU, "HuyNV");
     }
 
     private void SetupButton(Button button, System.Action callback, string buttonName)
@@ -238,6 +236,8 @@ public class QuestManager : MonoBehaviour
 
         if (timerText != null)
             timerText.gameObject.SetActive(true);
+        if (HuyNV != null)
+            HuyNV.gameObject.SetActive(true); // 👈 Hiện nút hủy khi bắt đầu nhiệm vụ
 
         switch (currentQuest.questType)
         {
@@ -345,6 +345,9 @@ public class QuestManager : MonoBehaviour
 
         if (timerText != null)
             timerText.gameObject.SetActive(false);
+        if (HuyNV != null)
+            HuyNV.gameObject.SetActive(false); // Ẩn nút hủy khi nhiệm vụ kết thúc
+
 
         if (CoinManager.Instance != null)
         {
@@ -373,6 +376,9 @@ public class QuestManager : MonoBehaviour
 
         if (timerText != null)
             timerText.gameObject.SetActive(false);
+        if (HuyNV != null)
+            HuyNV.gameObject.SetActive(false); // Ẩn nút hủy khi nhiệm vụ kết thúc
+
         WaypointManager.Instance?.RemoveWaypoint();
 
         if (faileText != null)

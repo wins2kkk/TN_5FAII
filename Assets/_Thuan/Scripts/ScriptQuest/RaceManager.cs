@@ -254,28 +254,41 @@ public class RaceManager : MonoBehaviour
         if (positions.Count > 0)
         {
             string winner = positions[0].racerName;
-            bool playerWon = winner == "Player";
 
-            if (playerWon)
+            bool playerIsTop1 = winner == "Player";
+            bool playerFinished = false;
+
+            // Kiểm tra xem player đã hoàn thành đủ laps chưa
+            if (player != null)
             {
-                // ✅ Hiển thị win panel trước khi complete mission
+                var progress = player.GetComponent<RacerProgressWaypoint>();
+                if (progress != null)
+                {
+                    playerFinished = progress.IsFinished(); // ✅ true nếu đã hoàn thành đủ laps
+                }
+            }
+
+            if (playerIsTop1 && playerFinished)
+            {
+                // ✅ Player đứng đầu và đã hoàn thành đủ laps
                 ShowWinPanel($"Nhiệm vụ thành công!\nBạn đã thắng cuộc đua!\nNhận được {currentCoinReward} coin!");
                 CompleteMission(true, "Nhiệm vụ thành công! Bạn đã thắng cuộc đua!");
             }
             else
             {
-                // ✅ Hiển thị lose panel trước khi complete mission
-                ShowLosePanel($"Hết thời gian!\nBạn không dành được vị trí số 1!\nNhiệm vụ thất bại!");
+                // ❌ Player chưa hoàn thành hoặc không đứng đầu
+                ShowLosePanel($"Hết thời gian!\nBạn không giành được vị trí số 1 hợp lệ!\nNhiệm vụ thất bại!");
                 CompleteMission(false, "Hết thời gian! Nhiệm vụ thất bại!");
             }
         }
         else
         {
-            // ✅ Hiển thị lose panel khi không có racer nào
+            // ✅ Hiển thị lose panel khi không có dữ liệu racer
             ShowLosePanel($"Hết thời gian!\nKhông có dữ liệu racer!\nNhiệm vụ thất bại!");
             CompleteMission(false, "Hết thời gian! Nhiệm vụ thất bại!");
         }
     }
+
 
     void FindTrackWaypoints()
     {

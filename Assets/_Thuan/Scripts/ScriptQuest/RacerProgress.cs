@@ -1,5 +1,8 @@
 ﻿// ========== RACERPROGRESSWAYPOINT.CS - FIXED VERSION ==========
 using UnityEngine;
+#if UNITY_EDITOR
+using UnityEditor;
+#endif
 
 public class RacerProgressWaypoint : MonoBehaviour
 {
@@ -195,12 +198,15 @@ public class RacerProgressWaypoint : MonoBehaviour
         Gizmos.color = Color.red;
         Gizmos.DrawWireSphere(targetWaypoint.position, waypointReachDistance);
 
-        // 🆕 Hiển thị thông tin debug
+#if UNITY_EDITOR
+        // 🆕 Hiển thị thông tin debug trong Editor
         if (showDebugInfo)
         {
             Gizmos.color = Color.white;
             UnityEditor.Handles.Label(transform.position + Vector3.up * 2,
                 $"{racerName}\nLap: {currentLap}\nWP: {currentWaypointIndex}\nProgress: {GetDetailedProgress():F2}");
         }
+#endif
     }
+
 }
