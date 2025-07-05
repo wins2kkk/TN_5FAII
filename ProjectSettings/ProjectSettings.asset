@@ -859,11 +859,11 @@ PlayerSettings:
   apiCompatibilityLevel: 6
   activeInputHandler: 0
   windowsGamepadBackendHint: 0
-  cloudProjectId: fba6a873-52b4-4080-94ee-c879ce69bb1a
+  cloudProjectId: e13e9917-8a9a-4f11-9d0a-acc2524bd936
   framebufferDepthMemorylessMode: 0
   qualitySettingsNames: []
-  projectName: DuAnTN
-  organizationId: thuanab12
+  projectName: TN_5fai
+  organizationId: thangdqpk03640
   cloudEnabled: 0
   legacyClampBlendShapeWeights: 0
   hmiLoadingImage: {fileID: 0}
