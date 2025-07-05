@@ -1881,7 +1881,7 @@ MonoBehaviour:
   - {fileID: 8300000, guid: 9942757492184274dab51fd903470187, type: 3}
   - {fileID: 8300000, guid: 55a3f6059a1264a41a9ad0481a74084c, type: 3}
   ambientSound: {fileID: 8300000, guid: b5fb1f773ae3daa49b040b41231ec196, type: 3}
-  ambientMaxVolume: 0.551
+  ambientMaxVolume: 1
   hurtVolume: 0.8
 --- !u!82 &333165121442562466
 AudioSource:
@@ -1939,7 +1939,7 @@ AudioSource:
     m_Curve:
     - serializedVersion: 3
       time: 0
-      value: 0
+      value: 1
       inSlope: 0
       outSlope: 0
       tangentMode: 0

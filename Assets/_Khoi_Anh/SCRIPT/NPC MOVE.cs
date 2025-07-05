@@ -110,13 +110,33 @@ public class NPCMOVE : MonoBehaviour
 
     void HandleAmbientSoundVolume()
     {
-        if (ambientSound == null || ambientAudioSource == null || playerTransform == null || !isAmbientEnabled) return;
+        if (ambientSound == null || ambientAudioSource == null || !isAmbientEnabled) return;
 
-        float distance = Vector3.Distance(transform.position, playerTransform.position);
-        targetVolume = distance <= 10f ? ambientMaxVolume : 0f;
+        GameObject[] players = GameObject.FindGameObjectsWithTag("Player");
+        float minDistance = float.MaxValue;
+
+        foreach (GameObject player in players)
+        {
+            float distance = Vector3.Distance(transform.position, player.transform.position);
+            if (distance < minDistance)
+            {
+                minDistance = distance;
+            }
+        }
+
+        // Nếu không có player nào thì volume = 0
+        if (players.Length == 0)
+        {
+            targetVolume = 0f;
+        }
+        else
+        {
+            targetVolume = minDistance <= 10f ? ambientMaxVolume : 0f;
+        }
 
         ambientAudioSource.volume = Mathf.MoveTowards(ambientAudioSource.volume, targetVolume, ambientFadeSpeed * Time.deltaTime);
     }
+
 
     bool IsPlayerNearby(float radius)
     {
@@ -130,14 +150,19 @@ public class NPCMOVE : MonoBehaviour
         {
             hasFallen = true;
 
-            if (rb != null)
-                rb.isKinematic = false; // cho vật lý hoạt động để bị đẩy lui
+            rb.isKinematic = false;
+            rb.useGravity = true;
+            rb.collisionDetectionMode = CollisionDetectionMode.Continuous;
+            rb.constraints = RigidbodyConstraints.FreezeRotationX | RigidbodyConstraints.FreezeRotationZ;
 
+            animator.applyRootMotion = false; // Giữ animator hoạt động nhưng vô hiệu hóa root motion
             animator.SetTrigger("fall");
 
             StartCoroutine(HandleFallSequence());
         }
+
     }
+
 
 
     IEnumerator HandleFallSequence()
@@ -150,7 +175,7 @@ public class NPCMOVE : MonoBehaviour
             yield return null;
         }
 
-        if (hurtSounds.Count > 0 && IsPlayerNearby(10f))
+        if (hurtSounds.Count > 0)
         {
             int index = Random.Range(0, hurtSounds.Count);
             AudioClip clip = hurtSounds[index];
@@ -163,14 +188,15 @@ public class NPCMOVE : MonoBehaviour
         }
 
         isAmbientEnabled = true;
-
         yield return new WaitForSeconds(1.5f);
 
-        hasFallen = false;
+        hasFallen = false; // Cho phép di chuyển lại
         animator.Play("Walking");
 
-        if (rb != null)
-            rb.isKinematic = true; // bật lại kinematic để tiếp tục di chuyển bằng transform
+        // Reset hướng di chuyển đúng
+        currentTarget = Vector3.Distance(transform.position, pointA.position) < Vector3.Distance(transform.position, pointB.position) ? pointB : pointA;
+
+        rb.isKinematic = true;
     }
     void OnDrawGizmos()
     {
