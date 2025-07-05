@@ -44,7 +44,7 @@ public class BanTocDo : MonoBehaviour
         }
         else
         {
-            Debug.LogError("Không tìm thấy xe với tag: " + carTag);
+            //Debug.LogError("Không tìm thấy xe với tag: " + carTag);
         }
     }
 

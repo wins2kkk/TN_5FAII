@@ -277,7 +277,7 @@ public class RaceManager : MonoBehaviour
             else
             {
                 // ❌ Player chưa hoàn thành hoặc không đứng đầu
-                ShowLosePanel($"Hết thời gian!\nBạn không giành được vị trí số 1 hợp lệ!\nNhiệm vụ thất bại!");
+                ShowLosePanel($"Hết thời gian!\nNhiệm vụ thất bại!");
                 CompleteMission(false, "Hết thời gian! Nhiệm vụ thất bại!");
             }
         }
@@ -713,10 +713,14 @@ public class RaceManager : MonoBehaviour
     {
         if (timerText == null) return;
 
-        int min = Mathf.FloorToInt(raceTimeLeft / 60f);
-        int sec = Mathf.FloorToInt(raceTimeLeft % 60f);
+        // Clamp không cho nhỏ hơn 0
+        float displayTime = Mathf.Max(raceTimeLeft, 0f);
+
+        int min = Mathf.FloorToInt(displayTime / 60f);
+        int sec = Mathf.FloorToInt(displayTime % 60f);
         timerText.text = $"{min:D2}:{sec:D2}";
     }
+
 
     public void UpdateLapUI(int currentLap)
     {

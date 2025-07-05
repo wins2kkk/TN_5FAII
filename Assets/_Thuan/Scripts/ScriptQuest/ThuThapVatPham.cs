@@ -29,7 +29,10 @@ public class ThuThapVatPham : MonoBehaviour
         if (playerObj != null)
             player = playerObj.transform;
         else
-            Debug.LogError("Không tìm thấy Player với tag: " + playerTag);
+        {
+
+        }
+           // Debug.LogError("Không tìm thấy Player với tag: " + playerTag//);
     }
 
     public void StartQuest()

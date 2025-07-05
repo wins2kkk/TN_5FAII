@@ -40,7 +40,7 @@ private void Awake()
         }
         else
         {
-            Debug.LogError("No active car found with tag: " + carTag);
+            //Debug.LogError("No active car found with tag: " + carTag);
         }
     }
 
