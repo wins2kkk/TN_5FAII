@@ -5,15 +5,18 @@ using TMPro;
 using PlayFab;
 using PlayFab.ClientModels;
 using UnityEngine.UI;
-
+using System;
 
 public class UserInfoDisplay : MonoBehaviour
 {
     public TextMeshProUGUI displayNameText;
     public TextMeshProUGUI playerIdText;
     public TextMeshProUGUI emailText;
-
     public Image avatarImage;
+    public static string displayNameCached = "Người chơi";
+
+    // Event để thông báo khi tên đã sẵn sàng
+    public static event Action<string> OnDisplayNameReady;
 
     void Start()
     {
@@ -29,6 +32,13 @@ public class UserInfoDisplay : MonoBehaviour
     void OnGetAccountSuccess(GetAccountInfoResult result)
     {
         string displayName = result.AccountInfo.TitleInfo.DisplayName ?? "Chưa đặt";
+
+        // Lưu lại để script khác có thể lấy
+        displayNameCached = displayName;
+
+        // Thông báo cho các script khác rằng tên đã sẵn sàng
+        OnDisplayNameReady?.Invoke(displayName);
+
         string playerId = result.AccountInfo.PlayFabId;
         string email = result.AccountInfo.PrivateInfo?.Email ?? "Không có";
 
@@ -39,7 +49,6 @@ public class UserInfoDisplay : MonoBehaviour
 
         // Gán hình ảnh từ thư mục Resources
         Sprite avatarSprite = Resources.Load<Sprite>("Avatars/avatar1");
-
         if (avatarSprite != null)
         {
             avatarImage.sprite = avatarSprite;
@@ -48,12 +57,10 @@ public class UserInfoDisplay : MonoBehaviour
         {
             Debug.LogWarning("Không tìm thấy hình ảnh avatar trong Resources.");
         }
-        GetAvatarFromUserData();
 
+        GetAvatarFromUserData();
         Debug.Log("Thông tin người chơi đã được tải.");
     }
-
-    //  
 
     void GetAvatarFromUserData()
     {
@@ -69,15 +76,14 @@ public class UserInfoDisplay : MonoBehaviour
         },
         error => Debug.LogWarning("Không thể lấy avatar từ PlayFab: " + error.GenerateErrorReport()));
     }
-    //
+
     void OnGetAccountFailure(PlayFabError error)
     {
         Debug.LogError("Không lấy được thông tin tài khoản: " + error.GenerateErrorReport());
     }
+
     public void RefreshUserInfo()
     {
         GetAccountInfoFromPlayFab(); // gọi lại như khi Start()
     }
 }
-
-    

@@ -6,8 +6,10 @@ public class Player : MonoBehaviour {
 	public float moveSpeed = 20f;
 	public float rotationSpeed = 30f;
 
-	// Use this for initialization
-	void Start () {
+    public string NickName { get; internal set; }
+
+    // Use this for initialization
+    void Start () {
 		
 	}
 	
