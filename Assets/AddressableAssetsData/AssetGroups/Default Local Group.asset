@@ -37,11 +37,6 @@ MonoBehaviour:
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: d3f05dd2be8626341bdeaeed4320cc04
-    m_Address: Sprites/Currency/Water
-    m_ReadOnly: 0
-    m_SerializedLabels: []
-    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: d6d3101fca83247abb58186e46256e99
     m_Address: Sprites/Badges/Banner
     m_ReadOnly: 0

@@ -16,17 +16,7 @@ MonoBehaviour:
   m_Data:
     m_SerializedData: []
   m_GUID: 0ce1730db5ea9455aadd66c813b22a31
-  m_SerializeEntries:
-  - m_GUID: d6fc7d4404cc6492ab95d242b74f0446
-    m_Address: ProjectInboxImages/StartHereScene
-    m_ReadOnly: 0
-    m_SerializedLabels: []
-    FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: 43e7211959029432ba78e4ce3fcd4ba7
-    m_Address: ProjectInboxImages/ServerlessMultiplayerScene
-    m_ReadOnly: 0
-    m_SerializedLabels: []
-    FlaggedDuringContentUpdateRestriction: 0
+  m_SerializeEntries: []
   m_ReadOnly: 0
   m_Settings: {fileID: 11400000, guid: d098d9082bf4e4f6b94dbf2997c0917c, type: 2}
   m_SchemaSet:

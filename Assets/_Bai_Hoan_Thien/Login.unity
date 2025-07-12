@@ -246,6 +246,10 @@ PrefabInstance:
       propertyPath: m_AnchoredPosition.x
       value: -2.3909912
       objectReference: {fileID: 0}
+    - target: {fileID: 977274265300131936, guid: 27f905f67b0c2974fadb8467848ebc5d, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
+      value: OpenRegisterPage
+      objectReference: {fileID: 0}
     - target: {fileID: 1074782595945102059, guid: 27f905f67b0c2974fadb8467848ebc5d, type: 3}
       propertyPath: m_IsActive
       value: 0

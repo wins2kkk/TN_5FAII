@@ -6,5 +6,7 @@
     ThuThapCoin,
     BanTocDo,
     duaxe,
-    DuaAI
+    DuaAI,
+    raceCity,
+    Taxi
 }
