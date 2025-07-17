@@ -1,7 +1,10 @@
 ﻿using UnityEngine;
 using TMPro;
+using PlayFab;
+using PlayFab.ClientModels;
 using UnityEngine.SceneManagement;
 using System.Collections;
+using System.Collections.Generic;
 
 public class CoinManager : MonoBehaviour
 {
@@ -9,9 +12,12 @@ public class CoinManager : MonoBehaviour
 
     [Header("UI References - Sẽ được tự động tìm lại")]
     public TextMeshProUGUI coinText; // Text hiển thị số coin trên UI
+    
+    private const string GAMECOIN = "GC";
+
 
     private int currentCoins;
-    private const string COIN_KEY = "PlayerCoins";
+  //  private const string COIN_KEY = "PlayerCoins";
 
     private void Awake()
     {
@@ -20,7 +26,7 @@ public class CoinManager : MonoBehaviour
         {
             Instance = this;
             DontDestroyOnLoad(gameObject);
-            LoadCoins();
+         //   LoadCoins();
         }
         else
         {
@@ -42,6 +48,7 @@ public class CoinManager : MonoBehaviour
     private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
     {
         StartCoroutine(DelayedSetup());
+        LoadCoinsFromPlayFab();
     }
 
     // Delay để đảm bảo UI đã được tạo
@@ -91,24 +98,55 @@ public class CoinManager : MonoBehaviour
         }
     }
 
+
+    //
     /// <summary>
-    /// Tải số coin từ PlayerPrefs
+    /// Gọi sau khi đăng nhập PlayFab thành công
     /// </summary>
-    private void LoadCoins()
+    public void LoadCoinsFromPlayFab()
     {
-        currentCoins = PlayerPrefs.GetInt(COIN_KEY, 0);
-        Debug.Log("Đã tải: " + currentCoins + " coins");
+        PlayFabClientAPI.GetUserInventory(new GetUserInventoryRequest(), result =>
+        {
+            if (result.VirtualCurrency != null && result.VirtualCurrency.ContainsKey(GAMECOIN))
+            {
+                currentCoins = result.VirtualCurrency[GAMECOIN];
+                UpdateCoinUI();
+                Debug.Log("Đã tải coin từ PlayFab: " + currentCoins);
+            }
+            else
+            {
+                Debug.Log("Không tìm thấy GC, thiết lập mặc định 0.");
+                currentCoins = 0;
+                UpdateCoinUI();
+            }
+        },
+        error =>
+        {
+            Debug.LogError("Lỗi tải coin từ PlayFab: " + error.GenerateErrorReport());
+        });
     }
 
-    /// <summary>
-    /// Lưu số coin vào PlayerPrefs
-    /// </summary>
-    private void SaveCoins()
-    {
-        PlayerPrefs.SetInt(COIN_KEY, currentCoins);
-        PlayerPrefs.Save();
-        //Debug.Log("Đã lưu: " + currentCoins + " coins");
-    }
+    //
+    /*
+        /// <summary>
+        /// Tải số coin từ PlayerPrefs
+        /// </summary>
+        private void LoadCoins()
+        {
+            currentCoins = PlayerPrefs.GetInt(COIN_KEY, 0);
+            Debug.Log("Đã tải: " + currentCoins + " coins");
+        }
+
+        /// <summary>
+        /// Lưu số coin vào PlayerPrefs
+        /// </summary>
+        private void SaveCoins()
+        {
+            PlayerPrefs.SetInt(COIN_KEY, currentCoins);
+            PlayerPrefs.Save();
+            //Debug.Log("Đã lưu: " + currentCoins + " coins");
+        }
+    */
 
     /// <summary>
     /// Thêm coin và lưu
@@ -116,13 +154,33 @@ public class CoinManager : MonoBehaviour
     /// <param name="amount">Số coin cần thêm</param>
     public void AddCoins(int amount)
     {
-        if (amount > 0)
+        if (amount <= 0) return;
+
+        var request = new AddUserVirtualCurrencyRequest
         {
-            currentCoins += amount;
-            SaveCoins();
-            UpdateCoinUI();
-           // Debug.Log("+ " + amount + " coins! Tổng: " + currentCoins);
-        }
+            VirtualCurrency = GAMECOIN,
+            Amount = amount
+        };
+
+        PlayFabClientAPI.AddUserVirtualCurrency(request,
+            result =>
+            {
+                Debug.Log("Đã cộng " + amount + " GC");
+                LoadCoinsFromPlayFab(); // cập nhật lại UI
+            },
+            error =>
+            {
+                Debug.LogError("Lỗi cộng GC: " + error.GenerateErrorReport());
+            });
+    
+
+        //if (amount > 0)
+        //{
+        //    currentCoins += amount;
+        //    SaveCoins();
+        //    UpdateCoinUI();
+        //   // Debug.Log("+ " + amount + " coins! Tổng: " + currentCoins);
+        //}
     }
 
     /// <summary>
@@ -130,21 +188,70 @@ public class CoinManager : MonoBehaviour
     /// </summary>
     /// <param name="amount">Số coin cần trừ</param>
     /// <returns>True nếu đủ coin để trừ</returns>
+
+    //public void SpendCoins(int amount)
     public bool SpendCoins(int amount)
     {
-        if (amount > 0 && currentCoins >= amount)
+
+        if (amount <= 0)
         {
-            currentCoins -= amount;
-            SaveCoins();
-            UpdateCoinUI();
-            Debug.Log("- " + amount + " coins! Còn lại: " + currentCoins);
-            return true;
-        }
-        else
-        {
-            Debug.Log("Không đủ coin! Hiện có: " + currentCoins + ", cần: " + amount);
+            Debug.LogWarning("Số lượng GC không hợp lệ.");
             return false;
         }
+        var request = new SubtractUserVirtualCurrencyRequest
+        {
+            VirtualCurrency = GAMECOIN,
+            Amount = amount
+        };
+
+        PlayFabClientAPI.SubtractUserVirtualCurrency(request,
+            result =>
+            {
+                Debug.Log("Đã trừ " + amount + " GC");
+                LoadCoinsFromPlayFab(); // cập nhật lại UI
+            },
+            error =>
+            {
+                Debug.LogError("Lỗi trừ GC: " + error.GenerateErrorReport());
+            });
+        return true;
+        //if (amount > 0 && currentCoins >= amount)
+        //{
+        //    currentCoins -= amount;
+        //    SaveCoins();
+        //    UpdateCoinUI();
+        //    Debug.Log("- " + amount + " coins! Còn lại: " + currentCoins);
+        //    return true;
+        //}
+        //else
+        //{
+        //    Debug.Log("Không đủ coin! Hiện có: " + currentCoins + ", cần: " + amount);
+        //    return false;
+        //}
+    }
+
+    //
+
+    public void TrySpendCoins(int amount)
+    {
+        PlayFabClientAPI.GetUserInventory(new GetUserInventoryRequest(), result =>
+        {
+            if (result.VirtualCurrency.TryGetValue(GAMECOIN, out int balance))
+            {
+                if (balance >= amount)
+                {
+                    SpendCoins(amount);
+                }
+                else
+                {
+                    Debug.Log("Không đủ GC. Cần: " + amount + ", hiện có: " + balance);
+                }
+            }
+        },
+        error =>
+        {
+            Debug.LogError("Lỗi kiểm tra GC: " + error.GenerateErrorReport());
+        });
     }
 
     /// <summary>

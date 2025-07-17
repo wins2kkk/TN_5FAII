@@ -1,4 +1,4 @@
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using TMPro;
@@ -52,7 +52,7 @@ public class LoginPagePlayfab : MonoBehaviour
     #region Buttom Fuctions
     public void RegisterUser()
     {
-        // Ki?m tra ?? d�i m?t kh?u
+        // Ki?m tra ?? dài m?t kh?u
         if (PassworRegisterInput.text.Length < 6)
         {
             MessageText.text = "Password is too short";
@@ -96,6 +96,15 @@ public class LoginPagePlayfab : MonoBehaviour
         if (gameManager != null)
         {
             gameManager.playerName = name;
+        }
+
+        if (CoinManager.Instance != null)
+        {
+            CoinManager.Instance.LoadCoinsFromPlayFab();
+        }
+        else
+        {
+            Debug.LogWarning("CoinManager chưa được tạo! Không thể tải coin.");
         }
 
         StartCoroutine(LoadNextScene());
