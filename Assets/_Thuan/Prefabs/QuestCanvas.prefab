@@ -17,7 +17,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &5624794868706739612
 RectTransform:
   m_ObjectHideFlags: 0
@@ -549,7 +549,7 @@ GameObject:
   m_Component:
   - component: {fileID: 9052774212510580997}
   m_Layer: 0
-  m_Name: Victory
+  m_Name: PanelSucces
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -4001,10 +4001,10 @@ RectTransform:
   - {fileID: 7309961921421606640}
   m_Father: {fileID: 1433536565207568305}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 123.734, y: 88.219}
-  m_SizeDelta: {x: 252.745, y: -176.273}
+  m_AnchorMin: {x: 0.5, y: 0.5}
+  m_AnchorMax: {x: 0.5, y: 0.5}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: 1178.745, y: 1087.727}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &1411072960404922769
 CanvasRenderer:
@@ -4054,7 +4054,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1433536565207568305}
   m_Layer: 0
-  m_Name: Failed
+  m_Name: PanelFaile
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -4097,7 +4097,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &5752831984781777894
 RectTransform:
   m_ObjectHideFlags: 0
@@ -5215,10 +5215,10 @@ RectTransform:
   - {fileID: 3386596734957088218}
   m_Father: {fileID: 9052774212510580997}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 123.734, y: 88.219}
-  m_SizeDelta: {x: 252.745, y: -176.273}
+  m_AnchorMin: {x: 0.5, y: 0.5}
+  m_AnchorMax: {x: 0.5, y: 0.5}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: 1178.745, y: 1087.727}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &6573856642270321846
 CanvasRenderer:

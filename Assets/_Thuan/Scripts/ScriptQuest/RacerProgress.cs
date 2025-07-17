@@ -20,6 +20,7 @@ public class RacerProgressWaypoint : MonoBehaviour
     private bool isProcessingLapCompletion = false;
     private float lastWaypointTriggerTime = 0f;
     private float waypointCooldown = 0.5f; // Cooldown để tránh trigger liên tục
+    public Transform lastPassedCheckpoint { get; private set; }
 
     [Header("Debug")]
     public bool showDebugInfo = true;
@@ -208,5 +209,18 @@ public class RacerProgressWaypoint : MonoBehaviour
         }
 #endif
     }
+    public Transform GetLastCheckpoint()
+    {
+        return lastPassedCheckpoint;
+    }
 
+    public void UpdateProgress(int newWaypointIndex)
+    {
+        currentWaypointIndex = newWaypointIndex;
+
+        if (trackWaypoints != null && newWaypointIndex >= 0 && newWaypointIndex < trackWaypoints.Length)
+        {
+            lastPassedCheckpoint = trackWaypoints[newWaypointIndex];
+        }
+    }
 }

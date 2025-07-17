@@ -154,7 +154,7 @@ public class LapMission : MonoBehaviour
             FailMission();
         }
 
-        if (player.position.y < -100f)
+        if (player.position.y < -30f)
         {
             Debug.Log("⚠️ Người chơi rơi khỏi map");
             ReturnToLastCheckpoint();

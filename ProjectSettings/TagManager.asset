@@ -20,6 +20,7 @@ TagManager:
   - toDestroy
   - Waypoint
   - Arrow
+  - LapCheckpoint
   layers:
   - Default
   - TransparentFX
@@ -28,7 +29,7 @@ TagManager:
   - Water
   - UI
   - UI2
-  - 
+  - Ground
   - 
   - 
   - 

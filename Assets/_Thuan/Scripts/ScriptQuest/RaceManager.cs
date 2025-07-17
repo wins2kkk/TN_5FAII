@@ -20,12 +20,18 @@ public class RaceManager : MonoBehaviour
     public List<GameObject> aiPrefabs;
     public List<Transform> aiSpawnPoints;
 
+    [Header("Respawn Settings")]
+    public float fallThreshold = -30f;
+    public float respawnDelay = 2f;
+    public LayerMask groundLayer = 1;
+
     [Header("UI - Sẽ được tự động tìm")]
     public TextMeshProUGUI timerText;
     public TextMeshProUGUI lapText;
     public TextMeshProUGUI positionText;
     public TextMeshProUGUI countdownText;
     public GameObject winPanel;
+    public TextMeshProUGUI coinText;
     public GameObject losePanel;
 
     [Header("Result Text - Sẽ được tự động tìm")]
@@ -43,10 +49,14 @@ public class RaceManager : MonoBehaviour
     private float raceTimeLeft;
     private bool raceStarted = false;
     private bool raceCompleted = false;
-    private int currentCoinReward = 0; // Lưu số coin reward
+    public int currentCoinReward = 0;
+    private bool isRespawning = false;
 
     private List<string> finishOrder = new List<string>();
     private Dictionary<string, int> racerLapCounts = new Dictionary<string, int>();
+
+    // ✅ Thêm reference đến ScriptableObject quest
+    private QuestData currentQuestData;
 
     public bool RaceOver => raceCompleted;
 
@@ -57,75 +67,171 @@ public class RaceManager : MonoBehaviour
 
     void Start()
     {
-        // ✅ Delay để đảm bảo scene đã load hoàn toàn
         StartCoroutine(DelayedInitialization());
     }
 
     private IEnumerator DelayedInitialization()
     {
-        // Đợi 1 frame để scene setup hoàn toàn
         yield return new WaitForEndOfFrame();
         yield return new WaitForSeconds(0.1f);
 
-        // Tự động tìm UI components
         FindUIComponents();
-
-        // Setup cơ bản
         InitializeUI();
         FindTrackWaypoints();
 
-        // Kiểm tra nếu có nhiệm vụ đua được lưu từ scene trước
         if (PlayerPrefs.GetInt("LapMission_Active", 0) == 1)
         {
-            QuestData quest = new QuestData
+            // ✅ Lấy quest data từ QuestManager thay vì PlayerPrefs
+            if (QuestManager.instance != null && QuestManager.instance.currentQuest != null)
             {
-                questName = "Lap Race",
-                lapCount = PlayerPrefs.GetInt("LapMission_Laps", 3),
-                timeLimit = PlayerPrefs.GetFloat("LapMission_Time", 90f),
-                coinReward = PlayerPrefs.GetInt("LapMission_Reward", 50),
-                questType = QuestType.DuaAI
-            };
-
-            Debug.Log("🎯 Bắt đầu race mission từ dữ liệu PlayerPrefs");
-
-            // Đợi thêm chút để đảm bảo mọi thứ đã sẵn sàng
-            yield return new WaitForSeconds(0.5f);
-            StartRaceMission(quest);
+                currentQuestData = QuestManager.instance.currentQuest;
+                Debug.Log("🎯 Bắt đầu race mission từ ScriptableObject");
+                yield return new WaitForSeconds(0.5f);
+                StartRaceMission(currentQuestData);
+            }
+            else
+            {
+                // Fallback nếu không có QuestManager
+                QuestData quest = new QuestData
+                {
+                    questName = "Lap Race",
+                    lapCount = PlayerPrefs.GetInt("LapMission_Laps", 3),
+                    timeLimit = PlayerPrefs.GetFloat("LapMission_Time", 90f),
+                    coinReward = PlayerPrefs.GetInt("LapMission_Reward", 50),
+                    questType = QuestType.DuaAI
+                };
+                currentQuestData = quest;
+                Debug.Log("🎯 Bắt đầu race mission từ PlayerPrefs (fallback)");
+                yield return new WaitForSeconds(0.5f);
+                StartRaceMission(quest);
+            }
 
             PlayerPrefs.SetInt("LapMission_Active", 0);
         }
     }
 
-    // ✅ Tự động tìm UI components
+    void Update()
+    {
+        if (!raceStarted || raceCompleted) return;
+
+        raceTimeLeft -= Time.deltaTime;
+        UpdateTimerUI();
+        UpdatePositionUI();
+
+        CheckPlayerFall();
+
+        if (raceTimeLeft <= 0f)
+        {
+            HandleTimeUp();
+        }
+    }
+
+    void CheckPlayerFall()
+    {
+        if (player == null || isRespawning) return;
+
+        if (player.transform.position.y < fallThreshold)
+        {
+            StartCoroutine(RespawnPlayer());
+        }
+    }
+
+    IEnumerator RespawnPlayer()
+    {
+        if (isRespawning) yield break;
+
+        isRespawning = true;
+        Debug.Log("🔄 Player rơi khỏi map, đang respawn...");
+
+        var carScript = player.GetComponent<Car_script>();
+        if (carScript != null) carScript.enabled = false;
+
+        Rigidbody rb = player.GetComponent<Rigidbody>();
+        if (rb != null)
+        {
+            rb.velocity = Vector3.zero;
+            rb.angularVelocity = Vector3.zero;
+            rb.isKinematic = true;
+        }
+
+        yield return new WaitForSeconds(respawnDelay);
+
+        Transform nearestWaypoint = GetNearestWaypoint();
+        Transform lastCheckpoint = player.GetComponent<RacerProgressWaypoint>()?.GetLastCheckpoint();
+        if (lastCheckpoint != null)
+        {
+            player.transform.position = lastCheckpoint.position + Vector3.up * 2f;
+            player.transform.rotation = lastCheckpoint.rotation;
+            Debug.Log($"✅ Player respawn tại checkpoint đã vượt: {lastCheckpoint.name}");
+        }
+        else
+        {
+            if (playerStartPoint != null)
+            {
+                player.transform.position = playerStartPoint.position;
+                player.transform.rotation = playerStartPoint.rotation;
+                Debug.Log("✅ Player đã respawn tại start point");
+            }
+        }
+
+        if (rb != null)
+        {
+            rb.isKinematic = false;
+        }
+
+        if (carScript != null)
+        {
+            carScript.enabled = true;
+        }
+
+        isRespawning = false;
+    }
+
+    Transform GetNearestWaypoint()
+    {
+        if (trackWaypoints == null || trackWaypoints.Length == 0 || player == null)
+            return null;
+
+        Transform nearest = null;
+        float minDistance = float.MaxValue;
+
+        foreach (Transform waypoint in trackWaypoints)
+        {
+            float distance = Vector3.Distance(player.transform.position, waypoint.position);
+            if (distance < minDistance)
+            {
+                minDistance = distance;
+                nearest = waypoint;
+            }
+        }
+
+        return nearest;
+    }
+
     void FindUIComponents()
     {
         Debug.Log("🔍 Tìm UI Components...");
 
-        // Tìm timer text
         if (timerText == null)
         {
             timerText = FindUIComponent<TextMeshProUGUI>("TimerText", "Timer", "RaceTimer");
         }
 
-        // Tìm lap text
         if (lapText == null)
         {
             lapText = FindUIComponent<TextMeshProUGUI>("LapText", "Lap", "CurrentLap");
         }
 
-        // Tìm position text
         if (positionText == null)
         {
             positionText = FindUIComponent<TextMeshProUGUI>("PositionText", "Position", "PlayerPosition");
         }
 
-        // Tìm countdown text
         if (countdownText == null)
         {
             countdownText = FindUIComponent<TextMeshProUGUI>("CountdownText", "Countdown", "RaceCountdown");
         }
 
-        // Tìm win/lose panels
         if (winPanel == null)
         {
             winPanel = GameObject.Find("WinPanel") ?? FindInactiveGameObject("WinPanel");
@@ -136,25 +242,31 @@ public class RaceManager : MonoBehaviour
             losePanel = GameObject.Find("LosePanel") ?? FindInactiveGameObject("LosePanel");
         }
 
-        // ✅ Tìm result text trong win/lose panels
+        // ✅ Tìm coin text trong win panel
+        if (winPanel != null && coinText == null)
+        {
+            coinText = FindTextInPanel(winPanel, "CoinText", "CoinRewardText", "CoinAmount", "Coin");
+        }
+
+        // ✅ Tìm result text trong win panel
         if (winPanel != null && winResultText == null)
         {
             winResultText = FindTextInPanel(winPanel, "WinResultText", "ResultText", "WinText", "MessageText");
         }
 
+        // ✅ Tìm result text trong lose panel
         if (losePanel != null && loseResultText == null)
         {
             loseResultText = FindTextInPanel(losePanel, "LoseResultText", "ResultText", "LoseText", "MessageText");
         }
 
         Debug.Log($"✅ UI Found: Timer:{timerText != null}, Lap:{lapText != null}, Position:{positionText != null}, Countdown:{countdownText != null}");
+        Debug.Log($"✅ Panels Found: Win:{winPanel != null}, Lose:{losePanel != null}");
         Debug.Log($"✅ Result Text Found: Win:{winResultText != null}, Lose:{loseResultText != null}");
     }
 
-    // ✅ Tìm text trong panel
     TextMeshProUGUI FindTextInPanel(GameObject panel, params string[] possibleNames)
     {
-        // Tìm trong children của panel
         foreach (string name in possibleNames)
         {
             Transform child = panel.transform.Find(name);
@@ -163,14 +275,22 @@ public class RaceManager : MonoBehaviour
                 TextMeshProUGUI text = child.GetComponent<TextMeshProUGUI>();
                 if (text != null)
                 {
-                    Debug.Log($"✅ Found result text: {name} in {panel.name}");
+                    Debug.Log($"✅ Found text: {name} in {panel.name}");
                     return text;
                 }
             }
         }
 
-        // Tìm trong tất cả children
         TextMeshProUGUI[] allTexts = panel.GetComponentsInChildren<TextMeshProUGUI>(true);
+        foreach (var text in allTexts)
+        {
+            if (!text.name.ToLower().Contains("button"))
+            {
+                Debug.Log($"✅ Found first non-button text in {panel.name}: {text.name}");
+                return text;
+            }
+        }
+
         if (allTexts.Length > 0)
         {
             Debug.Log($"✅ Found first text component in {panel.name}");
@@ -180,7 +300,6 @@ public class RaceManager : MonoBehaviour
         return null;
     }
 
-    // Helper method để tìm UI component
     T FindUIComponent<T>(params string[] possibleNames) where T : Component
     {
         foreach (string name in possibleNames)
@@ -199,7 +318,6 @@ public class RaceManager : MonoBehaviour
         return null;
     }
 
-    // Tìm inactive GameObject
     GameObject FindInactiveGameObject(string name)
     {
         Transform[] allTransforms = Resources.FindObjectsOfTypeAll<Transform>();
@@ -218,35 +336,21 @@ public class RaceManager : MonoBehaviour
         if (winPanel != null) winPanel.SetActive(false);
         if (losePanel != null) losePanel.SetActive(false);
 
-        // ✅ Đảm bảo UI được setup đúng từ đầu
         if (lapText != null) lapText.gameObject.SetActive(false);
         if (positionText != null) positionText.gameObject.SetActive(false);
         if (countdownText != null)
         {
             countdownText.gameObject.SetActive(false);
-            countdownText.text = ""; // Clear text
+            countdownText.text = "";
         }
-    }
 
-    void Update()
-    {
-        if (!raceStarted || raceCompleted) return;
-
-        raceTimeLeft -= Time.deltaTime;
-        UpdateTimerUI();
-        UpdatePositionUI();
-
-        if (raceTimeLeft <= 0f)
-        {
-            HandleTimeUp();
-        }
+        if (coinText != null) coinText.gameObject.SetActive(false);
     }
 
     void HandleTimeUp()
     {
         Debug.Log("⏰ Hết thời gian!");
 
-        // ✅ Dừng race trước khi xử lý
         raceStarted = false;
         raceCompleted = true;
 
@@ -254,41 +358,30 @@ public class RaceManager : MonoBehaviour
         if (positions.Count > 0)
         {
             string winner = positions[0].racerName;
-
             bool playerIsTop1 = winner == "Player";
             bool playerFinished = false;
 
-            // Kiểm tra xem player đã hoàn thành đủ laps chưa
             if (player != null)
             {
                 var progress = player.GetComponent<RacerProgressWaypoint>();
                 if (progress != null)
                 {
-                    playerFinished = progress.IsFinished(); // ✅ true nếu đã hoàn thành đủ laps
+                    playerFinished = progress.IsFinished();
                 }
             }
 
             if (playerIsTop1 && playerFinished)
             {
-                // ✅ Player đứng đầu và đã hoàn thành đủ laps
-                ShowWinPanel($"Nhiệm vụ thành công!\nBạn đã thắng cuộc đua!\nNhận được {currentCoinReward} coin!");
+                ShowWinPanel();
                 CompleteMission(true, "Nhiệm vụ thành công! Bạn đã thắng cuộc đua!");
             }
             else
             {
-                // ❌ Player chưa hoàn thành hoặc không đứng đầu
-                ShowLosePanel($"Hết thời gian!\nNhiệm vụ thất bại!");
-                CompleteMission(false, "Hết thời gian! Nhiệm vụ thất bại!");
+                ShowLosePanel();
+                CompleteMission(false, "Hết thời gian! Bạn không thể hoàn thành nhiệm vụ.");
             }
         }
-        else
-        {
-            // ✅ Hiển thị lose panel khi không có dữ liệu racer
-            ShowLosePanel($"Hết thời gian!\nKhông có dữ liệu racer!\nNhiệm vụ thất bại!");
-            CompleteMission(false, "Hết thời gian! Nhiệm vụ thất bại!");
-        }
     }
-
 
     void FindTrackWaypoints()
     {
@@ -322,7 +415,7 @@ public class RaceManager : MonoBehaviour
 
     int ExtractNumber(string name)
     {
-        string digits = System.Text.RegularExpressions.Regex.Match(name, @"\\d+").Value;
+        string digits = System.Text.RegularExpressions.Regex.Match(name, @"\d+").Value;
         return int.TryParse(digits, out int result) ? result : 0;
     }
 
@@ -330,43 +423,30 @@ public class RaceManager : MonoBehaviour
     {
         Debug.Log("🏁 Bắt đầu race mission!");
 
-        // ✅ Lưu coin reward
+        // ✅ Lưu reference đến quest data
+        currentQuestData = questData;
         currentCoinReward = questData.coinReward;
 
-        // Reset trạng thái
         raceStarted = false;
         raceCompleted = false;
         allRacers.Clear();
         finishOrder.Clear();
         racerLapCounts.Clear();
 
-        // Setup từ quest data
         maxRaceTime = questData.timeLimit;
         totalLaps = questData.lapCount;
         raceTimeLeft = maxRaceTime;
 
-        // ✅ Thực hiện setup theo thứ tự
         StartCoroutine(SetupRaceCoroutine());
     }
 
     private IEnumerator SetupRaceCoroutine()
     {
-        // Tìm lại UI nếu cần
         FindUIComponents();
-
-        // Tìm player
         yield return StartCoroutine(FindPlayerCoroutine());
-
-        // Setup AI
         SetupAI();
-
-        // Setup UI
         InitializeRaceUI();
-
-        // Đợi một chút để đảm bảo mọi thứ đã sẵn sàng
         yield return new WaitForSeconds(0.5f);
-
-        // Bắt đầu countdown
         StartCoroutine(CountdownAndStartRace());
     }
 
@@ -375,7 +455,6 @@ public class RaceManager : MonoBehaviour
         int attempts = 0;
         while (player == null && attempts < 10)
         {
-            // Thử tìm player bằng nhiều cách
             player = GameObject.FindGameObjectWithTag("Player");
 
             if (player == null)
@@ -385,7 +464,6 @@ public class RaceManager : MonoBehaviour
 
             if (player == null)
             {
-                // Tìm trong tất cả GameObject có tên chứa "Player"
                 GameObject[] allObjects = FindObjectsOfType<GameObject>();
                 foreach (GameObject obj in allObjects)
                 {
@@ -414,7 +492,6 @@ public class RaceManager : MonoBehaviour
             yield break;
         }
 
-        // Setup player
         SetupPlayer();
     }
 
@@ -422,7 +499,6 @@ public class RaceManager : MonoBehaviour
     {
         if (player == null) return;
 
-        // Reset physics
         Rigidbody rb = player.GetComponent<Rigidbody>();
         if (rb != null)
         {
@@ -430,11 +506,9 @@ public class RaceManager : MonoBehaviour
             rb.angularVelocity = Vector3.zero;
         }
 
-        // Tắt control tạm thời
         var control = player.GetComponent<Car_script>();
         if (control != null) control.enabled = false;
 
-        // Setup progress tracking
         var progress = player.GetComponent<RacerProgressWaypoint>();
         if (progress == null)
         {
@@ -446,7 +520,6 @@ public class RaceManager : MonoBehaviour
         progress.racerName = "Player";
         progress.ResetProgress();
 
-        // ✅ Đảm bảo player có tag đúng
         if (player.tag != "Player")
         {
             player.tag = "Player";
@@ -460,14 +533,12 @@ public class RaceManager : MonoBehaviour
 
     void SetupAI()
     {
-        // Clear AI cũ
         foreach (var ai in spawnedAIs)
         {
             if (ai != null) Destroy(ai);
         }
         spawnedAIs.Clear();
 
-        // Spawn AI mới
         int aiCount = Mathf.Min(aiSpawnPoints.Count, aiPrefabs.Count);
         for (int i = 0; i < aiCount; i++)
         {
@@ -477,14 +548,12 @@ public class RaceManager : MonoBehaviour
             GameObject newAI = Instantiate(aiPrefab, spawnPoint.position, spawnPoint.rotation);
             newAI.name = "AI_" + i;
 
-            // Setup AI progress
             var progress = newAI.GetComponent<RacerProgressWaypoint>() ?? newAI.AddComponent<RacerProgressWaypoint>();
             progress.totalLaps = totalLaps;
             progress.trackWaypoints = trackWaypoints;
             progress.racerName = newAI.name;
             progress.ResetProgress();
 
-            // Setup AI control
             var aiControl = newAI.GetComponent<AICarController>() ?? newAI.AddComponent<AICarController>();
             aiControl.enabled = false;
 
@@ -498,18 +567,16 @@ public class RaceManager : MonoBehaviour
 
     void InitializeRaceUI()
     {
-        // Tìm lại UI nếu cần
         if (lapText == null || positionText == null || countdownText == null)
         {
             FindUIComponents();
         }
 
-        // Setup UI state
         if (lapText != null) lapText.gameObject.SetActive(false);
         if (positionText != null) positionText.gameObject.SetActive(false);
         if (countdownText != null)
         {
-            countdownText.gameObject.SetActive(true); // ✅ Bật countdown
+            countdownText.gameObject.SetActive(true);
             countdownText.text = "GET READY!";
         }
     }
@@ -553,13 +620,11 @@ public class RaceManager : MonoBehaviour
 
         raceStarted = true;
 
-        // Bật UI
         if (lapText != null) lapText.gameObject.SetActive(true);
         if (positionText != null) positionText.gameObject.SetActive(true);
 
         UpdateLapUI(1);
 
-        // Bật player control
         if (player != null)
         {
             var control = player.GetComponent<Car_script>();
@@ -569,7 +634,6 @@ public class RaceManager : MonoBehaviour
             if (progress != null) progress.StartRace();
         }
 
-        // Bật AI control
         foreach (var ai in spawnedAIs)
         {
             if (ai == null) continue;
@@ -601,7 +665,6 @@ public class RaceManager : MonoBehaviour
 
         Debug.Log($"🏆 {racerName} finished the race!");
 
-        // Tắt UI
         if (lapText != null) lapText.gameObject.SetActive(false);
         if (positionText != null) positionText.gameObject.SetActive(false);
 
@@ -610,53 +673,75 @@ public class RaceManager : MonoBehaviour
 
         if (playerIsFirst)
         {
-            // ✅ Player thắng
-            ShowWinPanel($"Nhiệm vụ thành công!\nBạn đã giành vị trí số 1!\nNhận được {currentCoinReward} coin!");
+            ShowWinPanel();
             CompleteMission(true, "Player won the race!");
         }
         else if (playerFinished)
         {
-            // ✅ Player hoàn thành nhưng không phải top 1
-            ShowLosePanel($"Bạn không dành được vị trí số 1!\nNhiệm vụ thất bại!");
-            CompleteMission(false, "Player finished, but not first.");
+            // Player finished but not first
+            ShowLosePanel();
+            CompleteMission(false, "Bạn đã hoàn thành cuộc đua nhưng không giành được vị trí đầu tiên!");
         }
         else
         {
-            // Nếu AI về đích trước
-            ShowLosePanel($"Bạn không dành được vị trí số 1!\nNhiệm vụ thất bại!");
-            CompleteMission(false, "AI finished first.");
+            // AI finished first, player still racing
+            ShowLosePanel();
+            CompleteMission(false, "AI đã về đích trước bạn!");
         }
     }
 
-    // ✅ Hiển thị win panel với text
-    void ShowWinPanel(string message)
+    // ✅ Hiển thị win panel với coin từ ScriptableObject
+    void ShowWinPanel()
     {
         if (winPanel != null)
         {
             winPanel.SetActive(true);
 
+            // ✅ Hiển thị message win
             if (winResultText != null)
             {
-                winResultText.text = message;
+                winResultText.text = "Nhiệm vụ thành công!\nBạn đã giành vị trí số 1!";
             }
 
-            Debug.Log($"🏆 Win Panel: {message}");
+            // ✅ Hiển thị coin reward từ ScriptableObject
+            if (coinText != null && currentQuestData != null)
+            {
+                coinText.gameObject.SetActive(true);
+                coinText.text = $"+{currentQuestData.coinReward}";
+                Debug.Log($"💰 Coin reward displayed from ScriptableObject: +{currentQuestData.coinReward}");
+            }
+            else if (coinText != null)
+            {
+                // Fallback nếu không có ScriptableObject
+                coinText.gameObject.SetActive(true);
+                coinText.text = $"+{currentCoinReward}";
+                Debug.Log($"💰 Coin reward displayed fallback: +{currentCoinReward}");
+            }
+
+            Debug.Log("🏆 Win Panel displayed");
         }
     }
 
-    // ✅ Hiển thị lose panel với text
-    void ShowLosePanel(string message)
+    // ✅ Hiển thị lose panel - chỉ hiển thị panel, xóa hết text
+    void ShowLosePanel()
     {
         if (losePanel != null)
         {
             losePanel.SetActive(true);
 
+            // ✅ Xóa hết text trong lose panel
             if (loseResultText != null)
             {
-                loseResultText.text = message;
+                loseResultText.text = "";
             }
 
-            Debug.Log($"💀 Lose Panel: {message}");
+            // ✅ Ẩn coin text khi lose
+            if (coinText != null)
+            {
+                coinText.gameObject.SetActive(false);
+            }
+
+            Debug.Log("💀 Lose Panel displayed (no text)");
         }
     }
 
@@ -667,7 +752,6 @@ public class RaceManager : MonoBehaviour
 
         Debug.Log($"🎯 Mission {(success ? "Success" : "Failed")}: {reason}");
 
-        // Gọi QuestManager
         if (success)
         {
             QuestManager.instance?.CompleteQuest();
@@ -677,7 +761,6 @@ public class RaceManager : MonoBehaviour
             QuestManager.instance?.FailQuest(reason);
         }
 
-        // Cleanup sau delay
         StartCoroutine(DelayedCleanup());
     }
 
@@ -713,14 +796,11 @@ public class RaceManager : MonoBehaviour
     {
         if (timerText == null) return;
 
-        // Clamp không cho nhỏ hơn 0
         float displayTime = Mathf.Max(raceTimeLeft, 0f);
-
         int min = Mathf.FloorToInt(displayTime / 60f);
         int sec = Mathf.FloorToInt(displayTime % 60f);
         timerText.text = $"{min:D2}:{sec:D2}";
     }
-
 
     public void UpdateLapUI(int currentLap)
     {
@@ -737,7 +817,7 @@ public class RaceManager : MonoBehaviour
         var positions = CalculateRacerPositions();
         int playerPos = positions.FindIndex(p => p.racerName == "Player") + 1;
 
-        if (playerPos > 0) // Đảm bảo tìm thấy player
+        if (playerPos > 0)
         {
             positionText.text = $"POS {playerPos}/{allRacers.Count}";
         }

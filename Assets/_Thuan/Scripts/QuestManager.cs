@@ -36,7 +36,7 @@ public class QuestManager : MonoBehaviour
     public float buttonPunchScale = 0.1f;
 
     [Header("Quest Data - Được giữ lại")]
-    private QuestData currentQuest;
+    public QuestData currentQuest;
     private float timeRemaining;
     private bool questActive = false;
     private bool isAnimating = false;
