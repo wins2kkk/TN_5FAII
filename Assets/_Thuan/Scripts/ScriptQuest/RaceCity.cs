@@ -209,7 +209,7 @@ public class RaceCity : MonoBehaviour
         }
 
         // Hoàn thành quest thay vì chuyển scene
-        QuestManager.instance?.CompleteQuest();
+        QuestManager.instance?.CompleteQuest ();
     }
 
     void FailMission()

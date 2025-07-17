@@ -139,7 +139,7 @@ public class FusionLauncher : MonoBehaviour, INetworkRunnerCallbacks
 
                 roomIdText.text = $"ID Phòng: <b>{roomName}</b>";
 
-                string currentPlayerName = UserInfoDisplay.displayNameCached;
+                string currentPlayerName = UserInfor.displayNameCached;
                 playerNames[runner.LocalPlayer] = currentPlayerName;
                 playerReadyStates[runner.LocalPlayer] = false;
 
@@ -489,7 +489,7 @@ public class FusionLauncher : MonoBehaviour, INetworkRunnerCallbacks
         {
             if (player == runner.LocalPlayer)
             {
-                playerNames[player] = UserInfoDisplay.displayNameCached;
+                playerNames[player] = UserInfor.displayNameCached;
             }
             else
             {
@@ -523,11 +523,11 @@ public class FusionLauncher : MonoBehaviour, INetworkRunnerCallbacks
         // Đợi một chút để đảm bảo PlayerNetwork đã sẵn sàng
         yield return new WaitForSeconds(0.5f);
 
-        var playerNetwork = playerNetworkObj.GetComponent<PlayerNetwork>();
+        var playerNetwork = playerNetworkObj.GetComponent<PlayerNetworkkẻ>();
         if (playerNetwork != null)
         {
             // Gửi tên server cho client mới
-            string serverName = UserInfoDisplay.displayNameCached;
+            string serverName = UserInfor.displayNameCached;
             if (string.IsNullOrEmpty(serverName) || serverName == "Người chơi")
             {
                 serverName = "Chủ phòng";

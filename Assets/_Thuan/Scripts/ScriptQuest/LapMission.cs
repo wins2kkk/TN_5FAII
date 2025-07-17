@@ -15,9 +15,16 @@ public class LapMission : MonoBehaviour
     public TextMeshProUGUI countdownText;
     public GameObject countdownPanel;
 
-    [Header("Result Display")]
-    public TextMeshProUGUI resultText; // Text hiển thị kết quả win/lose
-    public GameObject resultPanel; // Panel chứa kết quả
+    [Header("Win Panel")]
+    public GameObject winPanel;
+    public TextMeshProUGUI winCoinText;
+
+    [Header("Lose Panel")]
+    public GameObject losePanel;
+
+    [Header("Panel Animation Settings")]
+    public float animationDuration = 0.8f;
+    public AnimationCurve slideDownCurve = AnimationCurve.EaseInOut(0, 0, 1, 1);
 
     [Header("Checkpoint Order")]
     public List<string> checkpointOrder = new List<string> { "Check1", "Check2", "Check3" };
@@ -35,7 +42,6 @@ public class LapMission : MonoBehaviour
 
     void Start()
     {
-        // 🔍 Tìm Player tự động qua tag
         GameObject playerObj = GameObject.FindGameObjectWithTag("Player");
         if (playerObj != null)
         {
@@ -53,10 +59,17 @@ public class LapMission : MonoBehaviour
         }
 
         UpdateLapDisplay();
+        InitializePanels();
+    }
 
-        // Ẩn result panel ban đầu
-        if (resultPanel != null)
-            resultPanel.SetActive(false);
+    void InitializePanels()
+    {
+        // Ẩn tất cả panels
+        if (winPanel != null)
+            winPanel.SetActive(false);
+
+        if (losePanel != null)
+            losePanel.SetActive(false);
     }
 
     void LoadMissionSettings()
@@ -108,11 +121,9 @@ public class LapMission : MonoBehaviour
         timer = 0f;
         missionActive = true;
 
-        // 🔄 Thay đổi: Chỉ hiện checkpoint đầu tiên thay vì tất cả
         if (CheckpointPool.Instance != null)
         {
             CheckpointPool.Instance.HideAllCheckpoints();
-            // Hiện checkpoint đầu tiên
             if (checkpointOrder.Count > 0)
             {
                 CheckpointPool.Instance.ShowCheckpoint(checkpointOrder[0]);
@@ -129,7 +140,6 @@ public class LapMission : MonoBehaviour
 
         timer += Time.deltaTime;
 
-        // Chỉ dùng QuestManager để hiển thị thời gian
         if (QuestManager.instance != null && QuestManager.instance.timerText != null)
         {
             float timeLeft = Mathf.Max(0f, timeLimit - timer);
@@ -144,7 +154,6 @@ public class LapMission : MonoBehaviour
             FailMission();
         }
 
-        // ⚠️ Kiểm tra rơi khỏi map
         if (player.position.y < -100f)
         {
             Debug.Log("⚠️ Người chơi rơi khỏi map");
@@ -168,8 +177,6 @@ public class LapMission : MonoBehaviour
         if (CheckpointPool.Instance != null)
         {
             CheckpointPool.Instance.HideCheckpoint(checkpointName);
-
-            // 🔁 Ghi nhớ checkpoint cuối cùng
             var checkpoint = CheckpointPool.Instance.checkpoints.Find(c => c.name == checkpointName);
             if (checkpoint != null)
                 lastCheckpointTransform = checkpoint.transform;
@@ -177,7 +184,6 @@ public class LapMission : MonoBehaviour
 
         currentCheckpointIndex++;
 
-        // 🔄 Thay đổi: Hiện checkpoint tiếp theo nếu chưa hết lap
         if (currentCheckpointIndex < checkpointOrder.Count)
         {
             if (CheckpointPool.Instance != null)
@@ -209,7 +215,6 @@ public class LapMission : MonoBehaviour
     {
         yield return new WaitForSeconds(0.5f);
 
-        // 🔄 Thay đổi: Chỉ hiện checkpoint đầu tiên của lap mới
         if (CheckpointPool.Instance != null)
         {
             CheckpointPool.Instance.HideAllCheckpoints();
@@ -233,10 +238,6 @@ public class LapMission : MonoBehaviour
         missionActive = false;
         Debug.Log("🎉 Đua hoàn thành!");
 
-        // Hiển thị kết quả trực tiếp
-
-        ShowResult("Nhiệm vụ hoàn thành ");
-        // Ẩn timer của QuestManager
         if (QuestManager.instance != null && QuestManager.instance.timerText != null)
         {
             QuestManager.instance.timerText.gameObject.SetActive(false);
@@ -244,9 +245,11 @@ public class LapMission : MonoBehaviour
 
         if (CoinManager.Instance != null)
         {
-            CoinManager.Instance.AddCoins(500); // Thưởng 50 coin khi thắng
+            CoinManager.Instance.AddCoins(500);
         }
-        StartCoroutine(ReturnToMenu());
+
+        ShowWinPanel();
+        StartCoroutine(AutoReturnToMenu());
     }
 
     void FailMission()
@@ -254,38 +257,127 @@ public class LapMission : MonoBehaviour
         missionActive = false;
         Debug.Log("❌ Thất bại - Hết thời gian!");
 
-        // Hiển thị kết quả trực tiếp
-        ShowResult("Hết thời gian nhiệm vụ thất bại !");
-
-        // Ẩn timer của QuestManager
         if (QuestManager.instance != null && QuestManager.instance.timerText != null)
         {
             QuestManager.instance.timerText.gameObject.SetActive(false);
         }
 
-        StartCoroutine(ReturnToMenu());
+        ShowLosePanel();
+        StartCoroutine(AutoReturnToMenu());
     }
 
-    void ShowResult(string message)
+    void ShowWinPanel()
     {
-        if (resultPanel != null)
+        if (winPanel != null)
         {
-            resultPanel.SetActive(true);
+            // Cập nhật text hiển thị coins
+            if (winCoinText != null)
+            {
+                winCoinText.text = "500";
+            }
+
+            StartCoroutine(AnimatePanel(winPanel, true));
         }
-
-        if (resultText != null)
-        {
-            resultText.text = message;
-
-            resultText.gameObject.SetActive(true);
-        }
-
-
     }
 
-    IEnumerator ReturnToMenu()
+    void ShowLosePanel()
     {
-        yield return new WaitForSeconds(5f); // Hiển thị kết quả 5 giây
+        if (losePanel != null)
+        {
+            StartCoroutine(AnimatePanel(losePanel, true));
+        }
+    }
+
+    IEnumerator AnimatePanel(GameObject panel, bool showPanel)
+    {
+        if (panel == null) yield break;
+
+        RectTransform panelRect = panel.GetComponent<RectTransform>();
+        if (panelRect == null) yield break;
+
+        if (showPanel)
+        {
+            // Hiện panel
+            panel.SetActive(true);
+
+            // Vị trí ban đầu (ở trên màn hình)
+            Vector2 startPos = new Vector2(panelRect.anchoredPosition.x, Screen.height);
+            Vector2 targetPos = Vector2.zero; // Vị trí giữa màn hình
+
+            panelRect.anchoredPosition = startPos;
+
+            // Animation slide down
+            float elapsed = 0f;
+            while (elapsed < animationDuration)
+            {
+                elapsed += Time.deltaTime;
+                float t = elapsed / animationDuration;
+                float curveValue = slideDownCurve.Evaluate(t);
+
+                panelRect.anchoredPosition = Vector2.Lerp(startPos, targetPos, curveValue);
+
+                // Thêm hiệu ứng alpha
+                CanvasGroup canvasGroup = panel.GetComponent<CanvasGroup>();
+                if (canvasGroup != null)
+                {
+                    canvasGroup.alpha = curveValue;
+                }
+
+                yield return null;
+            }
+
+            // Đảm bảo vị trí cuối cùng chính xác
+            panelRect.anchoredPosition = targetPos;
+
+            if (panel.GetComponent<CanvasGroup>() != null)
+            {
+                panel.GetComponent<CanvasGroup>().alpha = 1f;
+            }
+        }
+        else
+        {
+            // Ẩn panel (slide up)
+            Vector2 startPos = panelRect.anchoredPosition;
+            Vector2 targetPos = new Vector2(startPos.x, Screen.height);
+
+            float elapsed = 0f;
+            while (elapsed < animationDuration)
+            {
+                elapsed += Time.deltaTime;
+                float t = elapsed / animationDuration;
+                float curveValue = slideDownCurve.Evaluate(t);
+
+                panelRect.anchoredPosition = Vector2.Lerp(startPos, targetPos, curveValue);
+
+                // Hiệu ứng alpha khi ẩn
+                CanvasGroup canvasGroup = panel.GetComponent<CanvasGroup>();
+                if (canvasGroup != null)
+                {
+                    canvasGroup.alpha = Mathf.Lerp(1f, 0f, curveValue);
+                }
+
+                yield return null;
+            }
+
+            panel.SetActive(false);
+        }
+    }
+
+    IEnumerator AutoReturnToMenu()
+    {
+        yield return new WaitForSeconds(5f);
+
+        // Ẩn panel trước khi chuyển scene
+        if (winPanel != null && winPanel.activeInHierarchy)
+        {
+            yield return StartCoroutine(AnimatePanel(winPanel, false));
+        }
+
+        if (losePanel != null && losePanel.activeInHierarchy)
+        {
+            yield return StartCoroutine(AnimatePanel(losePanel, false));
+        }
+
         PlayerPrefs.SetString("SceneToLoad", "Thanh_Pho2");
         SceneManager.LoadScene("Loading");
     }
@@ -308,10 +400,21 @@ public class LapMission : MonoBehaviour
         }
     }
 
-    // Method để skip kết quả (nếu muốn)
     public void SkipResult()
     {
         StopAllCoroutines();
+
+        // Ẩn panels nhanh
+        if (winPanel != null && winPanel.activeInHierarchy)
+        {
+            winPanel.SetActive(false);
+        }
+
+        if (losePanel != null && losePanel.activeInHierarchy)
+        {
+            losePanel.SetActive(false);
+        }
+
         PlayerPrefs.SetString("SceneToLoad", "Thanh_Pho2");
         SceneManager.LoadScene("Loading");
     }

@@ -45,15 +45,25 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a416c5e219d585e46a5355af6e073c24, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  QuestlogoPanel: {fileID: 0}
   PanelQuest: {fileID: 0}
+  QuestlogoPanel: {fileID: 0}
   PanelSucces: {fileID: 0}
+  PanelFaile: {fileID: 0}
   descriptionText: {fileID: 0}
   questNametext: {fileID: 0}
   acceptButton: {fileID: 0}
   declineButton: {fileID: 0}
+  openQuestButton: {fileID: 0}
   timerText: {fileID: 0}
   successRewardText: {fileID: 0}
+  faileText: {fileID: 0}
+  HuyNV: {fileID: 0}
+  animationDuration: 0.5
+  animationEase: 7
+  buttonScaleEffect: 1.1
+  buttonPressScale: 0.95
+  buttonEffectDuration: 0.15
+  buttonPunchScale: 0.1
 --- !u!114 &5086937005823954312
 MonoBehaviour:
   m_ObjectHideFlags: 0

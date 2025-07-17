@@ -23,5 +23,14 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/_Bai_Hoan_Thien/DuaAi.unity
     guid: 5ba87aaad78d11e4093228a5a47ae793
+  - enabled: 1
+    path: Assets/Scenes/Cacto.unity
+    guid: 4ea4afde284cfb64e9a2bc70796070c0
+  - enabled: 1
+    path: Assets/_Thuan/aaaa.unity
+    guid: 24d3924f6959d264a90ecf966ecb8246
+  - enabled: 1
+    path: Assets/Scenes/OnlScene.unity
+    guid: 1859a1b88083c1d4b8dcf3f770359dc5
   m_configObjects:
     com.unity.addressableassets: {fileID: 11400000, guid: c6ca533da370b4f2794f0c63c45e0e6f, type: 2}

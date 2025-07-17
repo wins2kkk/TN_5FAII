@@ -4848,11 +4848,6 @@ MonoBehaviour:
   maximumSpeed: 140
   brakePower: 2000
   COM: {fileID: 2057051996}
-  normalGrip: 2.5
-  driftGrip: 0.8
-  frontWheelGrip: 3
-  rearWheelGrip: 2
-  speedMethod: 0
   carSpeed: 0
   carSpeedConverted: 0
   handBrakeEffects: 0
@@ -4869,6 +4864,9 @@ MonoBehaviour:
   - {fileID: 1433891919}
   - {fileID: 648878021}
   smokeEffects: []
+  carBody: {fileID: 0}
+  tiltAngle: 5
+  tiltSpeed: 5
   flipUpOffset: 3
   flipBackOffset: 5
   flipCooldown: 3
@@ -14168,11 +14166,6 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 400016732}
   m_Mesh: {fileID: 6225481373932061080, guid: 4e8a28938e1002c4cb222e32844ab845, type: 3}
---- !u!1 &409498542 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 7217794782582720872, guid: ecc3fee9738a3f041bb4f2f64728144c, type: 3}
-  m_PrefabInstance: {fileID: 1944195816}
-  m_PrefabAsset: {fileID: 0}
 --- !u!1 &422007263
 GameObject:
   m_ObjectHideFlags: 0
@@ -14820,17 +14813,6 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 428007963}
   m_Mesh: {fileID: 8667349096026222169, guid: 4e8a28938e1002c4cb222e32844ab845, type: 3}
---- !u!114 &431127361 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 82997914784218237, guid: ecc3fee9738a3f041bb4f2f64728144c, type: 3}
-  m_PrefabInstance: {fileID: 1944195816}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f4688fdb7df04437aeb418b961361dc5, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!1 &433072415
 GameObject:
   m_ObjectHideFlags: 0
@@ -56918,7 +56900,7 @@ PrefabInstance:
     - target: {fileID: 2057960, guid: 98e2b8a7d6de642f8ae08a3cbb957b7a, type: 3}
       propertyPath: m_TargetTexture
       value: 
-      objectReference: {fileID: 1499634130}
+      objectReference: {fileID: 1075863939}
     - target: {fileID: 2057960, guid: 98e2b8a7d6de642f8ae08a3cbb957b7a, type: 3}
       propertyPath: orthographic size
       value: 50.7
@@ -57901,6 +57883,44 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1075631917}
   m_CullTransparentMesh: 1
+--- !u!84 &1075863939
+RenderTexture:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: 
+  m_ImageContentsHash:
+    serializedVersion: 2
+    Hash: 00000000000000000000000000000000
+  m_ForcedFallbackFormat: 4
+  m_DownscaleFallback: 0
+  m_IsAlphaChannelOptional: 0
+  serializedVersion: 5
+  m_Width: 257
+  m_Height: 257
+  m_AntiAliasing: 1
+  m_MipCount: -1
+  m_DepthStencilFormat: 94
+  m_ColorFormat: 4
+  m_MipMap: 0
+  m_GenerateMips: 1
+  m_SRGB: 1
+  m_UseDynamicScale: 0
+  m_BindMS: 0
+  m_EnableCompatibleFormat: 1
+  m_EnableRandomWrite: 0
+  m_TextureSettings:
+    serializedVersion: 2
+    m_FilterMode: 1
+    m_Aniso: 1
+    m_MipBias: 0
+    m_WrapU: 1
+    m_WrapV: 1
+    m_WrapW: 1
+  m_Dimension: 2
+  m_VolumeDepth: 1
+  m_ShadowSamplingMode: 2
 --- !u!1 &1076636810
 GameObject:
   m_ObjectHideFlags: 0
@@ -61035,11 +61055,6 @@ MonoBehaviour:
   maximumSpeed: 200
   brakePower: 5000
   COM: {fileID: 1410019101}
-  normalGrip: 2.5
-  driftGrip: 0.8
-  frontWheelGrip: 3
-  rearWheelGrip: 2
-  speedMethod: 0
   carSpeed: 0
   carSpeedConverted: 0
   handBrakeEffects: 0
@@ -61058,6 +61073,9 @@ MonoBehaviour:
   smokeEffects:
   - {fileID: 2007024388}
   - {fileID: 505545162}
+  carBody: {fileID: 0}
+  tiltAngle: 5
+  tiltSpeed: 5
   flipUpOffset: 3
   flipBackOffset: 5
   flipCooldown: 3
@@ -61454,11 +61472,6 @@ MonoBehaviour:
   maximumSpeed: 250
   brakePower: 5000
   COM: {fileID: 723465818}
-  normalGrip: 2.5
-  driftGrip: 0.8
-  frontWheelGrip: 3
-  rearWheelGrip: 2
-  speedMethod: 0
   carSpeed: 0
   carSpeedConverted: 0
   handBrakeEffects: 0
@@ -61477,6 +61490,9 @@ MonoBehaviour:
   smokeEffects:
   - {fileID: 520987415}
   - {fileID: 906535046}
+  carBody: {fileID: 0}
+  tiltAngle: 5
+  tiltSpeed: 5
   flipUpOffset: 3
   flipBackOffset: 5
   flipCooldown: 3
@@ -62268,17 +62284,6 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1306630377}
   m_Mesh: {fileID: 4300004, guid: c5ba2f9267836b74095c5d860af51a34, type: 3}
---- !u!114 &1319894379 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 3774568438948598592, guid: ecc3fee9738a3f041bb4f2f64728144c, type: 3}
-  m_PrefabInstance: {fileID: 1944195816}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f4688fdb7df04437aeb418b961361dc5, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!1 &1327536219
 GameObject:
   m_ObjectHideFlags: 0
@@ -62433,11 +62438,6 @@ WheelCollider:
   m_LayerOverridePriority: 0
   m_Enabled: 1
   m_ProvidesContacts: 0
---- !u!1 &1344289406 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 6191508359159983752, guid: ecc3fee9738a3f041bb4f2f64728144c, type: 3}
-  m_PrefabInstance: {fileID: 1944195816}
-  m_PrefabAsset: {fileID: 0}
 --- !u!1 &1345420969
 GameObject:
   m_ObjectHideFlags: 0
@@ -68724,17 +68724,6 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1420700029}
   m_Mesh: {fileID: 4256302638816918394, guid: 4e8a28938e1002c4cb222e32844ab845, type: 3}
---- !u!114 &1421297928 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 3205314136411815916, guid: ecc3fee9738a3f041bb4f2f64728144c, type: 3}
-  m_PrefabInstance: {fileID: 1944195816}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f4688fdb7df04437aeb418b961361dc5, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!1 &1424057445
 GameObject:
   m_ObjectHideFlags: 0
@@ -69518,11 +69507,6 @@ MonoBehaviour:
   maximumSpeed: 80
   brakePower: 500
   COM: {fileID: 739311769}
-  normalGrip: 2.5
-  driftGrip: 0.8
-  frontWheelGrip: 3
-  rearWheelGrip: 2
-  speedMethod: 0
   carSpeed: 0
   carSpeedConverted: 0
   handBrakeEffects: 0
@@ -69537,6 +69521,9 @@ MonoBehaviour:
   skidMarkPrefab: {fileID: 0}
   skidWheelPositions: []
   smokeEffects: []
+  carBody: {fileID: 0}
+  tiltAngle: 5
+  tiltSpeed: 5
   flipUpOffset: 3
   flipBackOffset: 5
   flipCooldown: 3
@@ -70181,44 +70168,6 @@ Transform:
   - {fileID: 462085310}
   m_Father: {fileID: 349761990}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!84 &1499634130
-RenderTexture:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_Name: 
-  m_ImageContentsHash:
-    serializedVersion: 2
-    Hash: 00000000000000000000000000000000
-  m_ForcedFallbackFormat: 4
-  m_DownscaleFallback: 0
-  m_IsAlphaChannelOptional: 0
-  serializedVersion: 5
-  m_Width: 257
-  m_Height: 257
-  m_AntiAliasing: 1
-  m_MipCount: -1
-  m_DepthStencilFormat: 94
-  m_ColorFormat: 4
-  m_MipMap: 0
-  m_GenerateMips: 1
-  m_SRGB: 1
-  m_UseDynamicScale: 0
-  m_BindMS: 0
-  m_EnableCompatibleFormat: 1
-  m_EnableRandomWrite: 0
-  m_TextureSettings:
-    serializedVersion: 2
-    m_FilterMode: 1
-    m_Aniso: 1
-    m_MipBias: 0
-    m_WrapU: 1
-    m_WrapV: 1
-    m_WrapW: 1
-  m_Dimension: 2
-  m_VolumeDepth: 1
-  m_ShadowSamplingMode: 2
 --- !u!1 &1509744954
 GameObject:
   m_ObjectHideFlags: 0
@@ -71333,7 +71282,7 @@ PrefabInstance:
     - target: {fileID: 112506974450279631, guid: 9605c27108b94d84692a07422eb5dc90, type: 3}
       propertyPath: thongbao
       value: 
-      objectReference: {fileID: 431127361}
+      objectReference: {fileID: 0}
     - target: {fileID: 1076909786300000402, guid: 9605c27108b94d84692a07422eb5dc90, type: 3}
       propertyPath: lapText
       value: 
@@ -71341,11 +71290,11 @@ PrefabInstance:
     - target: {fileID: 1076909786300000402, guid: 9605c27108b94d84692a07422eb5dc90, type: 3}
       propertyPath: winPanel
       value: 
-      objectReference: {fileID: 409498542}
+      objectReference: {fileID: 1944195818}
     - target: {fileID: 1076909786300000402, guid: 9605c27108b94d84692a07422eb5dc90, type: 3}
       propertyPath: losePanel
       value: 
-      objectReference: {fileID: 1344289406}
+      objectReference: {fileID: 1944195819}
     - target: {fileID: 1076909786300000402, guid: 9605c27108b94d84692a07422eb5dc90, type: 3}
       propertyPath: timerText
       value: 
@@ -71365,11 +71314,11 @@ PrefabInstance:
     - target: {fileID: 1076909786300000402, guid: 9605c27108b94d84692a07422eb5dc90, type: 3}
       propertyPath: winResultText
       value: 
-      objectReference: {fileID: 1421297928}
+      objectReference: {fileID: 0}
     - target: {fileID: 1076909786300000402, guid: 9605c27108b94d84692a07422eb5dc90, type: 3}
       propertyPath: loseResultText
       value: 
-      objectReference: {fileID: 1319894379}
+      objectReference: {fileID: 0}
     - target: {fileID: 1076909786300000402, guid: 9605c27108b94d84692a07422eb5dc90, type: 3}
       propertyPath: waypointParent
       value: 
@@ -75624,6 +75573,9 @@ MonoBehaviour:
   loadingText: {fileID: 0}
   loadingPanel: {fileID: 0}
   minimumLoadTime: 2
+  bounceHeight: 10
+  bounceSpeed: 2
+  letterDelay: 0.1
 --- !u!114 &1739363177
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -75851,11 +75803,6 @@ MonoBehaviour:
   maximumSpeed: 140
   brakePower: 5000
   COM: {fileID: 1863727151}
-  normalGrip: 2.5
-  driftGrip: 0.8
-  frontWheelGrip: 3
-  rearWheelGrip: 2
-  speedMethod: 0
   carSpeed: 0
   carSpeedConverted: 0
   handBrakeEffects: 0
@@ -75876,6 +75823,9 @@ MonoBehaviour:
   smokeEffects:
   - {fileID: 254057996}
   - {fileID: 458855327}
+  carBody: {fileID: 0}
+  tiltAngle: 5
+  tiltSpeed: 5
   flipUpOffset: 3
   flipBackOffset: 5
   flipCooldown: 3
@@ -78531,7 +78481,7 @@ PrefabInstance:
     - target: {fileID: 3069812569693119344, guid: 2cf44cd31a859654fa0ee20b3c81b8cc, type: 3}
       propertyPath: faileText
       value: 
-      objectReference: {fileID: 431127361}
+      objectReference: {fileID: 0}
     - target: {fileID: 3069812569693119344, guid: 2cf44cd31a859654fa0ee20b3c81b8cc, type: 3}
       propertyPath: timerText
       value: 
@@ -84633,6 +84583,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 943420129149598176, guid: ecc3fee9738a3f041bb4f2f64728144c, type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 5176260445621031738, guid: ecc3fee9738a3f041bb4f2f64728144c, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
       value: 
@@ -84726,7 +84680,9 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
-    m_RemovedGameObjects: []
+    m_RemovedGameObjects:
+    - {fileID: 7217794782582720872, guid: ecc3fee9738a3f041bb4f2f64728144c, type: 3}
+    - {fileID: 6191508359159983752, guid: ecc3fee9738a3f041bb4f2f64728144c, type: 3}
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: ecc3fee9738a3f041bb4f2f64728144c, type: 3}
@@ -84741,6 +84697,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f4688fdb7df04437aeb418b961361dc5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!1 &1944195818 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 943420129149598176, guid: ecc3fee9738a3f041bb4f2f64728144c, type: 3}
+  m_PrefabInstance: {fileID: 1944195816}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1 &1944195819 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 5563494562916387677, guid: ecc3fee9738a3f041bb4f2f64728144c, type: 3}
+  m_PrefabInstance: {fileID: 1944195816}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &1947903532
 GameObject:
   m_ObjectHideFlags: 0
@@ -85611,11 +85577,6 @@ MonoBehaviour:
   maximumSpeed: 110
   brakePower: 5000
   COM: {fileID: 530789813}
-  normalGrip: 2.5
-  driftGrip: 0.8
-  frontWheelGrip: 3
-  rearWheelGrip: 2
-  speedMethod: 0
   carSpeed: 0
   carSpeedConverted: 0
   handBrakeEffects: 0
@@ -85630,6 +85591,9 @@ MonoBehaviour:
   skidMarkPrefab: {fileID: 0}
   skidWheelPositions: []
   smokeEffects: []
+  carBody: {fileID: 0}
+  tiltAngle: 5
+  tiltSpeed: 5
   flipUpOffset: 3
   flipBackOffset: 5
   flipCooldown: 3
@@ -85983,11 +85947,6 @@ MonoBehaviour:
   maximumSpeed: 130
   brakePower: 1000
   COM: {fileID: 366713692}
-  normalGrip: 2.5
-  driftGrip: 0.8
-  frontWheelGrip: 3
-  rearWheelGrip: 2
-  speedMethod: 0
   carSpeed: 0
   carSpeedConverted: 0
   handBrakeEffects: 0
@@ -86002,6 +85961,9 @@ MonoBehaviour:
   skidMarkPrefab: {fileID: 0}
   skidWheelPositions: []
   smokeEffects: []
+  carBody: {fileID: 0}
+  tiltAngle: 5
+  tiltSpeed: 5
   flipUpOffset: 3
   flipBackOffset: 5
   flipCooldown: 3

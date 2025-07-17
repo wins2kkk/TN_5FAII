@@ -7,7 +7,7 @@ using PlayFab.ClientModels;
 using UnityEngine.UI;
 using System;
 
-public class UserInfoDisplay : MonoBehaviour
+public class UserInfor : MonoBehaviour
 {
     public TextMeshProUGUI displayNameText;
     public TextMeshProUGUI playerIdText;

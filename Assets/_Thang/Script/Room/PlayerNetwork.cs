@@ -2,7 +2,7 @@
 using UnityEngine;
 using System.Collections;
 
-public class PlayerNetwork : NetworkBehaviour
+public class PlayerNetworkkẻ : NetworkBehaviour
 {
     [Networked] public string PlayerName { get; set; }
     private bool nameSent = false;
@@ -13,13 +13,13 @@ public class PlayerNetwork : NetworkBehaviour
         if (Object.HasInputAuthority)
         {
             // Đăng ký event để nhận thông báo khi tên sẵn sàng
-            UserInfoDisplay.OnDisplayNameReady += OnDisplayNameReady;
+            UserInfor.OnDisplayNameReady += OnDisplayNameReady;
 
             // Kiểm tra xem tên đã sẵn sàng chưa
-            if (!string.IsNullOrEmpty(UserInfoDisplay.displayNameCached) &&
-                UserInfoDisplay.displayNameCached != "Người chơi")
+            if (!string.IsNullOrEmpty(UserInfor.displayNameCached) &&
+                UserInfor.displayNameCached != "Người chơi")
             {
-                RPC_SendNameToHost(UserInfoDisplay.displayNameCached);
+                RPC_SendNameToHost(UserInfor.displayNameCached);
                 nameSent = true;
             }
             else
@@ -45,10 +45,10 @@ public class PlayerNetwork : NetworkBehaviour
         float timeout = 10f;
         while (timeout > 0 && !nameSent)
         {
-            if (!string.IsNullOrEmpty(UserInfoDisplay.displayNameCached) &&
-                UserInfoDisplay.displayNameCached != "Người chơi")
+            if (!string.IsNullOrEmpty(UserInfor.displayNameCached) &&
+                UserInfor.displayNameCached != "Người chơi")
             {
-                RPC_SendNameToHost(UserInfoDisplay.displayNameCached);
+                RPC_SendNameToHost(UserInfor.displayNameCached);
                 nameSent = true;
                 break;
             }
@@ -68,7 +68,7 @@ public class PlayerNetwork : NetworkBehaviour
     public override void Despawned(NetworkRunner runner, bool hasState)
     {
         // Hủy đăng ký event khi object bị destroy
-        UserInfoDisplay.OnDisplayNameReady -= OnDisplayNameReady;
+        UserInfor.OnDisplayNameReady -= OnDisplayNameReady;
     }
 
     [Rpc(RpcSources.InputAuthority, RpcTargets.StateAuthority)]

@@ -158,7 +158,7 @@ public class AccountSettingsPanel : MonoBehaviour
         Debug.Log("Lưu thành công!");
 
         // Tự động cập nhật UI ngoài nếu tồn tại
-        UserInfoDisplay infoDisplay = FindObjectOfType<UserInfoDisplay>();
+        UserInfor infoDisplay = FindObjectOfType<UserInfor>();
         if (infoDisplay != null)
         {
             infoDisplay.RefreshUserInfo();

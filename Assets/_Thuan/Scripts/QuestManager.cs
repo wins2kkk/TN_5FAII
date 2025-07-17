@@ -4,6 +4,7 @@ using TMPro;
 using UnityEngine.SceneManagement;
 using System.Collections;
 using UnityEngine.EventSystems;
+using DG.Tweening;
 
 public class QuestManager : MonoBehaviour
 {
@@ -13,6 +14,7 @@ public class QuestManager : MonoBehaviour
     public GameObject PanelQuest;
     public GameObject QuestlogoPanel;
     public GameObject PanelSucces;
+    public GameObject PanelFaile;
     public TextMeshProUGUI descriptionText;
     public TextMeshProUGUI questNametext;
     public Button acceptButton;
@@ -25,14 +27,13 @@ public class QuestManager : MonoBehaviour
 
     [Header("Animation Settings")]
     public float animationDuration = 0.5f;
-    public AnimationCurve animationCurve = AnimationCurve.EaseInOut(0, 0, 1, 1);
+    public Ease animationEase = Ease.InOutQuad;
 
     [Header("Button Effect Settings")]
     public float buttonScaleEffect = 1.1f;
     public float buttonPressScale = 0.95f;
     public float buttonEffectDuration = 0.15f;
-    public Color buttonHoverColor = new Color(1f, 1f, 1f, 0.9f);
-    public Color buttonPressColor = new Color(0.8f, 0.8f, 0.8f, 1f);
+    public float buttonPunchScale = 0.1f;
 
     [Header("Quest Data - Được giữ lại")]
     private QuestData currentQuest;
@@ -40,7 +41,6 @@ public class QuestManager : MonoBehaviour
     private bool questActive = false;
     private bool isAnimating = false;
 
-    // Lưu vị trí ban đầu của QuestlogoPanel
     private Vector3 originalPanelPosition;
     private Vector3 hiddenPanelPosition;
 
@@ -72,7 +72,7 @@ public class QuestManager : MonoBehaviour
         FindUIReferences();
         SetupUI();
         SetupAnimationPositions();
-        SetupButtonEffects(); // Thêm setup hiệu ứng button
+        SetupButtonEffects();
     }
 
     private IEnumerator DelayedSetup()
@@ -84,11 +84,9 @@ public class QuestManager : MonoBehaviour
         FindUIReferences();
         SetupUI();
         SetupAnimationPositions();
-        SetupButtonEffects(); // Thêm setup hiệu ứng button
+        SetupButtonEffects();
     }
 
-    // 🎨 BUTTON EFFECTS - Hiệu ứng đẹp cho các nút bấm
-    // 🎨 BUTTON EFFECTS - Hiệu ứng đẹp cho các nút bấm (FIXED VERSION)
     private void SetupButtonEffects()
     {
         SetupButtonEffect(acceptButton, "Accept");
@@ -101,44 +99,26 @@ public class QuestManager : MonoBehaviour
     {
         if (button == null) return;
 
-        // Lưu lại scale ban đầu của button
         button.transform.localScale = Vector3.one;
 
-        // Thêm EventTrigger để xử lý các sự kiện hover và press
         EventTrigger eventTrigger = button.gameObject.GetComponent<EventTrigger>();
         if (eventTrigger == null)
         {
             eventTrigger = button.gameObject.AddComponent<EventTrigger>();
         }
 
-        // Clear existing triggers
         eventTrigger.triggers.Clear();
 
-        // Hover Enter Effect
-        EventTrigger.Entry hoverEnter = new EventTrigger.Entry();
-        hoverEnter.eventID = EventTriggerType.PointerEnter;
-        hoverEnter.callback.AddListener((data) => { StartCoroutine(ButtonHoverEffect(button, true)); });
-        eventTrigger.triggers.Add(hoverEnter);
-
-        // Hover Exit Effect
-        EventTrigger.Entry hoverExit = new EventTrigger.Entry();
-        hoverExit.eventID = EventTriggerType.PointerExit;
-        hoverExit.callback.AddListener((data) => { StartCoroutine(ButtonHoverEffect(button, false)); });
-        eventTrigger.triggers.Add(hoverExit);
-
-        // Press Down Effect
         EventTrigger.Entry pressDown = new EventTrigger.Entry();
         pressDown.eventID = EventTriggerType.PointerDown;
         pressDown.callback.AddListener((data) => { StartCoroutine(ButtonPressEffect(button, true)); });
         eventTrigger.triggers.Add(pressDown);
 
-        // Press Up Effect
         EventTrigger.Entry pressUp = new EventTrigger.Entry();
         pressUp.eventID = EventTriggerType.PointerUp;
         pressUp.callback.AddListener((data) => { StartCoroutine(ButtonPressEffect(button, false)); });
         eventTrigger.triggers.Add(pressUp);
 
-        // Click Effect với âm thanh và rung
         EventTrigger.Entry click = new EventTrigger.Entry();
         click.eventID = EventTriggerType.PointerClick;
         click.callback.AddListener((data) => { StartCoroutine(ButtonClickEffect(button, buttonName)); });
@@ -147,236 +127,87 @@ public class QuestManager : MonoBehaviour
         Debug.Log($"✅ Button effects setup for: {buttonName}");
     }
 
-    // FIXED: Hiệu ứng hover với scale cố định
-    private IEnumerator ButtonHoverEffect(Button button, bool isHovering)
-    {
-        if (button == null) yield break;
-
-        Image buttonImage = button.GetComponent<Image>();
-        Transform buttonTransform = button.transform;
-
-        // FIXED: Đảm bảo scale luôn bắt đầu từ 1f
-        float startScale = 1f;
-        float targetScale = isHovering ? buttonScaleEffect : 1f;
-
-        Color startColor = buttonImage != null ? buttonImage.color : Color.white;
-        Color targetColor = isHovering ? buttonHoverColor : Color.white;
-
-        float elapsedTime = 0f;
-        float duration = buttonEffectDuration;
-
-        while (elapsedTime < duration)
-        {
-            elapsedTime += Time.deltaTime;
-            float progress = elapsedTime / duration;
-
-            // Smooth scale animation
-            float currentScale = Mathf.Lerp(startScale, targetScale, progress);
-            buttonTransform.localScale = Vector3.one * currentScale;
-
-            // Smooth color transition
-            if (buttonImage != null)
-            {
-                buttonImage.color = Color.Lerp(startColor, targetColor, progress);
-            }
-
-            yield return null;
-        }
-
-        // Ensure final values
-        buttonTransform.localScale = Vector3.one * targetScale;
-        if (buttonImage != null)
-        {
-            buttonImage.color = targetColor;
-        }
-    }
-
-    // FIXED: Hiệu ứng press với logic cải tiến
     private IEnumerator ButtonPressEffect(Button button, bool isPressed)
     {
         if (button == null) yield break;
 
         Transform buttonTransform = button.transform;
-        Image buttonImage = button.GetComponent<Image>();
+        float targetScale = isPressed ? buttonPressScale : 1f;
 
-        // FIXED: Logic scale rõ ràng hơn
-        float startScale = buttonTransform.localScale.x;
-        float targetScale;
-
-        if (isPressed)
-        {
-            targetScale = buttonPressScale; // Thu nhỏ khi nhấn
-        }
-        else
-        {
-            // Khi nhả ra, về lại trạng thái hover (nếu đang hover) hoặc normal
-            targetScale = buttonScaleEffect; // Giả sử đang hover
-        }
-
-        Color startColor = buttonImage != null ? buttonImage.color : Color.white;
-        Color targetColor = isPressed ? buttonPressColor : buttonHoverColor;
-
-        float elapsedTime = 0f;
-        float duration = buttonEffectDuration * 0.5f; // Faster press effect
-
-        while (elapsedTime < duration)
-        {
-            elapsedTime += Time.deltaTime;
-            float progress = elapsedTime / duration;
-
-            float currentScale = Mathf.Lerp(startScale, targetScale, progress);
-            buttonTransform.localScale = Vector3.one * currentScale;
-
-            if (buttonImage != null)
-            {
-                buttonImage.color = Color.Lerp(startColor, targetColor, progress);
-            }
-
-            yield return null;
-        }
-
-        buttonTransform.localScale = Vector3.one * targetScale;
-        if (buttonImage != null)
-        {
-            buttonImage.color = targetColor;
-        }
+        yield return buttonTransform.DOScale(targetScale, buttonEffectDuration * 0.5f)
+            .SetEase(animationEase)
+            .WaitForCompletion();
     }
 
-    // FIXED: Hiệu ứng click với reset về trạng thái bình thường
     private IEnumerator ButtonClickEffect(Button button, string buttonName)
     {
         if (button == null) yield break;
 
-        // Tạo hiệu ứng rung nhẹ
 #if UNITY_ANDROID || UNITY_IOS
-    Handheld.Vibrate();
+        Handheld.Vibrate();
 #endif
 
-        // Tạo hiệu ứng bounce
         Transform buttonTransform = button.transform;
-        Vector3 normalScale = Vector3.one; // FIXED: Về scale bình thường sau click
 
-        // Bounce effect
-        float bounceScale = buttonScaleEffect * 1.2f;
-        float bounceTime = 0.1f;
+        yield return buttonTransform.DOPunchScale(Vector3.one * buttonPunchScale, buttonEffectDuration, 2, 0.5f)
+            .SetEase(Ease.InOutSine)
+            .WaitForCompletion();
 
-        // Scale up quickly
-        float elapsedTime = 0f;
-        while (elapsedTime < bounceTime)
-        {
-            elapsedTime += Time.deltaTime;
-            float progress = elapsedTime / bounceTime;
-            float currentScale = Mathf.Lerp(1f, bounceScale, progress);
-            buttonTransform.localScale = Vector3.one * currentScale;
-            yield return null;
-        }
+        buttonTransform.localScale = Vector3.one;
 
-        // Scale back down to normal (not hover state)
-        elapsedTime = 0f;
-        while (elapsedTime < bounceTime)
-        {
-            elapsedTime += Time.deltaTime;
-            float progress = elapsedTime / bounceTime;
-            float currentScale = Mathf.Lerp(bounceScale, 1f, progress);
-            buttonTransform.localScale = Vector3.one * currentScale;
-            yield return null;
-        }
-
-        // FIXED: Đảm bảo về scale bình thường
-        buttonTransform.localScale = normalScale;
-
-        // Reset màu về bình thường
-        Image buttonImage = button.GetComponent<Image>();
-        if (buttonImage != null)
-        {
-            buttonImage.color = Color.white;
-        }
-
-        // Tạo hiệu ứng particle hoặc glow (optional)
         CreateClickParticles(button.transform.position);
 
         Debug.Log($"🎉 Button clicked with effects: {buttonName}");
     }
 
-    // THÊM: Phương thức reset button về trạng thái bình thường
     public void ResetButtonToNormal(Button button)
     {
         if (button == null) return;
 
         button.transform.localScale = Vector3.one;
-
-        Image buttonImage = button.GetComponent<Image>();
-        if (buttonImage != null)
-        {
-            buttonImage.color = Color.white;
-        }
     }
 
-    // THÊM: Reset tất cả button về trạng thái bình thường
     public void ResetAllButtonsToNormal()
     {
         ResetButtonToNormal(acceptButton);
         ResetButtonToNormal(declineButton);
         ResetButtonToNormal(openQuestButton);
         ResetButtonToNormal(HuyNV);
-    } 
+    }
 
-    // Tạo hiệu ứng particle khi click (optional)
     private void CreateClickParticles(Vector3 position)
     {
-        // Tạo hiệu ứng đơn giản với GameObject tạm thời
         GameObject effect = new GameObject("ClickEffect");
         effect.transform.position = position;
-
-        // Thêm hiệu ứng đơn giản
         StartCoroutine(SimpleClickEffect(effect));
     }
 
     private IEnumerator SimpleClickEffect(GameObject effect)
     {
-        // Tạo hiệu ứng đơn giản - có thể thay thế bằng particle system
         float duration = 0.5f;
-        float elapsedTime = 0f;
-
-        while (elapsedTime < duration)
-        {
-            elapsedTime += Time.deltaTime;
-            // Hiệu ứng có thể được mở rộng ở đây
-            yield return null;
-        }
-
+        yield return new WaitForSeconds(duration);
         Destroy(effect);
     }
 
-    // Hiệu ứng đặc biệt cho nút Accept
     private IEnumerator AcceptButtonSpecialEffect()
     {
         if (acceptButton == null) yield break;
 
-        // Tạo hiệu ứng đặc biệt cho nút Accept
         Image buttonImage = acceptButton.GetComponent<Image>();
         if (buttonImage != null)
         {
             Color originalColor = buttonImage.color;
             Color specialColor = Color.green;
 
-            float effectDuration = 0.3f;
-            float elapsedTime = 0f;
-
-            // Glow effect
-            while (elapsedTime < effectDuration)
-            {
-                elapsedTime += Time.deltaTime;
-                float progress = Mathf.PingPong(elapsedTime * 4f, 1f);
-                buttonImage.color = Color.Lerp(originalColor, specialColor, progress * 0.3f);
-                yield return null;
-            }
+            yield return buttonImage.DOColor(specialColor, 0.3f)
+                .SetLoops(4, LoopType.Yoyo)
+                .SetEase(Ease.InOutSine)
+                .WaitForCompletion();
 
             buttonImage.color = originalColor;
         }
     }
 
-    // Hiệu ứng đặc biệt cho nút Decline
     private IEnumerator DeclineButtonSpecialEffect()
     {
         if (declineButton == null) yield break;
@@ -387,16 +218,10 @@ public class QuestManager : MonoBehaviour
             Color originalColor = buttonImage.color;
             Color specialColor = Color.red;
 
-            float effectDuration = 0.3f;
-            float elapsedTime = 0f;
-
-            while (elapsedTime < effectDuration)
-            {
-                elapsedTime += Time.deltaTime;
-                float progress = Mathf.PingPong(elapsedTime * 4f, 1f);
-                buttonImage.color = Color.Lerp(originalColor, specialColor, progress * 0.3f);
-                yield return null;
-            }
+            yield return buttonImage.DOColor(specialColor, 0.3f)
+                .SetLoops(4, LoopType.Yoyo)
+                .SetEase(Ease.InOutSine)
+                .WaitForCompletion();
 
             buttonImage.color = originalColor;
         }
@@ -409,10 +234,7 @@ public class QuestManager : MonoBehaviour
             RectTransform panelRect = QuestlogoPanel.GetComponent<RectTransform>();
             if (panelRect != null)
             {
-                // Lưu vị trí ban đầu
                 originalPanelPosition = panelRect.anchoredPosition;
-
-                // Tạo vị trí ẩn (trên màn hình) - sử dụng Canvas height thay vì Screen height
                 Canvas canvas = panelRect.GetComponentInParent<Canvas>();
                 float canvasHeight = canvas != null ? canvas.GetComponent<RectTransform>().rect.height : Screen.height;
 
@@ -443,6 +265,11 @@ public class QuestManager : MonoBehaviour
         if (PanelSucces == null)
         {
             PanelSucces = GameObject.Find("PanelSucces") ?? FindInactiveGameObject("PanelSucces");
+        }
+
+        if (PanelFaile == null)
+        {
+            PanelFaile = GameObject.Find("PanelFaile") ?? FindInactiveGameObject("PanelFaile");
         }
 
         FindTextComponent(ref descriptionText, "DescriptionText", "Description Text", "Desc Text");
@@ -477,7 +304,6 @@ public class QuestManager : MonoBehaviour
         foreach (string name in possibleNames)
         {
             GameObject obj = GameObject.Find(name) ?? FindInactiveGameObject(name);
-
             if (obj != null)
             {
                 component = obj.GetComponent<TextMeshProUGUI>();
@@ -493,7 +319,6 @@ public class QuestManager : MonoBehaviour
         foreach (string name in possibleNames)
         {
             GameObject obj = GameObject.Find(name) ?? FindInactiveGameObject(name);
-
             if (obj != null)
             {
                 component = obj.GetComponent<Button>();
@@ -509,6 +334,9 @@ public class QuestManager : MonoBehaviour
 
         if (PanelSucces != null)
             PanelSucces.SetActive(false);
+
+        if (PanelFaile != null)
+            PanelFaile.SetActive(false);
 
         if (QuestlogoPanel != null)
             QuestlogoPanel.SetActive(false);
@@ -535,13 +363,13 @@ public class QuestManager : MonoBehaviour
 
     private IEnumerator DelayedAcceptQuest()
     {
-        yield return new WaitForSeconds(0.2f); // Đợi hiệu ứng hoàn thành
+        yield return new WaitForSeconds(0.2f);
         AcceptQuest();
     }
 
     private IEnumerator DelayedDeclineQuest()
     {
-        yield return new WaitForSeconds(0.2f); // Đợi hiệu ứng hoàn thành
+        yield return new WaitForSeconds(0.2f);
         HideQuestLogoPanelWithAnimation();
     }
 
@@ -584,13 +412,34 @@ public class QuestManager : MonoBehaviour
             descriptionText.text = quest.description + "\nThưởng: " + quest.coinReward + " coin\nThời gian: " + quest.timeLimit + "s";
 
         if (PanelQuest != null)
+        {
             PanelQuest.SetActive(true);
+            CanvasGroup canvasGroup = PanelQuest.GetComponent<CanvasGroup>();
+            if (canvasGroup == null)
+            {
+                canvasGroup = PanelQuest.AddComponent<CanvasGroup>();
+            }
+            canvasGroup.alpha = 0f;
+            canvasGroup.DOFade(1f, animationDuration).SetEase(animationEase);
+        }
     }
 
     public void HideQuestPopup()
     {
         if (PanelQuest != null)
-            PanelQuest.SetActive(false);
+        {
+            CanvasGroup canvasGroup = PanelQuest.GetComponent<CanvasGroup>();
+            if (canvasGroup != null)
+            {
+                canvasGroup.DOFade(0f, animationDuration)
+                    .SetEase(animationEase)
+                    .OnComplete(() => PanelQuest.SetActive(false));
+            }
+            else
+            {
+                PanelQuest.SetActive(false);
+            }
+        }
     }
 
     private void AcceptQuest()
@@ -599,74 +448,49 @@ public class QuestManager : MonoBehaviour
         StartQuest();
     }
 
-    // 🎨 ANIMATION METHODS - Phương thức tạo hiệu ứng đẹp
     public void ShowQuestLogoPanelWithAnimation()
     {
         if (isAnimating || QuestlogoPanel == null) return;
 
-        StartCoroutine(ShowPanelAnimation());
+        isAnimating = true;
+
+        RectTransform panelRect = QuestlogoPanel.GetComponent<RectTransform>();
+        if (panelRect == null)
+        {
+            isAnimating = false;
+            return;
+        }
+
+        CanvasGroup canvasGroup = QuestlogoPanel.GetComponent<CanvasGroup>();
+        if (canvasGroup == null)
+        {
+            canvasGroup = QuestlogoPanel.AddComponent<CanvasGroup>();
+        }
+
+        QuestlogoPanel.SetActive(true);
+        canvasGroup.alpha = 0f;
+        panelRect.anchoredPosition = hiddenPanelPosition;
+
+        Sequence sequence = DOTween.Sequence();
+        sequence.Append(canvasGroup.DOFade(1f, animationDuration).SetEase(animationEase))
+               .Join(panelRect.DOAnchorPos(originalPanelPosition, animationDuration).SetEase(animationEase))
+               .OnComplete(() => isAnimating = false);
+
+        Debug.Log("✅ Quest logo panel showed with DOTween animation");
     }
 
     public void HideQuestLogoPanelWithAnimation()
     {
         if (isAnimating || QuestlogoPanel == null) return;
 
-        StartCoroutine(HidePanelAnimation());
-    }
-
-    private IEnumerator ShowPanelAnimation()
-    {
         isAnimating = true;
 
         RectTransform panelRect = QuestlogoPanel.GetComponent<RectTransform>();
-        if (panelRect == null) yield break;
-
-        // Kích hoạt panel và đặt ở vị trí ẩn
-        QuestlogoPanel.SetActive(true);
-        panelRect.anchoredPosition = hiddenPanelPosition;
-
-        // Tạo hiệu ứng fade in cho alpha
-        CanvasGroup canvasGroup = QuestlogoPanel.GetComponent<CanvasGroup>();
-        if (canvasGroup == null)
+        if (panelRect == null)
         {
-            canvasGroup = QuestlogoPanel.AddComponent<CanvasGroup>();
+            isAnimating = false;
+            return;
         }
-        canvasGroup.alpha = 0f;
-
-        // Animation slide xuống và fade in
-        float elapsedTime = 0f;
-        Vector3 startPos = hiddenPanelPosition;
-        Vector3 endPos = originalPanelPosition;
-
-        while (elapsedTime < animationDuration)
-        {
-            elapsedTime += Time.deltaTime;
-            float progress = elapsedTime / animationDuration;
-
-            // Sử dụng animation curve để tạo chuyển động mượt mà
-            float easedProgress = animationCurve.Evaluate(progress);
-
-            // Lerp vị trí và alpha
-            panelRect.anchoredPosition = Vector3.Lerp(startPos, endPos, easedProgress);
-            canvasGroup.alpha = Mathf.Lerp(0f, 1f, easedProgress);
-
-            yield return null;
-        }
-
-        // Đảm bảo đặt đúng vị trí cuối
-        panelRect.anchoredPosition = endPos;
-        canvasGroup.alpha = 1f;
-
-        isAnimating = false;
-        Debug.Log("✅ Quest logo panel showed with animation");
-    }
-
-    private IEnumerator HidePanelAnimation()
-    {
-        isAnimating = true;
-
-        RectTransform panelRect = QuestlogoPanel.GetComponent<RectTransform>();
-        if (panelRect == null) yield break;
 
         CanvasGroup canvasGroup = QuestlogoPanel.GetComponent<CanvasGroup>();
         if (canvasGroup == null)
@@ -674,31 +498,16 @@ public class QuestManager : MonoBehaviour
             canvasGroup = QuestlogoPanel.AddComponent<CanvasGroup>();
         }
 
-        // Animation slide lên và fade out
-        float elapsedTime = 0f;
-        Vector3 startPos = originalPanelPosition;
-        Vector3 endPos = hiddenPanelPosition;
-
-        while (elapsedTime < animationDuration)
-        {
-            elapsedTime += Time.deltaTime;
-            float progress = elapsedTime / animationDuration;
-
-            float easedProgress = animationCurve.Evaluate(progress);
-
-            panelRect.anchoredPosition = Vector3.Lerp(startPos, endPos, easedProgress);
-            canvasGroup.alpha = Mathf.Lerp(1f, 0f, easedProgress);
-
-            yield return null;
-        }
-
-        // Ẩn panel
-        QuestlogoPanel.SetActive(false);
-        panelRect.anchoredPosition = originalPanelPosition;
-        canvasGroup.alpha = 1f;
-
-        isAnimating = false;
-        Debug.Log("✅ Quest logo panel hidden with animation");
+        Sequence sequence = DOTween.Sequence();
+        sequence.Append(canvasGroup.DOFade(0f, animationDuration).SetEase(animationEase))
+               .Join(panelRect.DOAnchorPos(hiddenPanelPosition, animationDuration).SetEase(animationEase))
+               .OnComplete(() => {
+                   QuestlogoPanel.SetActive(false);
+                   panelRect.anchoredPosition = originalPanelPosition;
+                   canvasGroup.alpha = 1f;
+                   isAnimating = false;
+                   Debug.Log("✅ Quest logo panel hidden with DOTween animation");
+               });
     }
 
     private void StartQuest()
@@ -796,7 +605,6 @@ public class QuestManager : MonoBehaviour
         SceneManager.LoadScene("Loading");
     }
 
-    // 🎨 Phương thức này thay thế cho AcpQuestlogo cũ
     public void AcpQuestlogo()
     {
         if (QuestlogoPanel == null || PanelQuest == null)
@@ -805,7 +613,6 @@ public class QuestManager : MonoBehaviour
             return;
         }
 
-        // Sử dụng animation thay vì SetActive trực tiếp
         ShowQuestLogoPanelWithAnimation();
 
         if (PanelQuest != null)
@@ -824,19 +631,33 @@ public class QuestManager : MonoBehaviour
             HuyNV.gameObject.SetActive(false);
 
         if (CoinManager.Instance != null)
-        {
             CoinManager.Instance.AddCoins(currentQuest.coinReward);
 
-            if (successRewardText != null)
-            {
-                successRewardText.text = "Nhiệm vụ hoàn thành bạn đã nhận được " + currentQuest.coinReward + " coin!";
-            }
-
-            if (PanelSucces != null)
-                PanelSucces.SetActive(true);
-
-            StartCoroutine(HideSuccessPanel());
+        if (successRewardText != null)
+        {
+            successRewardText.text = +currentQuest.coinReward + " coin!";
+            successRewardText.gameObject.SetActive(true);
         }
+
+        if (PanelSucces != null)
+        {
+            PanelSucces.SetActive(true);
+            CanvasGroup canvasGroup = PanelSucces.GetComponent<CanvasGroup>();
+            if (canvasGroup == null)
+            {
+                canvasGroup = PanelSucces.AddComponent<CanvasGroup>();
+            }
+            canvasGroup.alpha = 0f;
+            canvasGroup.DOFade(1f, animationDuration).SetEase(Ease.OutSine);
+        }
+
+        if (PanelFaile != null)
+            PanelFaile.SetActive(false);
+
+        if (faileText != null)
+            faileText.gameObject.SetActive(false);
+
+        StartCoroutine(HideSuccessPanel());
     }
 
     public void FailQuest(string reason)
@@ -849,20 +670,30 @@ public class QuestManager : MonoBehaviour
 
         if (timerText != null)
             timerText.gameObject.SetActive(false);
-
         if (HuyNV != null)
             HuyNV.gameObject.SetActive(false);
 
         WaypointManager.Instance?.RemoveWaypoint();
 
-        if (PanelSucces != null)
-            PanelSucces.SetActive(true);
-
-        if (faileText != null)
+        if (PanelFaile != null)
         {
-            faileText.text = reason;
-            faileText.gameObject.SetActive(true);
+            PanelFaile.SetActive(true);
+            CanvasGroup canvasGroup = PanelFaile.GetComponent<CanvasGroup>();
+            if (canvasGroup == null)
+            {
+                canvasGroup = PanelFaile.AddComponent<CanvasGroup>();
+            }
+            canvasGroup.alpha = 0f;
+            canvasGroup.DOFade(1f, animationDuration).SetEase(Ease.OutSine);
         }
+
+        if (PanelSucces != null)
+            PanelSucces.SetActive(false);
+
+        if (successRewardText != null)
+            successRewardText.gameObject.SetActive(false);
+        if (faileText != null)
+            faileText.gameObject.SetActive(false);
 
         StartCoroutine(HideSuccessPanel());
     }
@@ -883,15 +714,39 @@ public class QuestManager : MonoBehaviour
         yield return new WaitForSeconds(2f);
 
         if (PanelSucces != null)
-            PanelSucces.SetActive(false);
+        {
+            CanvasGroup canvasGroup = PanelSucces.GetComponent<CanvasGroup>();
+            if (canvasGroup != null)
+            {
+                yield return canvasGroup.DOFade(0f, animationDuration)
+                    .SetEase(Ease.InSine)
+                    .OnComplete(() => PanelSucces.SetActive(false))
+                    .WaitForCompletion();
+            }
+            else
+            {
+                PanelSucces.SetActive(false);
+            }
+        }
 
         if (successRewardText != null)
             successRewardText.text = "";
 
-        if (faileText != null)
+        yield return new WaitForSeconds(2f);
+        if (PanelFaile != null)
         {
-            faileText.text = "";
-            faileText.gameObject.SetActive(false);
+            CanvasGroup canvasGroup = PanelFaile.GetComponent<CanvasGroup>();
+            if (canvasGroup != null)
+            {
+                yield return canvasGroup.DOFade(0f, animationDuration)
+                    .SetEase(Ease.InSine)
+                    .OnComplete(() => PanelFaile.SetActive(false))
+                    .WaitForCompletion();
+            }
+            else
+            {
+                PanelFaile.SetActive(false);
+            }
         }
     }
 
@@ -911,4 +766,4 @@ public class QuestManager : MonoBehaviour
             }
         }
     }
-}   
+}
