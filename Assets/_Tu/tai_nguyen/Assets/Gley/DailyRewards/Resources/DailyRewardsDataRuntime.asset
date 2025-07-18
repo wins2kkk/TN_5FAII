@@ -16,10 +16,10 @@ MonoBehaviour:
   calendarPrefab: {fileID: 1869782733140482, guid: de2046ad0284858438d0fa15bfdb6e31, type: 3}
   calendarCanvas: {fileID: 1072201933520926, guid: f0fb663a072a5c345bb1a5426202ac18, type: 3}
   availableAtStart: 1
-  resetAtEnd: 0
-  hours: 0
+  resetAtEnd: 1
+  hours: 24
   minutes: 0
-  seconds: 19
+  seconds: 0
   allDays:
   - dayTexture: {fileID: 21300000, guid: bafa0fb070a641d468ef61990cc20496, type: 3}
     rewardValue: 500
@@ -34,6 +34,6 @@ MonoBehaviour:
   - dayTexture: {fileID: 21300000, guid: bafa0fb070a641d468ef61990cc20496, type: 3}
     rewardValue: 1000
   - dayTexture: {fileID: 21300000, guid: bafa0fb070a641d468ef61990cc20496, type: 3}
-    rewardValue: 1500
+    rewardValue: 3000
   usePlaymaker: 0
   useUVS: 0

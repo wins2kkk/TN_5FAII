@@ -79,13 +79,13 @@ namespace Gley.DailyRewards.Internal
         {
             if (!CalendarManager.Instance.TimeExpired())
             {
-                subtitleText.text = "Your reward is ready in:";
+                subtitleText.text = "Phần thưởng của bạn sẽ sẵn sàng sau:";
                 remainingTime.text = CalendarManager.Instance.GetRemainingTime();
             }
             else
             {
-                subtitleText.text = "Your reward is ready";
-                remainingTime.text = "Open Now";
+                subtitleText.text = "Bạn đã sẵn sàng chưa";
+                remainingTime.text = "MỞ";
                 Refresh(currentDay, true);
             }
         }
@@ -96,7 +96,7 @@ namespace Gley.DailyRewards.Internal
         /// </summary>
         public void ClosePopup()
         {
-            GetComponent<Animator>().SetTrigger("Close");
+            GetComponent<Animator>().SetTrigger("C");
             AnimatorStateInfo info = GetComponent<Animator>().GetCurrentAnimatorStateInfo(0);
             Destroy(gameObject.transform.parent.gameObject, info.length + 0.1f);
         }

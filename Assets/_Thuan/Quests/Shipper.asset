@@ -15,6 +15,7 @@ MonoBehaviour:
   questName: "V\u1EADn chuy\u1EC3n \u0111\u1ED3"
   questType: 1
   timeLimit: 60
-  coinReward: 60
+  coinReward: 200
   description: "T\u1EDBi V\u1ECB tr\xED tr\xEAn b\u1EA3n \u0111\u1ED3 l\u1EA5y h\xE0ng
     v\xE0 t\u1EDBi v\u1ECB tr\xED ti\u1EBFp theo"
+  lapCount: 3

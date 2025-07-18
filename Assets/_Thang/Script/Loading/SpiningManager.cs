@@ -3,16 +3,18 @@ using UnityEngine;
 using TMPro;
 using UnityEngine.UI;
 using System;
+using System.Collections.Generic;
+using PlayFab;
+using PlayFab.ClientModels;
 
 public class SpiningManager : MonoBehaviour
 {
     public GameObject wheelPanel;
     public Button spinButton;
     public Button adButton;
-    public Button freeSpinButton; // Nút nhận lượt quay miễn phí
+    public Button freeSpinButton;
     public TMP_Text winText;
-    public TMP_Text countdownText; // Text hiển thị thời gian còn lại
-    
+    public TMP_Text countdownText;
 
     [Header("Danh sách phần thưởng (coins)")]
     public int[] PrizeCoins = { 300, 100, 500, 100, 100, 200, 100, 200 };
@@ -26,7 +28,7 @@ public class SpiningManager : MonoBehaviour
 
     private int randVal;
     private float timeInterval;
-    private bool isSpinning; // Đổi tên để rõ ràng hơn
+    private bool isSpinning;
     private int finalAngle;
     private float totalAngle;
 
@@ -34,23 +36,22 @@ public class SpiningManager : MonoBehaviour
     private DateTime nextAdTime;
     private int freeSpinCount = 0;
 
-    const string SPIN_KEY = "NextSpinTime";
-    const string AD_KEY = "NextAdTime";
-    const string FREE_SPIN_KEY = "FreeSpinCount";
+    private const string SPIN_KEY = "NextSpinTime";
+    private const string AD_KEY = "NextAdTime";
+    private const string FREE_SPIN_KEY = "FreeSpinCount";
 
     private void Start()
     {
         isSpinning = false;
         totalAngle = 360f / section;
 
-        // Tự tạo PrizeName từ PrizeCoins
         PrizeName = new string[PrizeCoins.Length];
         for (int i = 0; i < PrizeCoins.Length; i++)
         {
             PrizeName[i] = PrizeCoins[i].ToString();
         }
 
-        LoadCooldownTimes();
+        LoadCooldownFromPlayFab();
         UpdateUI();
         winText.gameObject.SetActive(false);
     }
@@ -60,29 +61,14 @@ public class SpiningManager : MonoBehaviour
         UpdateUI();
     }
 
-    public void OpenWheelPanel()
-    {
-        wheelPanel.SetActive(true);
-    }
-
-    public void CloseWheelPanel()
-    {
-        wheelPanel.SetActive(false);
-    }
+    public void OpenWheelPanel() => wheelPanel.SetActive(true);
+    public void CloseWheelPanel() => wheelPanel.SetActive(false);
 
     public void OnSpinButtonClicked()
     {
-        // Kiểm tra xem có đang quay không
         if (isSpinning) return;
-
-        if (CanSpin())
-        {
-            StartCoroutine(Spin());
-        }
-        else
-        {
-            Debug.Log("Chưa đến thời gian quay lại!");
-        }
+        if (CanSpin()) StartCoroutine(Spin());
+        else Debug.Log("Chưa đến thời gian quay lại!");
     }
 
     public void OnAdButtonClicked()
@@ -90,14 +76,9 @@ public class SpiningManager : MonoBehaviour
         if (CanWatchAd())
         {
             Debug.Log("Đã xem quảng cáo!");
-
             freeSpinCount++;
-            PlayerPrefs.SetInt(FREE_SPIN_KEY, freeSpinCount);
-
             nextAdTime = DateTime.Now.AddHours(2);
-            PlayerPrefs.SetString(AD_KEY, nextAdTime.ToBinary().ToString());
-            PlayerPrefs.Save();
-
+            SaveCooldownToPlayFab();
             UpdateUI();
         }
         else
@@ -108,24 +89,14 @@ public class SpiningManager : MonoBehaviour
 
     public void OnFreeSpinButtonClicked()
     {
-        // Nút để nhận lượt quay miễn phí (có thể là reward video, daily bonus, etc.)
         freeSpinCount++;
-        PlayerPrefs.SetInt(FREE_SPIN_KEY, freeSpinCount);
-        PlayerPrefs.Save();
-
+        SaveCooldownToPlayFab();
         Debug.Log("Đã nhận 1 lượt quay miễn phí!");
         UpdateUI();
     }
 
-    private bool CanSpin()
-    {
-        return DateTime.Now >= nextSpinTime || freeSpinCount > 0;
-    }
-
-    private bool CanWatchAd()
-    {
-        return DateTime.Now >= nextAdTime;
-    }
+    private bool CanSpin() => DateTime.Now >= nextSpinTime || freeSpinCount > 0;
+    private bool CanWatchAd() => DateTime.Now >= nextAdTime;
 
     private IEnumerator Spin()
     {
@@ -140,16 +111,11 @@ public class SpiningManager : MonoBehaviour
         {
             transform.Rotate(0, 0, (totalAngle / 2));
 
-            if (i > Mathf.RoundToInt(randVal * 0.2f))
-                timeInterval = 0.5f * Time.deltaTime;
-            if (i > Mathf.RoundToInt(randVal * 0.5f))
-                timeInterval = 1f * Time.deltaTime;
-            if (i > Mathf.RoundToInt(randVal * 0.7f))
-                timeInterval = 1.5f * Time.deltaTime;
-            if (i > Mathf.RoundToInt(randVal * 0.8f))
-                timeInterval = 2f * Time.deltaTime;
-            if (i > Mathf.RoundToInt(randVal * 0.9f))
-                timeInterval = 2.5f * Time.deltaTime;
+            if (i > Mathf.RoundToInt(randVal * 0.2f)) timeInterval = 0.5f * Time.deltaTime;
+            if (i > Mathf.RoundToInt(randVal * 0.5f)) timeInterval = 1f * Time.deltaTime;
+            if (i > Mathf.RoundToInt(randVal * 0.7f)) timeInterval = 1.5f * Time.deltaTime;
+            if (i > Mathf.RoundToInt(randVal * 0.8f)) timeInterval = 2f * Time.deltaTime;
+            if (i > Mathf.RoundToInt(randVal * 0.9f)) timeInterval = 2.5f * Time.deltaTime;
 
             yield return new WaitForSeconds(timeInterval);
         }
@@ -165,101 +131,96 @@ public class SpiningManager : MonoBehaviour
         winText.gameObject.SetActive(true);
         CoinManager.Instance.AddCoins(prizeCoin);
 
-        // Xử lý cooldown và free spin
         if (freeSpinCount > 0)
         {
             freeSpinCount--;
-            PlayerPrefs.SetInt(FREE_SPIN_KEY, freeSpinCount);
         }
         else
         {
             nextSpinTime = DateTime.Now.AddSeconds(cooldownSeconds);
-            PlayerPrefs.SetString(SPIN_KEY, nextSpinTime.ToBinary().ToString());
         }
 
-        PlayerPrefs.Save();
+        SaveCooldownToPlayFab();
 
-        // Kết thúc quay
         isSpinning = false;
-
-        // Hiển thị kết quả 3 giây
         yield return new WaitForSeconds(3f);
         winText.gameObject.SetActive(false);
-
-        // Cập nhật UI
         UpdateUI();
     }
 
-    private void LoadCooldownTimes()
+    // ----------------- PlayFab Sync -----------------
+
+    private void LoadCooldownFromPlayFab()
     {
-        // Load thời gian quay tiếp theo
-        if (PlayerPrefs.HasKey(SPIN_KEY))
+        PlayFabClientAPI.GetUserData(new GetUserDataRequest(), result =>
         {
-            try
-            {
-                nextSpinTime = DateTime.FromBinary(Convert.ToInt64(PlayerPrefs.GetString(SPIN_KEY)));
-            }
-            catch (System.Exception)
-            {
+            var data = result.Data;
+
+            if (data.ContainsKey(SPIN_KEY))
+                nextSpinTime = DateTime.FromBinary(Convert.ToInt64(data[SPIN_KEY].Value));
+            else
                 nextSpinTime = DateTime.MinValue;
-            }
-        }
-        else
-        {
-            nextSpinTime = DateTime.MinValue;
-        }
 
-        // Load thời gian xem quảng cáo tiếp theo
-        if (PlayerPrefs.HasKey(AD_KEY))
-        {
-            try
-            {
-                nextAdTime = DateTime.FromBinary(Convert.ToInt64(PlayerPrefs.GetString(AD_KEY)));
-            }
-            catch (System.Exception)
-            {
+            if (data.ContainsKey(AD_KEY))
+                nextAdTime = DateTime.FromBinary(Convert.ToInt64(data[AD_KEY].Value));
+            else
                 nextAdTime = DateTime.MinValue;
-            }
-        }
-        else
-        {
-            nextAdTime = DateTime.MinValue;
-        }
 
-        // Load số lượt quay miễn phí
-        if (PlayerPrefs.HasKey(FREE_SPIN_KEY))
+            if (data.ContainsKey(FREE_SPIN_KEY))
+                freeSpinCount = int.Parse(data[FREE_SPIN_KEY].Value);
+            else
+                freeSpinCount = 0;
+
+            Debug.Log("Đã load cooldown từ PlayFab.");
+            UpdateUI();
+        },
+        error =>
         {
-            freeSpinCount = PlayerPrefs.GetInt(FREE_SPIN_KEY);
-        }
-        else
-        {
-            freeSpinCount = 0;
-        }
+            Debug.LogError("Lỗi load cooldown từ PlayFab: " + error.GenerateErrorReport());
+        });
     }
+
+    private void SaveCooldownToPlayFab()
+    {
+        var data = new Dictionary<string, string>
+        {
+            { SPIN_KEY, nextSpinTime.ToBinary().ToString() },
+            { AD_KEY, nextAdTime.ToBinary().ToString() },
+            { FREE_SPIN_KEY, freeSpinCount.ToString() }
+        };
+
+        PlayFabClientAPI.UpdateUserData(new UpdateUserDataRequest
+        {
+            Data = data
+        },
+        result =>
+        {
+            Debug.Log("Đã lưu cooldown lên PlayFab.");
+        },
+        error =>
+        {
+            Debug.LogError("Lỗi lưu cooldown: " + error.GenerateErrorReport());
+        });
+    }
+
+    // ----------------- UI -----------------
 
     private void UpdateUI()
     {
-        // Nút quay: luôn hiện nhưng chỉ có thể bấm khi không đang quay và có thể quay
         spinButton.gameObject.SetActive(true);
         spinButton.interactable = !isSpinning && CanSpin();
-
-        // Nút quảng cáo
         adButton.interactable = CanWatchAd();
+        if (freeSpinButton != null) freeSpinButton.interactable = true;
 
-        // Nút nhận lượt quay miễn phí (luôn có thể bấm)
-        if (freeSpinButton != null)
-            freeSpinButton.interactable = true;
-
-        // Cập nhật text countdown
         if (countdownText != null)
         {
             if (freeSpinCount > 0 || DateTime.Now >= nextSpinTime)
             {
-                countdownText.gameObject.SetActive(false); // Ẩn khi có lượt quay
+                countdownText.gameObject.SetActive(false);
             }
             else
             {
-                countdownText.gameObject.SetActive(true); // Hiện khi đang cooldown
+                countdownText.gameObject.SetActive(true);
                 TimeSpan timeLeft = nextSpinTime - DateTime.Now;
                 string minutes = Mathf.FloorToInt((float)timeLeft.TotalSeconds / 60).ToString("00");
                 string seconds = Mathf.FloorToInt((float)timeLeft.TotalSeconds % 60).ToString("00");
@@ -267,20 +228,6 @@ public class SpiningManager : MonoBehaviour
             }
         }
 
-
-
-
-
-        // Thay đổi màu nút dựa trên trạng thái
-        if (spinButton.interactable)
-        {
-            spinButton.GetComponent<Image>().color = Color.white;
-        }
-        else
-        {
-            spinButton.GetComponent<Image>().color = Color.gray;
-        }
+        spinButton.GetComponent<Image>().color = spinButton.interactable ? Color.white : Color.gray;
     }
-
-
 }

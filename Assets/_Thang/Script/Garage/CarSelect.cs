@@ -84,6 +84,7 @@ public class CarSelect : MonoBehaviour
         }
         UpdateStatSliders(); // cập nhật thanh slider
         UpdateSelectionUI(); // cập nhật UI chọn xe
+
     }
 
     // ✅ THÊM: Cập nhật UI dựa trên xe đã được chọn hay chưa

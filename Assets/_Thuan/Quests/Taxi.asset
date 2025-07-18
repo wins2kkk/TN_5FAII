@@ -15,6 +15,6 @@ MonoBehaviour:
   questName: "T\xEAn nhi\u1EC7m v\u1EE5"
   questType: 8
   timeLimit: 60
-  coinReward: 50
+  coinReward: 180
   description: "Nhi\u1EC7m v\u1EE5 m\u1EB7c \u0111\u1ECBnh"
   lapCount: 3

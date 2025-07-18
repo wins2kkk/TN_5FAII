@@ -1685,7 +1685,7 @@ RectTransform:
   m_GameObject: {fileID: 2177135964600832040}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 6481903819712013557}
@@ -1704,7 +1704,7 @@ RectTransform:
   m_AnchorMax: {x: 0, y: 0}
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 0, y: 0}
-  m_Pivot: {x: 0, y: 0}
+  m_Pivot: {x: 0.5, y: 0.5}
 --- !u!223 &1543415054035701381
 Canvas:
   m_ObjectHideFlags: 0
@@ -3451,7 +3451,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 78403332837863270}
+      - m_Target: {fileID: 0}
         m_TargetAssemblyTypeName: SpiningManager, Assembly-CSharp
         m_MethodName: CloseWheelPanel
         m_Mode: 1
@@ -3830,7 +3830,6 @@ GameObject:
   - component: {fileID: 7354637921681606584}
   - component: {fileID: 5495551198132464063}
   - component: {fileID: 5816445748611103231}
-  - component: {fileID: 78403332837863270}
   m_Layer: 5
   m_Name: Huong_Dan
   m_TagString: Untagged
@@ -3940,7 +3939,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 78403332837863270}
+      - m_Target: {fileID: 0}
         m_TargetAssemblyTypeName: SpiningManager, Assembly-CSharp
         m_MethodName: OpenWheelPanel
         m_Mode: 1
@@ -3952,28 +3951,6 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
---- !u!114 &78403332837863270
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5152599731672250132}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e02d4244ba415f7409c4355c6de03f4f, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  wheelPanel: {fileID: 229260954912653159}
-  spinButton: {fileID: 0}
-  adButton: {fileID: 0}
-  freeSpinButton: {fileID: 0}
-  winText: {fileID: 0}
-  countdownText: {fileID: 0}
-  PrizeCoins: 2c01000064000000f40100006400000064000000c800000064000000c8000000
-  PrizeName: []
-  section: 8
-  cooldownSeconds: 10
 --- !u!1 &5332438284940230821
 GameObject:
   m_ObjectHideFlags: 0

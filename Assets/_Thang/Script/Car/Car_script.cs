@@ -65,8 +65,17 @@ public class Car_script : MonoBehaviour
     [SerializeField] private float flipCooldown = 3f;
     private float lastFlipTime = -10f;
 
+
+    private float btnVertical = 0f, btnHorizontal = 0f;
+    private bool btnBrake = false, btnBoost = false;
+
     void Start()
     {
+        if (Application.isMobilePlatform)
+            control = ControlMode.Button;
+        else
+            control = ControlMode.Keyboard;
+
         carRigidbody = GetComponent<Rigidbody>();
         if (carRigidbody != null)
             carRigidbody.centerOfMass = COM.localPosition;
@@ -99,22 +108,44 @@ public class Car_script : MonoBehaviour
         HandleBoost();
         TiltCarBody();
     }
+    public void SetButtonInputs(CarInputData data)
+    {
+        btnVertical = data.verticall;
+        btnHorizontal = data.horizontall;
+        btnBrake = data.brake;
+
+        // Chỉ set true 1 frame duy nhất để HandleBoost() bắt được
+        if (data.boost)
+            btnBoost = true;
+    }
 
     void GetInputs()
     {
-        if (control == ControlMode.Keyboard)
-        {
-            horizontal = Input.GetAxis("Horizontal");
-            vertical = Input.GetAxisRaw("Vertical");
-        }
+        
+        // Lấy input từ bàn phím
+        float keyHorizontal = Input.GetAxis("Horizontal");
+        float keyVertical = Input.GetAxisRaw("Vertical");
+        bool keyBrake = Input.GetKey(KeyCode.Space);
+        bool keyBoost = Input.GetKey(KeyCode.LeftShift) || Input.GetKey(KeyCode.RightShift);
+
+        // Tổng hợp input từ cả bàn phím + nút UI
+        horizontal = Mathf.Clamp(keyHorizontal + btnHorizontal, -1f, 1f);
+        vertical = Mathf.Clamp(keyVertical + btnVertical, -1f, 1f);
+        handBrakeInput = keyBrake || btnBrake;
+
+        //isBoosting = keyBoost || btnBoost;
     }
+
+
 
     void CalculateCarMovement()
     {
         carSpeed = carRigidbody.velocity.magnitude;
         carSpeedConverted = Mathf.Round(carSpeed * 3.6f);
 
-        handBrakeInput = Input.GetKey(KeyCode.Space);
+        // Trong GetInputs()
+        
+
         handBrakeEffects = handBrakeInput && carSpeedConverted > 40f;
 
         if (handBrakeInput)
@@ -144,7 +175,7 @@ public class Car_script : MonoBehaviour
             ReleaseBrake();
             DriftOff();
 
-            if (Mathf.Abs(vertical) > 0.01f && carSpeedConverted < maximumSpeed)
+            if (Mathf.Abs(vertical) > 0.01f && carSpeedConverted < maximumSpeed * (isBoosting ? boostMultiplier : 1f))
             {
                 float boost = isBoosting ? boostMultiplier : 1f;
                 motorTorque = maximumMotorTorque * vertical * boost;
@@ -153,6 +184,7 @@ public class Car_script : MonoBehaviour
             {
                 motorTorque = 0;
             }
+
 
 
             if (smokeEffectEnabled)
@@ -274,36 +306,48 @@ public class Car_script : MonoBehaviour
 
     void HandleBoost()
     {
-        bool shiftHeld = Input.GetKey(KeyCode.LeftShift) || Input.GetKey(KeyCode.RightShift);
-        bool canStartBoost = shiftHeld && vertical > 0 && currentEnergy >= maxEnergy && carSpeedConverted > 0f;
+        // Phím boost được nhấn
+        bool boostKeyDown = Input.GetKeyDown(KeyCode.LeftShift) || Input.GetKeyDown(KeyCode.RightShift);
+        bool boostButtonDown = btnBoost;
+
+        // Chỉ cho phép boost nếu chưa boost & năng lượng đã đầy 100%
+        if (!isBoosting && (boostKeyDown || boostButtonDown) && Mathf.Approximately(currentEnergy, maxEnergy))
+        {
+            isBoosting = true;
+            btnBoost = false; // Reset cờ UI
+        }
 
         if (isBoosting)
         {
             currentEnergy -= energyDrainRate * Time.deltaTime;
+
             if (currentEnergy <= 0f)
             {
+                currentEnergy = 0f;
                 isBoosting = false;
-                carRigidbody.velocity *= 0.9f;
             }
         }
         else
         {
-            if (canStartBoost)
-                isBoosting = true;
-            else
-                currentEnergy += energyRechargeRate * Time.deltaTime;
-
-            currentEnergy = Mathf.Clamp(currentEnergy, 0, maxEnergy);
+            currentEnergy += energyRechargeRate * Time.deltaTime;
+            currentEnergy = Mathf.Clamp(currentEnergy, 0f, maxEnergy);
         }
 
+        // Quản lý hiệu ứng boost
         if (boostEffect != null)
         {
-            if (isBoosting && !boostEffect.isPlaying) boostEffect.Play(); else if (!isBoosting && boostEffect.isPlaying) boostEffect.Stop();
+            if (isBoosting && !boostEffect.isPlaying)
+                boostEffect.Play();
+            else if (!isBoosting && boostEffect.isPlaying)
+                boostEffect.Stop();
         }
 
+        // Cập nhật thanh slider UI
         if (energySlider != null)
             energySlider.value = currentEnergy;
     }
+
+
 
     public void FlipCarByButton()
     {
@@ -353,5 +397,7 @@ public class Car_script : MonoBehaviour
         // Áp dụng rotation mới (giữ nguyên X và Y)
         carBody.localEulerAngles = new Vector3(currentRotation.x, currentRotation.y, newZRotation);
     }
+
+   
 
 }
