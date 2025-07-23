@@ -29371,6 +29371,9 @@ MonoBehaviour:
   loadingText: {fileID: 0}
   loadingPanel: {fileID: 0}
   minimumLoadTime: 2
+  bounceHeight: 10
+  bounceSpeed: 2
+  letterDelay: 0.1
 --- !u!114 &535054349
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -91581,73 +91584,6 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1738039637}
   m_Mesh: {fileID: -7736012699129351603, guid: 4e8a28938e1002c4cb222e32844ab845, type: 3}
---- !u!1 &1738179874
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 1738179876}
-  - component: {fileID: 1738179875}
-  - component: {fileID: 1738179877}
-  m_Layer: 0
-  m_Name: CarSpawner
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 0
---- !u!114 &1738179875
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1738179874}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 9ef6b540242404e40be86a10c4ac5cf8, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  carPrefab: {fileID: 8061157674763961873, guid: 9bbe345a7205a9d4fa6ca07c3d4034ee, type: 3}
-  spawnPoints:
-  - {fileID: 0}
---- !u!4 &1738179876
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1738179874}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0.9682738, z: 0, w: -0.2498916}
-  m_LocalPosition: {x: 73.33, y: 10.18, z: 35.47}
-  m_LocalScale: {x: 0.65528953, y: 0.65528953, z: 0.65528953}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 0}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &1738179877
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1738179874}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: -1552182283, guid: e725a070cec140c4caffb81624c8c787, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  SortKey: 1841711352
-  ObjectInterest: 1
-  Flags: 262145
-  NestedObjects: []
-  NetworkedBehaviours:
-  - {fileID: 1738179875}
-  ForceRemoteRenderTimeframe: 0
 --- !u!1 &1741800149
 GameObject:
   m_ObjectHideFlags: 0
@@ -115298,4 +115234,3 @@ SceneRoots:
   - {fileID: 1245343500}
   - {fileID: 977277404}
   - {fileID: 1190752469}
-  - {fileID: 1738179876}

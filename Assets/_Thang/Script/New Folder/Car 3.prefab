@@ -24226,9 +24226,7 @@ GameObject:
   - component: {fileID: 6450626854933602411}
   - component: {fileID: 5296415098251057402}
   - component: {fileID: 7714736255774151542}
-  - component: {fileID: 5946714080600915}
   - component: {fileID: 2323638237245962136}
-  - component: {fileID: 5946336904014313499}
   m_Layer: 0
   m_Name: Car 3
   m_TagString: Player
@@ -24679,7 +24677,6 @@ MonoBehaviour:
   NetworkedBehaviours:
   - {fileID: 7714736255774151542}
   - {fileID: 2323638237245962136}
-  - {fileID: 5946336904014313499}
   - {fileID: 5560504798672829666}
   ForceRemoteRenderTimeframe: 0
 --- !u!114 &7714736255774151542
@@ -24719,12 +24716,14 @@ MonoBehaviour:
   - {fileID: 6361273935379022029}
   - {fileID: 8188627376739976634}
   smokeEffects: []
-  carBody: {fileID: 8061157674763961873}
+  carBody: {fileID: 1865868980692948487}
   tiltAngle: 5
   tiltSpeed: 5
   flipUpOffset: 3
   flipBackOffset: 5
   flipCooldown: 3
+  _NetworkedPosition: {x: 0, y: 0, z: 0}
+  _NetworkedRotation: {x: 0, y: 0, z: 0, w: 0}
   _NetworkedVertical: 0
   _NetworkedHorizontal: 0
   _NetworkedIsHandbraking:
@@ -24739,37 +24738,6 @@ MonoBehaviour:
     _value: 0
   _NetworkedBoostActive:
     _value: 0
---- !u!114 &5946714080600915
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8061157674763961873}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e96cb6065543e43c4a752faaa1468eb1, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  UseUnreliableDeltas: 0
-  SyncPositionX: 1
-  SyncPositionY: 1
-  SyncPositionZ: 1
-  SyncRotAngleX: 1
-  SyncRotAngleY: 1
-  SyncRotAngleZ: 1
-  SyncScaleX: 0
-  SyncScaleY: 0
-  SyncScaleZ: 0
-  PositionThreshold: 0.001
-  RotAngleThreshold: 0.01
-  ScaleThreshold: 0.01
-  UseQuaternionSynchronization: 0
-  UseQuaternionCompression: 0
-  UseHalfFloatPrecision: 0
-  InLocalSpace: 0
-  Interpolate: 1
-  SlerpPosition: 0
 --- !u!114 &2323638237245962136
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -24783,29 +24751,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   cameraPrefab: {fileID: 1604395111424511430, guid: f58ce376123f2fa4795c89d5a5004ea7, type: 3}
---- !u!114 &5946336904014313499
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8061157674763961873}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 0a591d221a634417e9827eb58e17de84, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _stateAuthorityChangeErrorCorrectionDelta: 0
-  SyncScale: 0
-  SyncParent: 1
-  _interpolationTarget: {fileID: 0}
-  UsePreciseRotation: 1
-  UseRenderSleepThresholds: 1
-  RenderThresholds:
-    UseEnergy: 1
-    Position: 0.05
-    Rotation: 0.5
-    Scale: 0.01
 --- !u!1 &8063346349046166853
 GameObject:
   m_ObjectHideFlags: 0

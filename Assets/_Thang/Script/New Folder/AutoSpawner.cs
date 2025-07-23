@@ -2,74 +2,69 @@
 using Fusion.Sockets;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 public class AutoSpawner : MonoBehaviour, INetworkRunnerCallbacks
 {
-    [Header("Prefab và vị trí spawn")]
-    public GameObject carPrefab;
-    public Transform[] spawnPoints;
-
-    // Theo dõi spawn points đã sử dụng
-    private Dictionary<PlayerRef, int> playerSpawnIndex = new Dictionary<PlayerRef, int>();
-    private int nextSpawnIndex = 0;
+    public NetworkObject carPrefab;
+    public Transform[] spawnPoints; // [0] = vị trí cho người join, [1] = vị trí cho host
+    private Dictionary<PlayerRef, NetworkObject> spawnedCars = new();
 
     public void OnPlayerJoined(NetworkRunner runner, PlayerRef player)
     {
-        Debug.Log($"👤 Player joined: {player}");
+        if (!runner.IsServer) return;
 
-        if (runner.IsServer)
+        int spawnIndex;
+        string playerType;
+
+        // 🎯 Kiểm tra số lượng player hiện tại
+        int currentPlayerCount = runner.ActivePlayers.Count();
+
+        if (currentPlayerCount == 1)
         {
-            int spawnIndex = nextSpawnIndex;
-            if (spawnIndex >= spawnPoints.Length)
-            {
-                Debug.LogWarning("❌ Không còn spawn point nào khả dụng!");
-                spawnIndex = 0;
-                nextSpawnIndex = 1;
-            }
-            else
-            {
-                nextSpawnIndex++;
-            }
-
-            Transform spawnPoint = spawnPoints[spawnIndex];
-
-            // ✅ Gán InputAuthority bằng cách truyền player vào runner.Spawn
-            NetworkObject spawnedCar = runner.Spawn(carPrefab, spawnPoint.position, spawnPoint.rotation, player);
-
-            // (Tùy chọn) Gán lại PlayerObject để truy cập player dễ hơn sau này
-            runner.SetPlayerObject(player, spawnedCar);
-
-            playerSpawnIndex[player] = spawnIndex;
-
-            Debug.Log($"✅ Spawned player {player} at spawn point {spawnIndex} - Position: {spawnPoint.position}");
+            // 👑 Player đầu tiên = Host → spawn ở vị trí 1 (index 1)
+            spawnIndex = 1;
+            playerType = "Host";
         }
-    }
+        else if (currentPlayerCount == 2)
+        {
+            // 🤝 Player thứ hai = Guest → spawn ở vị trí 0 (index 0) 
+            spawnIndex = 0;
+            playerType = "Guest";
+        }
+        else
+        {
+            Debug.LogWarning($"⚠️ Game chỉ hỗ trợ 2 người chơi! Player {player} không thể join.");
+            return;
+        }
 
+        // ✅ Spawn xe
+        Transform spawnPoint = spawnPoints[spawnIndex];
+        NetworkObject car = runner.Spawn(carPrefab, spawnPoint.position, spawnPoint.rotation, player);
+        spawnedCars[player] = car;
+
+        Debug.Log($"✅ Spawned {playerType} {player} at spawn point {spawnIndex}: {spawnPoint.name}");
+    }
 
     public void OnPlayerLeft(NetworkRunner runner, PlayerRef player)
     {
-        if (runner.IsServer)
+        if (runner.IsServer && spawnedCars.ContainsKey(player))
         {
-            if (playerSpawnIndex.ContainsKey(player))
-            {
-                int spawnIndex = playerSpawnIndex[player];
-                playerSpawnIndex.Remove(player);
-                Debug.Log($"🔄 Player {player} left - freed spawn point {spawnIndex}");
-            }
+            runner.Despawn(spawnedCars[player]);
+            spawnedCars.Remove(player);
+            Debug.Log($"🔄 Player {player} left and despawned");
         }
     }
 
     public void OnInput(NetworkRunner runner, NetworkInput input)
     {
-        // ✅ Tạo input data với tất cả controls
         CarInputData data = new CarInputData
         {
-            vertical = Input.GetAxisRaw("Vertical"),
+            vertical = Input.GetAxis("Vertical"),
             horizontal = Input.GetAxis("Horizontal"),
             isHandbraking = Input.GetKey(KeyCode.Space)
         };
-
         input.Set(data);
     }
 
@@ -92,6 +87,7 @@ public class AutoSpawner : MonoBehaviour, INetworkRunnerCallbacks
     public void OnShutdown(NetworkRunner runner, ShutdownReason shutdownReason)
     {
         Debug.Log($"🔄 Network shutdown: {shutdownReason}");
+        spawnedCars.Clear();
     }
 
     public void OnSceneLoadDone(NetworkRunner runner)

@@ -44,7 +44,8 @@ public class CarNetworkController : NetworkBehaviour
     public float flipUpOffset = 3f;
     public float flipBackOffset = 5f;
     public float flipCooldown = 3f;
-
+    [Networked] public Vector3 NetworkedPosition { get; set; }
+    [Networked] public Quaternion NetworkedRotation { get; set; }
     // ==== NETWORK PROPERTIES ====
     [Networked] public float NetworkedVertical { get; set; }
     [Networked] public float NetworkedHorizontal { get; set; }
@@ -131,22 +132,30 @@ public class CarNetworkController : NetworkBehaviour
     // ==== NETWORK UPDATE ====
     public override void FixedUpdateNetwork()
     {
-        // Xử lý input từ người chơi có quyền điều khiển
-        if (Object.HasInputAuthority)
+        if (Object.HasInputAuthority && GetInput<CarInputData>(out var input))
         {
-            if (GetInput<CarInputData>(out var input))
-            {
-                ProcessNetworkInput(input);
-            }
+            ProcessNetworkInput(input);
         }
 
-        // Xử lý physics (chỉ server)
         if (Object.HasStateAuthority)
         {
             UpdatePhysics();
             UpdateEffectsState();
+
+            // Cập nhật sync thủ công
+            NetworkedPosition = transform.position;
+            NetworkedRotation = transform.rotation;
+        }
+        else
+        {
+            // Client tự đồng bộ lại vị trí từ server
+            float lerpSpeed = 10f;
+            transform.position = Vector3.Lerp(transform.position, NetworkedPosition, Runner.DeltaTime * lerpSpeed);
+            transform.rotation = Quaternion.Slerp(transform.rotation, NetworkedRotation, Runner.DeltaTime * lerpSpeed);
         }
     }
+
+
 
     void ProcessNetworkInput(CarInputData input)
     {

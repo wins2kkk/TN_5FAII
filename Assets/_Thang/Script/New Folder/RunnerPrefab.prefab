@@ -92,7 +92,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4a23d1cd933fab14bbf1ffafa7613849, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  carPrefab: {fileID: 8061157674763961873, guid: 9bbe345a7205a9d4fa6ca07c3d4034ee, type: 3}
+  carPrefab: {fileID: 5296415098251057402, guid: 9bbe345a7205a9d4fa6ca07c3d4034ee, type: 3}
   spawnPoints:
   - {fileID: 7641925363434886158, guid: bf670946bf917334cb691290bf0800cd, type: 3}
-  - {fileID: 3160465414306075133, guid: c07da9218791d2c4e93952ffd8bd004a, type: 3}
+  - {fileID: 7641925363434886158, guid: bf670946bf917334cb691290bf0800cd, type: 3}

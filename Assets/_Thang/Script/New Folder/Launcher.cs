@@ -32,26 +32,31 @@ public class Launcher : MonoBehaviour
         }
 
         _runnerInstance = Instantiate(runnerPrefab);
+        _runnerInstance.name = "NetworkRunner";
         _runnerInstance.ProvideInput = true;
 
+        // Thêm AutoSpawner nếu chưa có
+        if (_runnerInstance.GetComponent<AutoSpawner>() == null)
+            _runnerInstance.gameObject.AddComponent<AutoSpawner>();
+
+        // Thêm SceneManager nếu chưa có
         if (_runnerInstance.GetComponent<NetworkSceneManagerDefault>() == null)
             _runnerInstance.gameObject.AddComponent<NetworkSceneManagerDefault>();
 
         var result = await _runnerInstance.StartGame(new StartGameArgs()
         {
-            GameMode = mode, // Host hoặc Client
+            GameMode = mode,
             SessionName = roomName,
-            Scene = SceneRef.FromIndex(1),
-
-
+            Scene = SceneRef.FromIndex(1), // Nếu Dua_Onl là scene số 1
             SceneManager = _runnerInstance.GetComponent<NetworkSceneManagerDefault>()
         });
 
 
         if (!result.Ok)
         {
-            Debug.LogError($"Failed to start: {result.ShutdownReason}");
+            Debug.LogError($"❌ Failed to start: {result.ShutdownReason}");
         }
     }
+
 
 }
