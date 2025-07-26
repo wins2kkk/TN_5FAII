@@ -4,7 +4,7 @@ using UnityEngine.EventSystems;
 public class ButtonHoverEffect : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler, IPointerClickHandler
 {
     private Vector3 originalScale;
-    public float scaleMultiplier = 1.1f;
+    public float scaleMultiplier = 1.2f;
     public float animationSpeed = 10f;
     private bool isHovered = false;
 
