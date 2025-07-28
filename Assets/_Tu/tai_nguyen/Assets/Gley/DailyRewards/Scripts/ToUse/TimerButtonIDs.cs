@@ -1,6 +1,6 @@
-namespace Gley.DailyRewards
-{
-	public enum TimerButtonIDs
-	{
-	}
-}
+//namespace Gley.DailyRewards
+//{
+//	public enum TimerButtonIDs
+//	{
+//	}
+//}

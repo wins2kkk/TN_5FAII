@@ -73,18 +73,31 @@ public class SpiningManager : MonoBehaviour
 
     public void OnAdButtonClicked()
     {
-        if (CanWatchAd())
+        if (DateTime.Now >= nextAdTime)
         {
-            Debug.Log("Đã xem quảng cáo!");
-            freeSpinCount++;
-            nextAdTime = DateTime.Now.AddHours(2);
-            SaveCooldownToPlayFab();
-            UpdateUI();
+            if (AdsManager.Instance != null)
+            {
+                AdsManager.Instance.OnRewardedAdWatched = OnRewardedAdFinished;
+                AdsManager.Instance.ShowRewardedAd();
+            }
+            else
+            {
+                Debug.LogWarning("AdsManager chưa được khởi tạo.");
+            }
         }
         else
         {
             Debug.Log("Chưa đủ thời gian để xem quảng cáo tiếp.");
         }
+    }
+    private void OnRewardedAdFinished()
+    {
+        freeSpinCount++;
+        nextAdTime = DateTime.Now.AddHours(2);
+        SaveCooldownToPlayFab();
+        UpdateUI();
+
+        Debug.Log("Người chơi đã nhận lượt quay miễn phí sau khi xem quảng cáo.");
     }
 
     public void OnFreeSpinButtonClicked()

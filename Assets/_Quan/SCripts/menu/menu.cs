@@ -9,6 +9,8 @@ public class SceneMenuManager : MonoBehaviour
 
     public void ShowPanel(GameObject panelToShow)
     {
+    //    AdsManager.Instance.ShowInterstitialAd();
+
         foreach (GameObject panel in allPanels)
         {
             panel.SetActive(false);
@@ -20,6 +22,8 @@ public class SceneMenuManager : MonoBehaviour
 
     public void HideAllPanels()
     {
+     //   AdsManager.Instance.ShowInterstitialAd();
+
         foreach (GameObject panel in allPanels)
         {
             panel.SetActive(false);
