@@ -9,7 +9,7 @@ public class CursorManager : MonoBehaviour
     private Vector2 cursorHotspot;
     private float timer = 0f;
     private bool isCursorVisible = true;
-    private float hideDelay = 3f;
+    //private float hideDelay = 3f;
 
     private AudioSource audioSource;
 
@@ -38,15 +38,15 @@ public class CursorManager : MonoBehaviour
                 audioSource.PlayOneShot(clickSound);
             }
         }
-        else
-        {
-            timer += Time.deltaTime;
+        //else
+        //{
+        //    timer += Time.deltaTime;
 
-            if (timer >= hideDelay && isCursorVisible)
-            {
-                HideCursor();
-            }
-        }
+        //    if (timer >= hideDelay && isCursorVisible)
+        //    {
+        //        HideCursor();
+        //    }
+        //}
     }
 
     void ShowCursor()

@@ -5,12 +5,6 @@ EditorBuildSettings:
   m_ObjectHideFlags: 0
   serializedVersion: 2
   m_Scenes:
-  - enabled: 0
-    path: "Assets/_Thang/Test_Taoph\xF2ng.unity"
-    guid: 68b909578819cc8498d3fdfce0c99ffd
-  - enabled: 0
-    path: Assets/_Thang/Dua_Onl.unity
-    guid: a7b79f9167308264385941dbc7625f1d
   - enabled: 1
     path: Assets/_Bai_Hoan_Thien/Login.unity
     guid: 3f5480120a55dcd4db888ced9be6659e

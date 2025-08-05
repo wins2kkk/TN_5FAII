@@ -1,4 +1,4 @@
-#if !GLEY_DAILY_REWARDS
+
 namespace Gley.DailyRewards
 {
     public enum TimerButtonIDs
@@ -8,4 +8,3 @@ namespace Gley.DailyRewards
         RewardButton3,
     }
 }
-#endif
