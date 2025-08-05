@@ -3,33 +3,16 @@
 --- !u!78 &1
 TagManager:
   serializedVersion: 2
-  tags:
-  - ParkZone
-  - DeliveryZone
-  - PickupZone
-  - CoinUI
-  - WaypointUI
-  - DistanceText
-  - WaypointIndicator
-  - Road
-  - SnapEnd
-  - SnapStart
-  - path
-  - gameManager
-  - AI
-  - toDestroy
-  - Waypoint
-  - Arrow
-  - LapCheckpoint
+  tags: []
   layers:
   - Default
   - TransparentFX
   - Ignore Raycast
-  - Obstacles
+  - 
   - Water
   - UI
-  - UI2
-  - Ground
+  - 
+  - 
   - 
   - 
   - 
