@@ -865,11 +865,11 @@ PlayerSettings:
   apiCompatibilityLevel: 6
   activeInputHandler: 0
   windowsGamepadBackendHint: 0
-  cloudProjectId: 6764ad50-9f12-4a2d-8a7f-8c3423ec5e92
+  cloudProjectId: e13e9917-8a9a-4f11-9d0a-acc2524bd936
   framebufferDepthMemorylessMode: 0
   qualitySettingsNames: []
-  projectName: test 2025-08-04_20-42-20
-  organizationId: anhtudeptrai
+  projectName: TN_5fai
+  organizationId: thangdqpk03640
   cloudEnabled: 0
   legacyClampBlendShapeWeights: 0
   hmiLoadingImage: {fileID: 0}

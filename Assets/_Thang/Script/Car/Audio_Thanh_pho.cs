@@ -2,9 +2,9 @@
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
 
-public class AudioManager : MonoBehaviour
+public class Audio_Thanh_pho : MonoBehaviour
 {
-    public static AudioManager Instance { get; private set; }
+    public static Audio_Thanh_pho Instance { get; private set; }
 
     [Header("Audio Sources")]
     public AudioSource backgroundMusicSource;
@@ -29,7 +29,7 @@ public class AudioManager : MonoBehaviour
         if (Instance == null)
         {
             Instance = this;
-            DontDestroyOnLoad(gameObject);
+            //DontDestroyOnLoad(gameObject);
 
             // Ép set volume = 1.0f mỗi khi mở game
             PlayerPrefs.SetFloat("BackgroundVolume", 1.0f);
@@ -95,18 +95,30 @@ public class AudioManager : MonoBehaviour
         // Áp dụng volume
         UpdateVolume();
 
-        // Phát nhạc nền nếu có
-        if (backgroundMusicSource != null && backgroundMusicSource.clip != null)
+        // Chỉ phát nhạc ở scene có tên cụ thể (ví dụ: "MainMenu")
+        string currentSceneName = SceneManager.GetActiveScene().name;
+        if (currentSceneName == "Thanh_Pho2")
         {
-            backgroundMusicSource.loop = true;
-            backgroundMusicSource.time = 0f;
-            backgroundMusicSource.volume = backgroundVolume;
-
-            if (!backgroundMusicSource.isPlaying)
+            if (backgroundMusicSource != null && backgroundMusicSource.clip != null)
             {
-                backgroundMusicSource.Play();
+                backgroundMusicSource.loop = true;
+                backgroundMusicSource.time = 0f;
+                backgroundMusicSource.volume = backgroundVolume;
+
+                if (!backgroundMusicSource.isPlaying)
+                {
+                    backgroundMusicSource.Play();
+                }
             }
         }
+        else
+        {
+            if (backgroundMusicSource != null && backgroundMusicSource.isPlaying)
+            {
+                backgroundMusicSource.Stop();
+            }
+        }
+
     }
 
 
@@ -235,9 +247,15 @@ public class AudioManager : MonoBehaviour
     public void PlayEffect(AudioClip clip, float pitch = 1f)
     {
         if (clip == null || effectsSource == null) return;
+
+        effectsSource.Stop(); // Dừng âm thanh đang phát nếu có
         effectsSource.pitch = pitch;
-        effectsSource.PlayOneShot(clip, effectsVolume);
+        effectsSource.volume = effectsVolume; // Đảm bảo set đúng volume hiện tại
+
+        effectsSource.PlayOneShot(clip);
     }
+
+
 
     public void PlayLoopingEngine(AudioSource engineSource, AudioClip clip, float pitch)
     {
@@ -298,7 +316,7 @@ public class AudioManager : MonoBehaviour
     [ContextMenu("Debug UI Status")]
     public void DebugUIStatus()
     {
-        Debug.Log($"=== AudioManager UI Status ===");
+        Debug.Log($"=== Audio_Thanh_pho UI Status ===");
         Debug.Log($"Settings Panel: {(settingsPanel != null ? "Found" : "Missing")}");
         Debug.Log($"Show Settings Button: {(showSettingsButton != null ? "Found" : "Missing")}");
         Debug.Log($"Close Settings Button: {(closeSettingsButton != null ? "Found" : "Missing")}");

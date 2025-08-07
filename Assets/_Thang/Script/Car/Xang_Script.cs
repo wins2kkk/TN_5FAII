@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
+using System.Collections;
 
 public class Xang_Script : MonoBehaviour
 {
@@ -24,6 +25,12 @@ public class Xang_Script : MonoBehaviour
     private Car_script carScript;
     private Color originalColor;
 
+
+    //am_thanh_an_xang
+    // audio_nangluong
+    [Header("Audio Settings")]
+    public AudioSource audioSource;
+    public AudioClip energyPickupSound;
     // Thay đổi từ private thành public để CayXang có thể truy cập
     [HideInInspector] public bool isOutOfFuel = false;
 
@@ -129,5 +136,42 @@ public class Xang_Script : MonoBehaviour
         if (fuelSlider != null)
             fuelSlider.value = currentFuel;
     }
+    private void OnTriggerEnter(Collider other)
+    {
+        if (other.CompareTag("Xang"))
+        {
+            Debug.Log("Đã nhặt bình xăng!");
+
+            currentFuel = maxFuel;
+            isOutOfFuel = false;
+
+            if (carScript != null)
+                carScript.maximumMotorTorque = 1500f;
+
+            if (fuelSlider != null)
+                fuelSlider.value = currentFuel;
+
+            if (fuelImage != null)
+                fuelImage.color = originalColor;
+
+            if (noFuelPanel != null)
+                noFuelPanel.SetActive(false);
+            if (audioSource != null && energyPickupSound != null && Audio_Thanh_pho.Instance != null)
+            {
+                audioSource.volume = Audio_Thanh_pho.Instance.effectsVolume;
+                audioSource.PlayOneShot(energyPickupSound);
+            }
+            other.gameObject.SetActive(false);
+            StartCoroutine(RespawnFuel(other.gameObject, 60f));
+
+        }
+    }
+    private IEnumerator RespawnFuel(GameObject fuelObject, float delay)
+    {
+        yield return new WaitForSeconds(delay);
+        fuelObject.SetActive(true);
+        Debug.Log("⛽ Bình xăng đã xuất hiện lại!");
+    }
+
 
 }

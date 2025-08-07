@@ -3,12 +3,25 @@
 --- !u!78 &1
 TagManager:
   serializedVersion: 2
-  tags: []
+  tags:
+  - ParkZone
+  - PickupZone
+  - DeliveryZone
+  - Road
+  - SnapEnd
+  - SnapStart
+  - CoinUI
+  - WaypointIndicator
+  - WaypointUI
+  - DistanceText
+  - AI
+  - Xang
+  - Nangluong
   layers:
   - Default
   - TransparentFX
   - Ignore Raycast
-  - 
+  - Obstacle
   - Water
   - UI
   - 

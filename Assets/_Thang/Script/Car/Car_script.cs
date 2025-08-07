@@ -18,7 +18,7 @@ public class Car_script : MonoBehaviour
 
     [Header("Movement, Steering and Braking")]
     public float maximumMotorTorque;
-    public float maximumSteeringAngle = 20f;
+    public float maximumSteeringAngle = 18f; //Giảm góc cua
     public float maximumSpeed;
     public float brakePower;
     public Transform COM;
@@ -69,6 +69,23 @@ public class Car_script : MonoBehaviour
     private float btnVertical = 0f, btnHorizontal = 0f;
     private bool btnBrake = false, btnBoost = false;
 
+    [Header("Drift Settings")]
+    //Giảm độ "nghiêng bánh xe" khi cua gấp (Drift Steer Multiplier) -> đuôi quá nhanh.
+    public float driftSteerMultiplier = 1.8f; // từ 1.5 -> 2.0 hoặc cao hơn
+    public float driftFriction = 0.5f;
+
+    private bool isDrifting = false;
+
+    // audio_nangluong
+    [Header("Audio Settings")]
+    public AudioSource audioSource;
+    public AudioClip energyPickupSound;
+
+    //tính vòng đua
+    //[Header("Lap")]
+    //public int maxLaps = 3;
+    //private int currentLap;
+
     void Start()
     {
         if (Application.isMobilePlatform)
@@ -97,6 +114,17 @@ public class Car_script : MonoBehaviour
         {
             energySlider.maxValue = maxEnergy; energySlider.value = currentEnergy;
         }
+
+        carRigidbody = GetComponent<Rigidbody>();
+
+        // Tăng độ bám bánh trước khi cua để xe ổn định hơn
+        WheelFrictionCurve frontFriction = FrontWheelLeftCollider.sidewaysFriction;
+        frontFriction.stiffness = 1.3f; // Độ bám ngang, càng cao càng ít trượt
+        FrontWheelLeftCollider.sidewaysFriction = frontFriction;
+        FrontWheelRightCollider.sidewaysFriction = frontFriction;
+
+
+       // maxLaps = FindObjectOfType<LapSystem>().maxLap;
     }
 
     void Update()
@@ -121,7 +149,7 @@ public class Car_script : MonoBehaviour
 
     void GetInputs()
     {
-        
+
         // Lấy input từ bàn phím
         float keyHorizontal = Input.GetAxis("Horizontal");
         float keyVertical = Input.GetAxisRaw("Vertical");
@@ -143,17 +171,14 @@ public class Car_script : MonoBehaviour
         carSpeed = carRigidbody.velocity.magnitude;
         carSpeedConverted = Mathf.Round(carSpeed * 3.6f);
 
-        // Trong GetInputs()
-        
-
-        handBrakeEffects = handBrakeInput && carSpeedConverted > 40f;
+        handBrakeEffects = handBrakeInput && carSpeedConverted > 30f;
+        isDrifting = handBrakeInput && carSpeedConverted > 10f;
 
         if (handBrakeInput)
         {
             motorTorque = 0;
             ApplyBrake();
-            DriftOn();
-
+            HandleDrift(); // mới
             if (carSpeedConverted > 10f)
             {
                 if (!smokeEffectEnabled)
@@ -172,8 +197,9 @@ public class Car_script : MonoBehaviour
         }
         else
         {
+            isDrifting = false;
             ReleaseBrake();
-            DriftOff();
+            RestoreFriction(); // mới
 
             if (Mathf.Abs(vertical) > 0.01f && carSpeedConverted < maximumSpeed * (isBoosting ? boostMultiplier : 1f))
             {
@@ -184,8 +210,6 @@ public class Car_script : MonoBehaviour
             {
                 motorTorque = 0;
             }
-
-
 
             if (smokeEffectEnabled)
             {
@@ -199,12 +223,18 @@ public class Car_script : MonoBehaviour
         EnableSkidTrails(handBrakeEffects);
     }
 
+
     void CalculateSteering()
     {
-        tireAngle = maximumSteeringAngle * horizontal;
+        float steerMultiplier = isDrifting ? driftSteerMultiplier : 1f;
+        float targetAngle = maximumSteeringAngle * horizontal * steerMultiplier;
+        tireAngle = Mathf.Lerp(tireAngle, targetAngle, Time.deltaTime * 5f);
+
         FrontWheelLeftCollider.steerAngle = tireAngle;
         FrontWheelRightCollider.steerAngle = tireAngle;
     }
+
+
 
     void ApplyMotorTorque()
     {
@@ -266,16 +296,16 @@ public class Car_script : MonoBehaviour
         }
     }
 
-    void DriftOn()
+    void HandleDrift()
     {
-        WheelFrictionCurve wheelFriction = BackWheelLeftCollider.sidewaysFriction;
-        wheelFriction.stiffness = 0.65f;
-        BackWheelLeftCollider.sidewaysFriction = wheelFriction;
+        // Giảm ma sát ngang khi drift
+        WheelFrictionCurve driftFrictionCurve = BackWheelLeftCollider.sidewaysFriction;
+        driftFrictionCurve.stiffness = driftFriction;
 
-        wheelFriction = BackWheelRightCollider.sidewaysFriction;
-        wheelFriction.stiffness = 0.65f;
-        BackWheelRightCollider.sidewaysFriction = wheelFriction;
+        BackWheelLeftCollider.sidewaysFriction = driftFrictionCurve;
+        BackWheelRightCollider.sidewaysFriction = driftFrictionCurve;
 
+        // Giảm phanh bánh trước để xe quay mượt
         float driftBrakePower = brakePower * 0.5f;
         FrontWheelLeftCollider.brakeTorque = 0;
         FrontWheelRightCollider.brakeTorque = 0;
@@ -283,11 +313,12 @@ public class Car_script : MonoBehaviour
         BackWheelRightCollider.brakeTorque = driftBrakePower;
     }
 
-    void DriftOff()
+    void RestoreFriction()
     {
         BackWheelLeftCollider.sidewaysFriction = originalSidewaysFrictionBackLeft;
         BackWheelRightCollider.sidewaysFriction = originalSidewaysFrictionBackRight;
     }
+
 
     void UpdateWheelMeshes()
     {
@@ -361,43 +392,104 @@ public class Car_script : MonoBehaviour
             carRigidbody.velocity = Vector3.zero;
             carRigidbody.angularVelocity = Vector3.zero;
 
+            // Lùi xa hơn một chút
             Vector3 backDir = -transform.forward;
-            Vector3 newPos = transform.position + backDir * flipBackOffset + Vector3.up * flipUpOffset;
+            Vector3 targetPos = transform.position + backDir * 2f + Vector3.up * 1.2f;
 
-            if (Physics.Raycast(newPos, Vector3.down, out RaycastHit hit, 10f))
-                newPos.y = hit.point.y + 1.5f;
+            // Kiểm tra mặt đất
+            if (Physics.Raycast(targetPos, Vector3.down, out RaycastHit hit, 10f))
+            {
+                targetPos.y = hit.point.y + 0.5f;
+            }
 
-            transform.position = newPos;
-            transform.rotation = Quaternion.Euler(0f, transform.eulerAngles.y, 0f);
-            StartCoroutine(ReactivatePhysics(0.1f));
+            Quaternion targetRot = Quaternion.Euler(0f, transform.eulerAngles.y, 0f);
+
+            StartCoroutine(FlipCarSmoothly(targetPos, targetRot, 0.6f));
         }
     }
 
-    IEnumerator ReactivatePhysics(float delay)
+    IEnumerator FlipCarSmoothly(Vector3 targetPos, Quaternion targetRot, float duration)
     {
-        yield return new WaitForSeconds(delay);
+        Vector3 startPos = transform.position;
+        Quaternion startRot = transform.rotation;
+
+        float elapsed = 0f;
+
+        while (elapsed < duration)
+        {
+            float t = elapsed / duration;
+
+            // Di chuyển và xoay từ từ
+            transform.position = Vector3.Lerp(startPos, targetPos, t);
+            transform.rotation = Quaternion.Slerp(startRot, targetRot, t);
+
+            elapsed += Time.deltaTime;
+            yield return null;
+        }
+
+        // Đặt chính xác lại vị trí & rotation
+        transform.position = targetPos;
+        transform.rotation = targetRot;
+
+        // Bật lại vật lý
         carRigidbody.isKinematic = false;
     }
+
+
+
     void TiltCarBody()
     {
         if (carBody == null) return;
 
-        // Tính toán góc nghiêng mục tiêu dựa theo hướng đánh lái
-        float targetZRotation = -horizontal * tiltAngle;
+        float targetYRotation = horizontal * 6f; //Giảm độ xoay thân xe khi cua
 
-        // Lấy rotation hiện tại
         Vector3 currentRotation = carBody.localEulerAngles;
 
-        // Convert Euler angles to signed angles (avoid sudden flip from 360 to 0)
-        if (currentRotation.z > 180f) currentRotation.z -= 360f;
+        if (currentRotation.y > 180f) currentRotation.y -= 360f;
 
-        // Lerp đến góc mới
-        float newZRotation = Mathf.Lerp(currentRotation.z, targetZRotation, Time.deltaTime * tiltSpeed);
+        float newY = Mathf.Lerp(currentRotation.y, targetYRotation, Time.deltaTime * tiltSpeed);
 
-        // Áp dụng rotation mới (giữ nguyên X và Y)
-        carBody.localEulerAngles = new Vector3(currentRotation.x, currentRotation.y, newZRotation);
+        // Chỉ giữ nguyên X và Z, không thay đổi nữa → bỏ nghiêng
+        carBody.localEulerAngles = new Vector3(currentRotation.x, newY, 0f);
     }
 
-   
 
+
+    private void OnTriggerEnter(Collider other)
+    {
+        if (other.CompareTag("Nangluong"))
+        {
+            Debug.Log("⚡ Nhặt năng lượng Boost!");
+
+            currentEnergy = maxEnergy;
+            isBoosting = false;
+
+            if (energySlider != null)
+                energySlider.value = currentEnergy;
+
+            if (audioSource != null && energyPickupSound != null && Audio_Thanh_pho.Instance != null)
+            {
+                audioSource.volume = Audio_Thanh_pho.Instance.effectsVolume;
+                audioSource.PlayOneShot(energyPickupSound);
+            }
+
+
+            // Ẩn vật phẩm và gọi Coroutine để xuất hiện lại
+            other.gameObject.SetActive(false);
+            StartCoroutine(RespawnEnergy(other.gameObject, 60f));
+        }
+
+    }
+    private IEnumerator RespawnEnergy(GameObject energyObject, float delay)
+    {
+        yield return new WaitForSeconds(delay);
+        energyObject.SetActive(true);
+        Debug.Log("⚡ Năng lượng đã xuất hiện lại!");
+    }
+
+    //public void IncreaseLap()
+    //{
+    //    currentLap++;
+    //    Debug.Log("car " + gameObject.name + "Lap: " + currentLap);
+    //}
 }

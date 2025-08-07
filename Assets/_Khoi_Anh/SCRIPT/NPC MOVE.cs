@@ -13,18 +13,7 @@ public class NPCMOVE : MonoBehaviour
     public Transform pointB;
 
     public Animator animator;
-    public AudioSource ambientAudioSource; // dành cho âm thanh rên nhẹ
-    private AudioSource hurtAudioSource;   // dành cho âm thanh khi ngã
-
-    [Header("Âm thanh khi ngã")]
-    public List<AudioClip> hurtSounds = new List<AudioClip>();
-
-    [Header("Âm thanh rên nhẹ khi có người tới gần")]
-    public AudioClip ambientSound;
-
-    [Header("Cài đặt âm lượng")]
-    [Range(0f, 1f)] public float ambientMaxVolume = 0.7f;
-    [Range(0f, 1f)] public float hurtVolume = 1.0f;
+  
 
     private bool hasFallen = false;
     private bool isAmbientEnabled = true;
@@ -43,27 +32,11 @@ public class NPCMOVE : MonoBehaviour
         if (animator == null)
             animator = GetComponent<Animator>();
 
-        if (ambientAudioSource == null)
-            ambientAudioSource = GetComponent<AudioSource>();
-
-        if (ambientAudioSource == null)
-            Debug.LogError("Thiếu AudioSource cho AmbientSound trên NPC: " + gameObject.name);
-
-        // Tạo thêm AudioSource để phát âm thanh hurt
-        hurtAudioSource = gameObject.AddComponent<AudioSource>();
-        hurtAudioSource.playOnAwake = false;
-        hurtAudioSource.loop = false;
+      
 
         animator.Play("Walking");
 
-        // Cài đặt ambient sound
-        if (ambientSound != null)
-        {
-            ambientAudioSource.clip = ambientSound;
-            ambientAudioSource.loop = true;
-            ambientAudioSource.volume = 0f;
-            ambientAudioSource.Play();
-        }
+    
 
         GameObject player = GameObject.FindGameObjectWithTag("Player");
         if (player != null) playerTransform = player.transform;
@@ -110,7 +83,7 @@ public class NPCMOVE : MonoBehaviour
 
     void HandleAmbientSoundVolume()
     {
-        if (ambientSound == null || ambientAudioSource == null || !isAmbientEnabled) return;
+       
 
         GameObject[] players = GameObject.FindGameObjectsWithTag("Player");
         float minDistance = float.MaxValue;
@@ -124,17 +97,7 @@ public class NPCMOVE : MonoBehaviour
             }
         }
 
-        // Nếu không có player nào thì volume = 0
-        if (players.Length == 0)
-        {
-            targetVolume = 0f;
-        }
-        else
-        {
-            targetVolume = minDistance <= 10f ? ambientMaxVolume : 0f;
-        }
-
-        ambientAudioSource.volume = Mathf.MoveTowards(ambientAudioSource.volume, targetVolume, ambientFadeSpeed * Time.deltaTime);
+        
     }
 
 
@@ -169,23 +132,7 @@ public class NPCMOVE : MonoBehaviour
     {
         isAmbientEnabled = false;
 
-        while (ambientAudioSource.volume > 0f)
-        {
-            ambientAudioSource.volume = Mathf.MoveTowards(ambientAudioSource.volume, 0f, ambientFadeSpeed * Time.deltaTime * 5);
-            yield return null;
-        }
-
-        if (hurtSounds.Count > 0)
-        {
-            int index = Random.Range(0, hurtSounds.Count);
-            AudioClip clip = hurtSounds[index];
-            hurtAudioSource.PlayOneShot(clip, hurtVolume);
-            yield return new WaitForSeconds(clip.length);
-        }
-        else
-        {
-            yield return new WaitForSeconds(1f);
-        }
+       
 
         isAmbientEnabled = true;
         yield return new WaitForSeconds(1.5f);

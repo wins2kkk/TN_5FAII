@@ -28,15 +28,19 @@ public class carNPC : MonoBehaviour
 
     [Header("VFX & SFX")]
     public GameObject hitEffectObject; // dùng object có sẵn, không phải prefab
-    public AudioClip hitSound;
-    private AudioSource audioSource;
+    //public AudioClip hitSound;
+
+    //am thanh va cham xe
+    [Header("Audio Settings")]
+    public AudioSource audioSource;
+    public AudioClip energyPickupSound;
 
     private Rigidbody rb;
 
     void Start()
     {
         rb = GetComponent<Rigidbody>();
-        audioSource = GetComponent<AudioSource>();
+        //audioSource = GetComponent<AudioSource>();
     }
 
     void FixedUpdate()
@@ -91,9 +95,10 @@ public class carNPC : MonoBehaviour
             }
 
             // SFX
-            if (hitSound && audioSource)
+            if (audioSource != null && energyPickupSound != null && Audio_Thanh_pho.Instance != null)
             {
-                audioSource.PlayOneShot(hitSound);
+                audioSource.volume = Audio_Thanh_pho.Instance.effectsVolume;
+                audioSource.PlayOneShot(energyPickupSound);
             }
         }
     }

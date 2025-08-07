@@ -77,7 +77,9 @@ public class CarAudioManager : MonoBehaviour
             car.carSpeedConverted > minSpeedForBoostSound &&
             boostTimer <= 0f)
         {
-            boostSource.PlayOneShot(boostClip, boostVolume);
+            if (useAudioManager && Audio_Thanh_pho.Instance != null)
+                Audio_Thanh_pho.Instance.PlayEffect(boostClip);
+
             boostTimer = boostCooldown;
         }
 
@@ -86,11 +88,9 @@ public class CarAudioManager : MonoBehaviour
         // Brake Drift Sound
         bool isDrifting = car.handBrakeEffects && car.carSpeedConverted > minSpeedForBrakeSound;
 
-        if (isDrifting)
-        {
-            if (!brakeSource.isPlaying)
-                brakeSource.Play();
-        }
+        if (useAudioManager && Audio_Thanh_pho.Instance != null)
+            Audio_Thanh_pho.Instance.PlayEffect(brakeClip);
+
         else
         {
             if (brakeSource.isPlaying)
@@ -99,13 +99,13 @@ public class CarAudioManager : MonoBehaviour
 
         wasBoosting = car.isBoosting;
         wasHandBraking = car.handBrakeEffects;
-        if (useAudioManager && AudioManager.Instance != null)
+        if (useAudioManager && Audio_Thanh_pho.Instance != null)
         {
             float speedRatio = Mathf.Clamp01(car.carSpeedConverted / car.maximumSpeed);
             float pitch = Mathf.Lerp(pitchMin, pitchMax, speedRatio);
 
             // Dùng AudioManager phát engine loop
-            AudioManager.Instance.PlayLoopingEngine(engineSource, engineClip, pitch);
+            Audio_Thanh_pho.Instance.PlayLoopingEngine(engineSource, engineClip, pitch);
 
             // Phát boost sound bằng AudioManager song song boostSource
             if (car.isBoosting && !wasBoosting &&
@@ -113,13 +113,13 @@ public class CarAudioManager : MonoBehaviour
                 car.carSpeedConverted > minSpeedForBoostSound &&
                 boostTimer <= 0f)
             {
-                AudioManager.Instance.PlayEffect(boostClip);
+                Audio_Thanh_pho.Instance.PlayEffect(boostClip);
             }
 
             // Phát brake sound bằng AudioManager nếu drifting
             if (car.handBrakeEffects && car.carSpeedConverted > minSpeedForBrakeSound && !wasHandBraking)
             {
-                AudioManager.Instance.PlayEffect(brakeClip);
+                Audio_Thanh_pho.Instance.PlayEffect(brakeClip);
             }
         }
 
