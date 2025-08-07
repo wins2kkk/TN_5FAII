@@ -13518,9 +13518,9 @@ GameObject:
   m_Component:
   - component: {fileID: 5860085358000243210}
   - component: {fileID: 1201251571934579587}
-  - component: {fileID: 7472937893437569349}
   - component: {fileID: -1015937881190097528}
   - component: {fileID: 2642538967601088754}
+  - component: {fileID: 2707521191622526625}
   m_Layer: 0
   m_Name: AIVip
   m_TagString: AI
@@ -13580,31 +13580,6 @@ Rigidbody:
   m_Interpolate: 0
   m_Constraints: 0
   m_CollisionDetection: 0
---- !u!114 &7472937893437569349
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6088916851905979410}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 030170acf65500443b6dcd48686610ee, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  maxSpeed: 90
-  acceleration: 3
-  brakeForce: 5000
-  maxSteerAngle: 45
-  steerSpeed: 8
-  frontLeftWheel: {fileID: 5525015906036135}
-  frontRightWheel: {fileID: 3339083121542237219}
-  rearLeftWheel: {fileID: 7598637172177198284}
-  rearRightWheel: {fileID: 2656241987891835447}
-  wheelRotationSpeed: 360
-  aiTag: AI
-  avoidDistance: 13
-  avoidSlowFactor: 5
 --- !u!114 &-1015937881190097528
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -13641,6 +13616,31 @@ MonoBehaviour:
   initialIconRotation: 0
   clampIconInBorder: 1
   clampDistance: 100
+--- !u!114 &2707521191622526625
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6088916851905979410}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5daa7bccbe0d1094fa59afb4107edc07, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  maxSpeed: 15
+  acceleration: 10
+  brakeForce: 20
+  maxSteerAngle: 45
+  steerSpeed: 8
+  frontLeftWheel: {fileID: 0}
+  frontRightWheel: {fileID: 0}
+  rearLeftWheel: {fileID: 0}
+  rearRightWheel: {fileID: 0}
+  wheelRotationSpeed: 360
+  aiTag: AI
+  avoidDistance: 6
+  avoidSlowFactor: 0.5
 --- !u!1 &6462094987126251341
 GameObject:
   m_ObjectHideFlags: 0

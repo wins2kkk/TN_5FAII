@@ -172,7 +172,7 @@ public class LoginPagePlayfab : MonoBehaviour
         yield return new WaitForSeconds(2);
         MessageText.text = "Login Succes";
         //SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex + 1);
-        PlayerPrefs.SetString("SceneToLoad", "Menu");
+        PlayerPrefs.SetString("SceneToLoad", "Road22");
         SceneManager.LoadScene("Loading");
     }
 

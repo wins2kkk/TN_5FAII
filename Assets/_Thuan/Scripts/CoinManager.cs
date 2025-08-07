@@ -12,7 +12,6 @@ public class CoinManager : MonoBehaviour
 
     [Header("UI References - Sẽ được tự động tìm lại")]
     public TextMeshProUGUI coinText; // Text hiển thị số coin trên UI
-    
     private const string GAMECOIN = "GC";
 
 
@@ -126,27 +125,7 @@ public class CoinManager : MonoBehaviour
         });
     }
 
-    //
-    /*
-        /// <summary>
-        /// Tải số coin từ PlayerPrefs
-        /// </summary>
-        private void LoadCoins()
-        {
-            currentCoins = PlayerPrefs.GetInt(COIN_KEY, 0);
-            Debug.Log("Đã tải: " + currentCoins + " coins");
-        }
-
-        /// <summary>
-        /// Lưu số coin vào PlayerPrefs
-        /// </summary>
-        private void SaveCoins()
-        {
-            PlayerPrefs.SetInt(COIN_KEY, currentCoins);
-            PlayerPrefs.Save();
-            //Debug.Log("Đã lưu: " + currentCoins + " coins");
-        }
-    */
+   
 
     /// <summary>
     /// Thêm coin và lưu
@@ -174,13 +153,7 @@ public class CoinManager : MonoBehaviour
             });
     
 
-        //if (amount > 0)
-        //{
-        //    currentCoins += amount;
-        //    SaveCoins();
-        //    UpdateCoinUI();
-        //   // Debug.Log("+ " + amount + " coins! Tổng: " + currentCoins);
-        //}
+        
     }
 
     /// <summary>
@@ -215,22 +188,8 @@ public class CoinManager : MonoBehaviour
                 Debug.LogError("Lỗi trừ GC: " + error.GenerateErrorReport());
             });
         return true;
-        //if (amount > 0 && currentCoins >= amount)
-        //{
-        //    currentCoins -= amount;
-        //    SaveCoins();
-        //    UpdateCoinUI();
-        //    Debug.Log("- " + amount + " coins! Còn lại: " + currentCoins);
-        //    return true;
-        //}
-        //else
-        //{
-        //    Debug.Log("Không đủ coin! Hiện có: " + currentCoins + ", cần: " + amount);
-        //    return false;
-        //}
+       
     }
-
-    //
 
     public void TrySpendCoins(int amount)
     {
@@ -301,6 +260,28 @@ public class CoinManager : MonoBehaviour
     {
         FindCoinText();
         UpdateCoinUI();
+    }
+    public void SendCoinsToLeaderboard()
+    {
+        var request = new UpdatePlayerStatisticsRequest
+        {
+            Statistics = new List<StatisticUpdate>
+        {
+            new StatisticUpdate
+            {
+                StatisticName = "BXH", // phải giống tên trên PlayFab
+                Value = currentCoins
+            }
+        }
+        };
+
+        PlayFabClientAPI.UpdatePlayerStatistics(request,
+            result => {
+                Debug.Log("Cập nhật leaderboard thành công với " + currentCoins + " cúp");
+            },
+            error => {
+                Debug.LogError("Lỗi cập nhật leaderboard: " + error.GenerateErrorReport());
+            });
     }
 
     private void OnDestroy()

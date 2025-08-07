@@ -82,9 +82,9 @@ public class Car_script : MonoBehaviour
     public AudioClip energyPickupSound;
 
     //tính vòng đua
-    //[Header("Lap")]
-    //public int maxLaps = 3;
-    //private int currentLap;
+    [Header("Lap")]
+    public int maxLaps = 3;
+    private int currentLap;
 
     void Start()
     {
@@ -124,7 +124,7 @@ public class Car_script : MonoBehaviour
         FrontWheelRightCollider.sidewaysFriction = frontFriction;
 
 
-       // maxLaps = FindObjectOfType<LapSystem>().maxLap;
+        maxLaps = FindObjectOfType<LapSystem>().maxLap;
     }
 
     void Update()
