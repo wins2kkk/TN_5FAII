@@ -16,6 +16,8 @@ public class SpiningManager : MonoBehaviour
     public TMP_Text winText;
     public TMP_Text countdownText;
 
+    public TMP_Text adCooldownText; // Text hiển thị cooldown quảng cáo
+
     [Header("Danh sách phần thưởng (coins)")]
     public int[] PrizeCoins = { 300, 100, 500, 100, 100, 200, 100, 200 };
     [HideInInspector] public string[] PrizeName;
@@ -25,6 +27,10 @@ public class SpiningManager : MonoBehaviour
 
     [Header("Thời gian cooldown (giây)")]
     public int cooldownSeconds = 10;
+
+    [Header("Cài đặt quảng cáo")]
+    public int adCooldownMinutes = 15; // 15 phút cooldown giữa các lần xem quảng cáo
+
 
     private int randVal;
     private float timeInterval;
@@ -39,6 +45,7 @@ public class SpiningManager : MonoBehaviour
     private const string SPIN_KEY = "NextSpinTime";
     private const string AD_KEY = "NextAdTime";
     private const string FREE_SPIN_KEY = "FreeSpinCount";
+
 
     private void Start()
     {
@@ -73,7 +80,7 @@ public class SpiningManager : MonoBehaviour
 
     public void OnAdButtonClicked()
     {
-        if (DateTime.Now >= nextAdTime)
+        if(CanWatchAd()) //(DateTime.Now >= nextAdTime)
         {
             if (AdsManager.Instance != null)
             {
@@ -86,14 +93,15 @@ public class SpiningManager : MonoBehaviour
             }
         }
         else
-        {
+        { 
+
             Debug.Log("Chưa đủ thời gian để xem quảng cáo tiếp.");
         }
     }
     private void OnRewardedAdFinished()
     {
         freeSpinCount++;
-        nextAdTime = DateTime.Now.AddHours(2);
+        nextAdTime = DateTime.Now.AddMinutes(adCooldownMinutes); //DateTime.Now.AddHours(2);
         SaveCooldownToPlayFab();
         UpdateUI();
 
@@ -183,7 +191,6 @@ public class SpiningManager : MonoBehaviour
                 freeSpinCount = int.Parse(data[FREE_SPIN_KEY].Value);
             else
                 freeSpinCount = 0;
-
             Debug.Log("Đã load cooldown từ PlayFab.");
             UpdateUI();
         },
@@ -199,7 +206,7 @@ public class SpiningManager : MonoBehaviour
         {
             { SPIN_KEY, nextSpinTime.ToBinary().ToString() },
             { AD_KEY, nextAdTime.ToBinary().ToString() },
-            { FREE_SPIN_KEY, freeSpinCount.ToString() }
+            { FREE_SPIN_KEY, freeSpinCount.ToString() },
         };
 
         PlayFabClientAPI.UpdateUserData(new UpdateUserDataRequest
@@ -220,11 +227,17 @@ public class SpiningManager : MonoBehaviour
 
     private void UpdateUI()
     {
+        // Cập nhật spin button
         spinButton.gameObject.SetActive(true);
         spinButton.interactable = !isSpinning && CanSpin();
-        adButton.interactable = CanWatchAd();
-        if (freeSpinButton != null) freeSpinButton.interactable = true;
 
+        // Cập nhật ad button
+        adButton.interactable = CanWatchAd();
+        
+        // Cập nhật free spin button
+        if (freeSpinButton != null) freeSpinButton.interactable = true;
+        
+        //Cập nhật countdown text cho spin
         if (countdownText != null)
         {
             if (freeSpinCount > 0 || DateTime.Now >= nextSpinTime)
@@ -241,6 +254,29 @@ public class SpiningManager : MonoBehaviour
             }
         }
 
+
+        // Cập nhật ad cooldown text
+        if (adCooldownText != null)
+        {
+            if (DateTime.Now >= nextAdTime)
+            {
+                adCooldownText.gameObject.SetActive(false);
+            }
+            else
+            {
+                adCooldownText.gameObject.SetActive(true);
+                TimeSpan timeLeft = nextAdTime - DateTime.Now;
+                string minutes = Mathf.FloorToInt((float)timeLeft.TotalMinutes).ToString();
+                string seconds = Mathf.FloorToInt((float)timeLeft.TotalSeconds % 60).ToString("00");
+                adCooldownText.text = $"{minutes}:{seconds}";
+            }
+        }
+
+        // Cập nhật màu spin button
         spinButton.GetComponent<Image>().color = spinButton.interactable ? Color.white : Color.gray;
+
+        // Cập nhật màu ad button
+        adButton.GetComponent<Image>().color = adButton.interactable ? Color.white : Color.gray;
+        // spinButton.GetComponent<Image>().color = spinButton.interactable ? Color.white : Color.gray;
     }
 }
