@@ -10,20 +10,31 @@ public class LapSystem : MonoBehaviour
     private float raceTime = 0f;
     private bool raceEnded = false;
 
+    [Header("Checkpoint Tracking")]
+    private int playerCheckpoints = 0;
+    public int requiredCheckpointsPerLap = 5;
+
     [Header("UI")]
     public TextMeshProUGUI lapText;
     public TextMeshProUGUI timerText;
     public GameObject resultPanel;
     public TextMeshProUGUI resultText;
-    public TextMeshProUGUI finalTimeText;
-    public TextMeshProUGUI cupRewardText; // 👈 THÊM DÒNG NÀY
+    public TextMeshProUGUI cupRewardText;
+    public TextMeshProUGUI raceInfoText; // 👉 hiển thị tên và thời gian từng người
 
     [Header("Reward Settings")]
-    public int winReward = 5; // Số cúp thưởng khi thắng
-    public int loseReward = 1; // Số cúp thưởng khi thua (có thể để 0)
+    public int winReward = 5;
+    public int loseReward = 1;
+
+    [Header("Opponent")]
+    public string[] botNames = { "Bot_Alex", "Bot_Jin", "Bot_Mike", "Bot_Sara" };
+    private string opponentName;
+    private float opponentFinishTime = 0f;
+    private float playerFinishTime = 0f;
 
     private void Start()
     {
+        opponentName = botNames[Random.Range(0, botNames.Length)];
         UpdateLapUI();
         StartCoroutine(UpdateTimer());
     }
@@ -32,20 +43,34 @@ public class LapSystem : MonoBehaviour
     {
         if (raceEnded) return;
 
+        if (other.CompareTag("Checkpoint"))
+        {
+            playerCheckpoints++;
+        }
+
         OppentCar opponentCar = other.GetComponent<OppentCar>();
         Car_script playerCar = other.GetComponent<Car_script>();
 
         if (opponentCar != null)
         {
-            opponentCar.IncreaseLap();
-            CheckRaceCompletion(opponentCar);
+            opponentCar.currentCheckpoints++;
+            if (opponentCar.currentCheckpoints >= requiredCheckpointsPerLap)
+            {
+                opponentCar.currentCheckpoints = 0;
+                opponentCar.currentLap++;
+                CheckRaceCompletion(opponentCar);
+            }
         }
 
-        if (playerCar != null)
+        if (playerCar != null && other.CompareTag("Finish"))
         {
-            currentLap++;
-            UpdateLapUI();
-            CheckRaceCompletion(playerCar);
+            if (playerCheckpoints >= requiredCheckpointsPerLap)
+            {
+                playerCheckpoints = 0;
+                currentLap++;
+                UpdateLapUI();
+                CheckRaceCompletion(playerCar);
+            }
         }
     }
 
@@ -53,7 +78,8 @@ public class LapSystem : MonoBehaviour
     {
         if (opponentCar.currentLap >= maxLap)
         {
-            EndMission(false);
+            opponentFinishTime = Time.timeSinceLevelLoad;
+            EndMission(false); // player thua
         }
     }
 
@@ -61,54 +87,54 @@ public class LapSystem : MonoBehaviour
     {
         if (currentLap >= maxLap)
         {
-            EndMission(true);
+            playerFinishTime = raceTime;
+            EndMission(true); // player thắng
         }
     }
 
     private void EndMission(bool success)
     {
+        if (raceEnded) return;
         raceEnded = true;
 
-        int rewardCup = 0;
+        int rewardCup = success ? winReward : loseReward;
 
         if (success)
         {
-            Debug.Log("🏁 Người chơi đã chiến thắng!");
             resultText.text = "Victory!";
-            rewardCup = winReward;
-
-            if (TrophyManager.Instance != null)
-            {
-                TrophyManager.Instance.AddCup(winReward);
-                Debug.Log($"✅ Đã cộng {winReward} cúp cho người chơi (lưu vào UserData).");
-            }
-            else
-            {
-                Debug.LogWarning("⚠️ TrophyManager chưa được khởi tạo.");
-            }
+            TrophyManager.Instance?.AddCup(winReward);
+            playerFinishTime = raceTime;
         }
         else
         {
-            Debug.Log("❌ Người chơi đã thua.");
             resultText.text = "Defeat!";
-            rewardCup = loseReward;
+            TrophyManager.Instance?.AddCup(loseReward);
+            opponentFinishTime = Time.timeSinceLevelLoad;
+        }
 
-            if (loseReward > 0 && TrophyManager.Instance != null)
+        // Hiển thị thông tin người thắng
+        if (raceInfoText != null)
+        {
+            if (success)
             {
-                TrophyManager.Instance.AddCup(loseReward);
-                Debug.Log($"🎖️ Đã cộng {loseReward} cúp an ủi.");
+                raceInfoText.text = $"1. You - {FormatTime(playerFinishTime)}\n2. {opponentName} - {FormatTime(opponentFinishTime)}";
+            }
+            else
+            {
+                raceInfoText.text = $"1. {opponentName} - {FormatTime(opponentFinishTime)}\n2. You - {FormatTime(playerFinishTime)}";
             }
         }
 
-        finalTimeText.text = "Time: " + FormatTime(raceTime);
-
-        // 👇 Hiển thị số cúp nhận được
         if (cupRewardText != null)
         {
             cupRewardText.text = $"🏆 +{rewardCup} Cup";
         }
 
-        resultPanel.SetActive(true);
+        if (resultPanel != null)
+        {
+            resultPanel.SetActive(true);
+        }
+
         StartCoroutine(HideResultPanelAfterDelay(5f));
     }
 
@@ -125,12 +151,8 @@ public class LapSystem : MonoBehaviour
     {
         if (lapText != null)
         {
-            lapText.text = "Lap: " + currentLap + "/" + maxLap;
+            lapText.text = $"Lap: {currentLap}/{maxLap}";
         }
-    }
-    public int GetCurrentLap()
-    {
-        return currentLap;
     }
 
     private IEnumerator UpdateTimer()
@@ -158,6 +180,7 @@ public class LapSystem : MonoBehaviour
     {
         raceEnded = false;
         currentLap = 0;
+        playerCheckpoints = 0;
         raceTime = 0f;
         resultPanel.SetActive(false);
         UpdateLapUI();

@@ -40,17 +40,21 @@ public class Waypointt : MonoBehaviour
         {
             int totalWaypoints = CheckPointManager.Instance.TotalWaypointCount;
 
-            // Nếu đi đúng thứ tự (hoặc quay vòng lại 0)
-            if ((tracker.currentWaypointIndex + 1) % totalWaypoints == waypointIndex)
+            // TÍNH checkpoint tiếp theo hợp lệ
+            int expectedNext = (tracker.currentWaypointIndex + 1) % totalWaypoints;
+
+            // Nếu đi ĐÚNG thứ tự (bao gồm vòng lại từ cuối về 0)
+            if (waypointIndex == expectedNext)
             {
                 tracker.currentWaypointIndex = waypointIndex;
 
-                // Nếu quay lại waypoint 0 thì tăng lap
-                if (waypointIndex == 0)
+                // Nếu về checkpoint 0 sau khi đi qua hết waypoint -> tăng lap
+                if (waypointIndex == 0 && tracker.currentWaypointIndex == 0)
                 {
                     tracker.currentLap++;
                 }
             }
         }
     }
+
 }
