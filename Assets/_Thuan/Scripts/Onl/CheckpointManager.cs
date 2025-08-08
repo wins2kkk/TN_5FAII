@@ -40,7 +40,7 @@ public class CheckPointManager : MonoBehaviour
         {
             allWaypoints[i].waypointIndex = i;
         }
-      
+
         // Tính DistanceFromStart tự động
 
         float cumulativeDistance = 0f;

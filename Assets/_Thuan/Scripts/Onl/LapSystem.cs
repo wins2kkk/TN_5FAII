@@ -31,22 +31,34 @@ public class LapSystem : MonoBehaviour
     private List<RacerResult> results = new List<RacerResult>();
     private List<string> botNames = new List<string> { "Bot Alpha", "Bot Beta", "Bot Gamma", "Bot Delta", "Bot Zeta" };
     private bool hasPlayerFinished = false;
-    private Checkpointwin checkpointManager;
+    //private Checkpointwin checkpointManager;
     public TextMeshProUGUI checkpointText;
+    [Header("Checkpoint Settings")]
+    public int checkpointsRequiredPerLap = 4; // Số checkpoint cần qua để tính 1 lap
+    private int playerCheckpointCount = 0;
+
+    public void PlayerPassedCheckpoint()
+    {
+        playerCheckpointCount++;
+        if (checkpointText != null)
+        {
+            checkpointText.text = $"Checkpoint: {playerCheckpointCount}/{checkpointsRequiredPerLap}";
+        }
+    }
 
     private void Start()
     {
-        checkpointManager = FindObjectOfType<Checkpointwin>();
+        //checkpointManager = FindObjectOfType<Checkpointwin>();
         UpdateLapUI();
         StartCoroutine(UpdateTimer());
     }
-    private void Update()
-    {
-        if (checkpointManager != null && checkpointText != null)
-        {
-            checkpointText.text = $"Checkpoint: {checkpointManager.CheckpointsPassedCount}/5";
-        }
-    }
+    //private void Update()
+    //{
+    //    if (checkpointManager != null && checkpointText != null)
+    //    {
+    //        checkpointText.text = $"Checkpoint: {checkpointManager.CheckpointsPassedCount}/5";
+    //    }
+    //}
     private void OnTriggerEnter(Collider other)
     {
         OppentCar opponentCar = other.GetComponent<OppentCar>();
@@ -82,16 +94,26 @@ public class LapSystem : MonoBehaviour
         // PLAYER về đích
         if (playerCar != null && currentLap < maxLap)
         {
-            currentLap++;
-            UpdateLapUI();
-
-            if (currentLap >= maxLap && !hasPlayerFinished)
+            // ✅ Chỉ tăng lap nếu đã qua đủ checkpoint
+            if (playerCheckpointCount >= checkpointsRequiredPerLap)
             {
-                hasPlayerFinished = true;
-                results.Add(new RacerResult("You", Time.timeSinceLevelLoad));
-                EndMission(); // Chỉ gọi 1 lần
+                currentLap++;
+                playerCheckpointCount = 0; // Reset cho lap mới
+                UpdateLapUI();
+
+                if (currentLap >= maxLap && !hasPlayerFinished)
+                {
+                    hasPlayerFinished = true;
+                    results.Add(new RacerResult("You", Time.timeSinceLevelLoad));
+                    EndMission();
+                }
+            }
+            else
+            {
+                Debug.Log("⚠ Chưa qua đủ checkpoint, không tính lap!");
             }
         }
+
     }
     private void EndMission()
     {
@@ -101,7 +123,7 @@ public class LapSystem : MonoBehaviour
 
         bool playerWon = results[0].name == "You";
         resultText.text = playerWon ? "Victory!" : "Defeat!";
-        cupRewardText.text = playerWon ? $"🏆 +{winReward} Cup" : $"🎖️ +{loseReward} Cup";
+        cupRewardText.text = playerWon ? $" +{winReward} Cup" : $" +{loseReward} Cup";
 
         if (TrophyManager.Instance != null)
         {

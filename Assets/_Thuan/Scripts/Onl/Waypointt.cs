@@ -39,16 +39,22 @@ public class Waypointt : MonoBehaviour
         if (tracker != null)
         {
             int totalWaypoints = CheckPointManager.Instance.TotalWaypointCount;
-
-            // TÍNH checkpoint tiếp theo hợp lệ
             int expectedNext = (tracker.currentWaypointIndex + 1) % totalWaypoints;
 
-            // Nếu đi ĐÚNG thứ tự (bao gồm vòng lại từ cuối về 0)
             if (waypointIndex == expectedNext)
             {
                 tracker.currentWaypointIndex = waypointIndex;
 
-                // Nếu về checkpoint 0 sau khi đi qua hết waypoint -> tăng lap
+                // Nếu là player thì báo về LapSystem
+                if (tracker.GetComponent<Car_script>() != null)
+                {
+                    LapSystem lapSys = FindObjectOfType<LapSystem>();
+                    if (lapSys != null)
+                    {
+                        lapSys.PlayerPassedCheckpoint();
+                    }
+                }
+
                 if (waypointIndex == 0 && tracker.currentWaypointIndex == 0)
                 {
                     tracker.currentLap++;
@@ -56,5 +62,6 @@ public class Waypointt : MonoBehaviour
             }
         }
     }
+
 
 }
