@@ -7,7 +7,7 @@ using UnityEngine.SceneManagement;
 
 public class globalAudioManager : MonoBehaviour
 {
-    public static Audio_Thanh_pho Instance;
+    public static AudioManager Instance;
 
     [Header("UI")]
     public Slider soundSlider;

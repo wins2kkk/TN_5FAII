@@ -34,7 +34,7 @@ public class ButtonHoverEffect : MonoBehaviour, IPointerEnterHandler, IPointerEx
 
     public void OnPointerClick(PointerEventData eventData)
     {
-        Debug.Log("Click!"); // Dòng kiểm tra click có hoạt động không
+        //Debug.Log("Click!"); // Dòng kiểm tra click có hoạt động không
 
         if (audioSource != null && audioSource.clip != null)
         {
@@ -42,7 +42,7 @@ public class ButtonHoverEffect : MonoBehaviour, IPointerEnterHandler, IPointerEx
         }
         else
         {
-            Debug.LogWarning("AudioSource hoặc AudioClip chưa được gán!");
+            //Debug.LogWarning("AudioSource hoặc AudioClip chưa được gán!");
         }
     }
 }

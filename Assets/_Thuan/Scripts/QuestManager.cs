@@ -675,6 +675,15 @@ public class QuestManager : MonoBehaviour
 
         WaypointManager.Instance?.RemoveWaypoint();
 
+        // CÁCH ĐỔI ĐỔN GIẢN: Chỉ thêm đoạn này vào FailQuest() sau dòng WaypointManager.Instance?.RemoveWaypoint();
+
+        // Dọn dẹp nhiệm vụ thu thập nếu đang active
+        if (currentQuest != null && currentQuest.questType == QuestType.ThuThapCoin)
+        {
+            var thuThapQuest = FindObjectOfType<ThuThapVatPham>();
+            if (thuThapQuest != null)
+                thuThapQuest.StopQuest();
+        }
         if (PanelFaile != null)
         {
             PanelFaile.SetActive(true);

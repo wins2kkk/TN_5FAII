@@ -67,7 +67,7 @@ public class WaypointManager : MonoBehaviour
     private void Start()
     {
         SetupReferences();
-        FindPlayerByTag(); // Tìm player ngay từ đầu
+       // FindPlayerByTag(); // Tìm player ngay từ đầu
     }
 
     // Tìm player theo tag với cache
@@ -136,7 +136,7 @@ public class WaypointManager : MonoBehaviour
                 {
                     foundCamera = cam;
                     if (debugMode)
-                        Debug.Log($"Found camera in player with tag '{cameraTag}': {cam.name}");
+                       // Debug.Log($"Found camera in player with tag '{cameraTag}': {cam.name}");
                     break;
                 }
             }
@@ -193,14 +193,14 @@ public class WaypointManager : MonoBehaviour
         }
         else
         {
-            Debug.LogWarning("No suitable camera found!");
+           // Debug.LogWarning("No suitable camera found!");
         }
     }
 
     // Được gọi mỗi khi load scene mới
     private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
     {
-        if (debugMode) Debug.Log($"Scene loaded: {scene.name}");
+        if (debugMode)// Debug.Log($"Scene loaded: {scene.name}");
 
         // Reset player reference khi đổi scene
         player = null;
@@ -237,7 +237,7 @@ public class WaypointManager : MonoBehaviour
 
         if (attempts >= maxAttempts)
         {
-            Debug.LogWarning("Could not find all UI elements after maximum attempts");
+            //Debug.LogWarning("Could not find all UI elements after maximum attempts");
             LogMissingUIElements();
         }
 

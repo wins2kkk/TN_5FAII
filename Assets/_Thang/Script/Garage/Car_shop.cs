@@ -13,7 +13,7 @@ public class Car_shop : MonoBehaviour
     public GameObject successPanel;
     public GameObject failPanel;
 
-    private int[] carPrices = { 0, 1999, 3999, 5999, 7999, 10000, 15000, 20000 };
+    private int[] carPrices = { 0, 1999, 3999, 5999, 7999, 10000, 15000};
     private bool[] carOwned;
     private const string CAR_OWNED_KEY_PREFIX = "CarOwned_";
 

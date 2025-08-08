@@ -190,6 +190,7 @@ public class RacerProgressWaypoint : MonoBehaviour
         if (currentWaypointIndex >= trackWaypoints.Length) return;
 
         Transform targetWaypoint = trackWaypoints[currentWaypointIndex];
+        if (targetWaypoint == null) return;
 
         // Vẽ đường đến waypoint tiếp theo
         Gizmos.color = racerName == "Player" ? Color.green : Color.blue;
@@ -200,7 +201,6 @@ public class RacerProgressWaypoint : MonoBehaviour
         Gizmos.DrawWireSphere(targetWaypoint.position, waypointReachDistance);
 
 #if UNITY_EDITOR
-        // 🆕 Hiển thị thông tin debug trong Editor
         if (showDebugInfo)
         {
             Gizmos.color = Color.white;
@@ -209,6 +209,7 @@ public class RacerProgressWaypoint : MonoBehaviour
         }
 #endif
     }
+
     public Transform GetLastCheckpoint()
     {
         return lastPassedCheckpoint;

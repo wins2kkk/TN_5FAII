@@ -1,7 +1,9 @@
 ﻿using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
+using System.Linq;
 
 public class LapSystem : MonoBehaviour
 {
@@ -10,148 +12,131 @@ public class LapSystem : MonoBehaviour
     private float raceTime = 0f;
     private bool raceEnded = false;
 
-    [Header("Checkpoint Tracking")]
-    private int playerCheckpoints = 0;
-    public int requiredCheckpointsPerLap = 5;
-
     [Header("UI")]
     public TextMeshProUGUI lapText;
     public TextMeshProUGUI timerText;
     public GameObject resultPanel;
     public TextMeshProUGUI resultText;
+    public TextMeshProUGUI finalTimeText;
     public TextMeshProUGUI cupRewardText;
-    public TextMeshProUGUI raceInfoText; // 👉 hiển thị tên và thời gian từng người
+
+    public TextMeshProUGUI top1Text;
+    public TextMeshProUGUI top2Text;
+    public TextMeshProUGUI top3Text;
 
     [Header("Reward Settings")]
     public int winReward = 5;
     public int loseReward = 1;
 
-    [Header("Opponent")]
-    public string[] botNames = { "Bot_Alex", "Bot_Jin", "Bot_Mike", "Bot_Sara" };
-    private string opponentName;
-    private float opponentFinishTime = 0f;
-    private float playerFinishTime = 0f;
+    private List<RacerResult> results = new List<RacerResult>();
+    private List<string> botNames = new List<string> { "Bot Alpha", "Bot Beta", "Bot Gamma", "Bot Delta", "Bot Zeta" };
+    private bool hasPlayerFinished = false;
+    private Checkpointwin checkpointManager;
+    public TextMeshProUGUI checkpointText;
 
     private void Start()
     {
-        opponentName = botNames[Random.Range(0, botNames.Length)];
+        checkpointManager = FindObjectOfType<Checkpointwin>();
         UpdateLapUI();
         StartCoroutine(UpdateTimer());
     }
-
+    private void Update()
+    {
+        if (checkpointManager != null && checkpointText != null)
+        {
+            checkpointText.text = $"Checkpoint: {checkpointManager.CheckpointsPassedCount}/5";
+        }
+    }
     private void OnTriggerEnter(Collider other)
     {
-        if (raceEnded) return;
-
-        if (other.CompareTag("Checkpoint"))
-        {
-            playerCheckpoints++;
-        }
-
         OppentCar opponentCar = other.GetComponent<OppentCar>();
         Car_script playerCar = other.GetComponent<Car_script>();
 
-        if (opponentCar != null)
+        // BOT về đích
+        if (opponentCar != null && !opponentCar.hasFinished)
         {
-            opponentCar.currentCheckpoints++;
-            if (opponentCar.currentCheckpoints >= requiredCheckpointsPerLap)
+            opponentCar.IncreaseLap();
+
+            if (opponentCar.currentLap >= maxLap)
             {
-                opponentCar.currentCheckpoints = 0;
-                opponentCar.currentLap++;
-                CheckRaceCompletion(opponentCar);
+                opponentCar.hasFinished = true;
+
+                string botName = opponentCar.botName;
+                if (string.IsNullOrEmpty(botName))
+                {
+                    botName = GetRandomBotName();
+                    opponentCar.botName = botName;
+                }
+
+                // ✅ Ghi đúng thời điểm bot về đích
+                results.Add(new RacerResult(botName, Time.timeSinceLevelLoad));
+
+                // ✅ Nếu player đã về đích => cập nhật UI
+                if (hasPlayerFinished)
+                {
+                    UpdateResultPanel();
+                }
             }
         }
 
-        if (playerCar != null && other.CompareTag("Finish"))
+        // PLAYER về đích
+        if (playerCar != null && currentLap < maxLap)
         {
-            if (playerCheckpoints >= requiredCheckpointsPerLap)
+            currentLap++;
+            UpdateLapUI();
+
+            if (currentLap >= maxLap && !hasPlayerFinished)
             {
-                playerCheckpoints = 0;
-                currentLap++;
-                UpdateLapUI();
-                CheckRaceCompletion(playerCar);
+                hasPlayerFinished = true;
+                results.Add(new RacerResult("You", Time.timeSinceLevelLoad));
+                EndMission(); // Chỉ gọi 1 lần
             }
         }
     }
-
-    private void CheckRaceCompletion(OppentCar opponentCar)
+    private void EndMission()
     {
-        if (opponentCar.currentLap >= maxLap)
-        {
-            opponentFinishTime = Time.timeSinceLevelLoad;
-            EndMission(false); // player thua
-        }
-    }
-
-    private void CheckRaceCompletion(Car_script playerCar)
-    {
-        if (currentLap >= maxLap)
-        {
-            playerFinishTime = raceTime;
-            EndMission(true); // player thắng
-        }
-    }
-
-    private void EndMission(bool success)
-    {
-        if (raceEnded) return;
         raceEnded = true;
 
-        int rewardCup = success ? winReward : loseReward;
+        results = results.OrderBy(r => r.finishTime).ToList();
 
-        if (success)
+        bool playerWon = results[0].name == "You";
+        resultText.text = playerWon ? "Victory!" : "Defeat!";
+        cupRewardText.text = playerWon ? $"🏆 +{winReward} Cup" : $"🎖️ +{loseReward} Cup";
+
+        if (TrophyManager.Instance != null)
         {
-            resultText.text = "Victory!";
-            TrophyManager.Instance?.AddCup(winReward);
-            playerFinishTime = raceTime;
-        }
-        else
-        {
-            resultText.text = "Defeat!";
-            TrophyManager.Instance?.AddCup(loseReward);
-            opponentFinishTime = Time.timeSinceLevelLoad;
+            TrophyManager.Instance.AddCup(playerWon ? winReward : loseReward);
         }
 
-        // Hiển thị thông tin người thắng
-        if (raceInfoText != null)
+        RacerResult playerResult = results.FirstOrDefault(r => r.name == "You");
+        if (playerResult != null)
         {
-            if (success)
-            {
-                raceInfoText.text = $"1. You - {FormatTime(playerFinishTime)}\n2. {opponentName} - {FormatTime(opponentFinishTime)}";
-            }
-            else
-            {
-                raceInfoText.text = $"1. {opponentName} - {FormatTime(opponentFinishTime)}\n2. You - {FormatTime(playerFinishTime)}";
-            }
+            finalTimeText.text = "Your Time: " + FormatTime(playerResult.finishTime);
         }
 
-        if (cupRewardText != null)
-        {
-            cupRewardText.text = $"🏆 +{rewardCup} Cup";
-        }
-
-        if (resultPanel != null)
-        {
-            resultPanel.SetActive(true);
-        }
-
-        StartCoroutine(HideResultPanelAfterDelay(5f));
+        UpdateResultPanel(); // 👈 ban đầu có thể chỉ có "You"
+        resultPanel.SetActive(true);
     }
 
-    private IEnumerator HideResultPanelAfterDelay(float delay)
+    private void UpdateResultPanel()
     {
-        yield return new WaitForSeconds(delay);
-        if (resultPanel != null && resultPanel.activeInHierarchy)
-        {
-            resultPanel.SetActive(false);
-        }
+        results = results.OrderBy(r => r.finishTime).ToList();
+
+        if (top1Text != null && results.Count > 0)
+            top1Text.text = $"1st. {results[0].name} - {FormatTime(results[0].finishTime)}";
+
+        if (top2Text != null && results.Count > 1)
+            top2Text.text = $"2nd {results[1].name} - {FormatTime(results[1].finishTime)}";
+
+        if (top3Text != null && results.Count > 2)
+            top3Text.text = $"3th {results[2].name} - {FormatTime(results[2].finishTime)}";
     }
 
     private void UpdateLapUI()
     {
         if (lapText != null)
         {
-            lapText.text = $"Lap: {currentLap}/{maxLap}";
+            lapText.text = "Lap: " + currentLap + "/" + maxLap;
         }
     }
 
@@ -176,15 +161,53 @@ public class LapSystem : MonoBehaviour
         return string.Format("{0:00}:{1:00}.{2:00}", minutes, seconds, milliseconds);
     }
 
+    private string GetRandomBotName()
+    {
+        if (botNames.Count == 0) return "Bot";
+        int index = Random.Range(0, botNames.Count);
+        string name = botNames[index];
+        botNames.RemoveAt(index);
+        return name;
+    }
+
     public void RestartRace()
     {
         raceEnded = false;
         currentLap = 0;
-        playerCheckpoints = 0;
         raceTime = 0f;
         resultPanel.SetActive(false);
+        results.Clear();
         UpdateLapUI();
         StartCoroutine(UpdateTimer());
         Debug.Log("🔄 Đã restart race");
     }
+
+    class RacerResult
+    {
+        public string name;
+        public float finishTime;
+
+        public RacerResult(string name, float time)
+        {
+            this.name = name;
+            this.finishTime = time;
+        }
+    }
+    public void PlayerPassedFinishLine()
+    {
+        if (raceEnded || currentLap >= maxLap) return;
+
+        currentLap++;
+        UpdateLapUI();
+
+        Debug.Log($"✅ Lap {currentLap} hoàn thành!");
+
+        if (currentLap >= maxLap)
+        {
+            hasPlayerFinished = true;
+            results.Add(new RacerResult("You", Time.timeSinceLevelLoad));
+            EndMission(); // Hiện kết quả
+        }
+    }
+
 }

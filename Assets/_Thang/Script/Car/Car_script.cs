@@ -21,7 +21,7 @@ public class Car_script : MonoBehaviour
     public float maximumSteeringAngle = 18f; //Giảm góc cua
     public float maximumSpeed;
     public float brakePower;
-    public Transform COM;
+    public Transform COM;       
 
     [HideInInspector] public float carSpeed;
     [HideInInspector] public float carSpeedConverted;
@@ -467,9 +467,9 @@ public class Car_script : MonoBehaviour
             if (energySlider != null)
                 energySlider.value = currentEnergy;
 
-            if (audioSource != null && energyPickupSound != null && Audio_Thanh_pho.Instance != null)
+            if (audioSource != null && energyPickupSound != null && AudioManager.Instance != null)
             {
-                audioSource.volume = Audio_Thanh_pho.Instance.effectsVolume;
+                audioSource.volume = AudioManager.Instance.effectsVolume;
                 audioSource.PlayOneShot(energyPickupSound);
             }
 
@@ -485,6 +485,16 @@ public class Car_script : MonoBehaviour
         yield return new WaitForSeconds(delay);
         energyObject.SetActive(true);
         Debug.Log("⚡ Năng lượng đã xuất hiện lại!");
+    }
+    public void StopMovement()
+    {
+        Rigidbody rb = GetComponent<Rigidbody>();
+        if (rb != null)
+        {
+            rb.velocity = Vector3.zero;
+            rb.angularVelocity = Vector3.zero;
+            rb.isKinematic = true;
+        }
     }
 
     //public void IncreaseLap()

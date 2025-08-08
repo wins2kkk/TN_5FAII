@@ -17,9 +17,9 @@ public class CoinPickUp : MonoBehaviour
             CoinManager.Instance.AddCoins(coinAmount);
 
             // 🔊 Phát âm thanh
-            if (audioSource != null && energyPickupSound != null && Audio_Thanh_pho.Instance != null)
+            if (audioSource != null && energyPickupSound != null && AudioManager.Instance != null)
             {
-                audioSource.volume = Audio_Thanh_pho.Instance.effectsVolume;
+                audioSource.volume = AudioManager.Instance.effectsVolume;
                 audioSource.PlayOneShot(energyPickupSound);
             }
             Destroy(gameObject);

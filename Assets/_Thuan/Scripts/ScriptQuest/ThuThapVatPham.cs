@@ -9,8 +9,6 @@ public class ThuThapVatPham : MonoBehaviour
     public GameObject collectablePrefab;
     public int numberOfItems = 5;
     public TextMeshProUGUI collectText; // 👈 Text hiển thị số lượng vật phẩm thu thập
-
-    //  public int reward = 100;
     public Transform[] itemSpawnPoints;
 
     private Transform player;
@@ -28,11 +26,6 @@ public class ThuThapVatPham : MonoBehaviour
         GameObject playerObj = GameObject.FindGameObjectWithTag(playerTag);
         if (playerObj != null)
             player = playerObj.transform;
-        else
-        {
-
-        }
-           // Debug.LogError("Không tìm thấy Player với tag: " + playerTag//);
     }
 
     public void StartQuest()
@@ -46,6 +39,7 @@ public class ThuThapVatPham : MonoBehaviour
 
         ClearItems();
         itemsCollected = 0;
+
         if (collectText != null)
         {
             collectText.text = $"Đã thu thập: {itemsCollected}/{numberOfItems}";
@@ -64,6 +58,21 @@ public class ThuThapVatPham : MonoBehaviour
         Debug.Log("🧺 Bắt đầu nhiệm vụ thu thập!");
     }
 
+    // 👈 THÊM PHƯƠNG THỨC MỚI: Dừng nhiệm vụ khi bị hủy
+    public void StopQuest()
+    {
+        questActive = false;
+        ClearItems();
+
+        if (collectText != null)
+        {
+            collectText.text = "";
+            collectText.gameObject.SetActive(false); // 👈 Ẩn text khi hủy
+        }
+
+        Debug.Log("❌ Nhiệm vụ thu thập đã bị hủy!");
+    }
+
     private void OnTriggerEnter(Collider other)
     {
         if (!questActive) return;
@@ -75,6 +84,7 @@ public class ThuThapVatPham : MonoBehaviour
             itemsCollected++;
 
             Debug.Log($"✅ Đã thu thập {itemsCollected}/{numberOfItems}");
+
             if (collectText != null)
                 collectText.text = $"Đã thu thập: {itemsCollected}/{numberOfItems}";
 
@@ -84,6 +94,7 @@ public class ThuThapVatPham : MonoBehaviour
             }
         }
     }
+
     public void CollectItem(GameObject item)
     {
         if (!questActive || !spawnedItems.Contains(item)) return;
@@ -93,6 +104,7 @@ public class ThuThapVatPham : MonoBehaviour
         itemsCollected++;
 
         Debug.Log($"✅ Đã thu thập {itemsCollected}/{numberOfItems}");
+
         if (collectText != null)
             collectText.text = $"Đã thu thập: {itemsCollected}/{numberOfItems}";
 
@@ -106,16 +118,17 @@ public class ThuThapVatPham : MonoBehaviour
     {
         questActive = false;
         ClearItems();
-        //Debug.Log($"🎉 Nhiệm vụ hoàn thành! Nhận {reward} xu.");
 
         // Gọi hệ thống quản lý nhiệm vụ nếu có
         QuestManager.instance?.CompleteQuest();
+
         if (collectText != null)
         {
             collectText.text = "";
             collectText.gameObject.SetActive(false); // 👈 Ẩn text khi xong
         }
 
+        Debug.Log("🎉 Nhiệm vụ thu thập hoàn thành!");
     }
 
     void ClearItems()

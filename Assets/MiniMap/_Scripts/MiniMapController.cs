@@ -377,7 +377,7 @@ public class MiniMapController : MonoBehaviour
             mapCamera = transform.GetComponentInChildren<Camera>();
             if (mapCamera == null)
             {
-                Debug.LogError("MiniMapController: Không tìm thấy Camera component!");
+                //Debug.LogError("MiniMapController: Không tìm thấy Camera component!");
                 return false;
             }
         }
@@ -385,14 +385,14 @@ public class MiniMapController : MonoBehaviour
         // Kiểm tra RenderTexture
         if (renderTex == null)
         {
-            Debug.LogError("MiniMapController: RenderTexture chưa được assign!");
+           // Debug.LogError("MiniMapController: RenderTexture chưa được assign!");
             return false;
         }
 
         // Kiểm tra Material
         if (mapMaterial == null)
         {
-            Debug.LogError("MiniMapController: Map Material chưa được assign!");
+           // Debug.LogError("MiniMapController: Map Material chưa được assign!");
             return false;
         }
 
@@ -412,7 +412,7 @@ public class MiniMapController : MonoBehaviour
         if (currentTarget == null && allTargets.Count > 0)
         {
             currentTarget = allTargets[0];
-            Debug.Log($"MiniMapController: Auto-assigned target to '{currentTarget.name}'");
+           // Debug.Log($"MiniMapController: Auto-assigned target to '{currentTarget.name}'");
         }
 
         // SỬA: Thêm validation trước khi khởi tạo
@@ -485,7 +485,7 @@ public class MiniMapController : MonoBehaviour
         if (mapPanelMask == null || mapPanelBorder == null || mapPanel == null ||
             mapPanelMaskRect == null || mapPanelRect == null || miniMapPanelImage == null)
         {
-            Debug.LogWarning("MiniMapController: Một số UI components bị null, thử khởi tạo lại...");
+           // Debug.LogWarning("MiniMapController: Một số UI components bị null, thử khởi tạo lại...");
             OnEnable();
             return;
         }
@@ -521,7 +521,7 @@ public class MiniMapController : MonoBehaviour
         // SỬA: Thêm null checks
         if (renderTex == null || mapMaterial == null || mapCamera == null || mapPanelRect == null)
         {
-            Debug.LogWarning("MiniMapController: Thiếu components để setup RenderTexture");
+            //Debug.LogWarning("MiniMapController: Thiếu components để setup RenderTexture");
             return;
         }
 
@@ -548,7 +548,7 @@ public class MiniMapController : MonoBehaviour
         // SỬA: Thêm null check cho camera
         if (mapCamera == null)
         {
-            Debug.LogWarning("MiniMapController: mapCamera is null!");
+           // Debug.LogWarning("MiniMapController: mapCamera is null!");
             return;
         }
 
@@ -559,7 +559,7 @@ public class MiniMapController : MonoBehaviour
         if (currentTarget == null)
         {
 #if UNITY_EDITOR
-            Debug.Log("Please assign the current target");
+           // Debug.Log("Please assign the current target");
 #endif
         }
         else
@@ -579,13 +579,13 @@ public class MiniMapController : MonoBehaviour
         // SỬA: Thêm null checks
         if (iconPref == null)
         {
-            Debug.LogError("MiniMapController: iconPref is null!");
+           // Debug.LogError("MiniMapController: iconPref is null!");
             return null;
         }
 
         if (miniMapPanel == null)
         {
-            Debug.LogError("MiniMapController: miniMapPanel is null!");
+            //Debug.LogError("MiniMapController: miniMapPanel is null!");
             return null;
         }
 

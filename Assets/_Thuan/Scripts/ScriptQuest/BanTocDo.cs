@@ -5,7 +5,7 @@ using UnityEngine;
 public class BanTocDo : MonoBehaviour
 {
     [Header("Settings")]
-    public float requiredSpeed = 22.22f; // tương đương 80 km/h
+    public float requiredSpeed = 41.66f; // tương đương 150 km/h
     public string carTag = "Player";
     public TextMeshProUGUI thongbao;
 

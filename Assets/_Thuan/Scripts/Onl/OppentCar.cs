@@ -46,24 +46,18 @@ public class OppentCar : MonoBehaviour
     private Vector3 lastPosition;
     private float stuckTimer = 0f;
 
-    //[Header("Name Settings")]
-    //public string carName; // Tên của xe đối thủ
-
+   // public string botName = "Bot_A"; // Đặt tên riêng cho từng AI trong Inspector
     //public int currentLap = 0;
     public int currentCheckpoints = 0;
+    public float finishTime = 0f;
+    public bool finished = false;
 
-    //private static readonly string[] randomNames = {
-    //    "Speedster",
-    //    "Thunder",
-    //    "Phantom",
-    //    "Nitro",
-    //    "Shadow",
-    //    "Blaze",
-    //    "Vortex",
-    //    "Predator",
-    //    "Raptor",
-    //    "Nova"
-    //};
+    public string[] botNames = { "Bot_Sara", "Bot_Max", "Bot_Tom", "Bot_Eva", "Bot_Jin" };
+    public string randomBotName;
+
+    public bool hasFinished = false;
+    public string botName;
+
     void Start()
     {
         rb = GetComponent<Rigidbody>();
@@ -87,6 +81,8 @@ public class OppentCar : MonoBehaviour
         //{
         //    carName = randomNames[Random.Range(0, randomNames.Length)];
         //}
+        int randIndex = Random.Range(0, botNames.Length);
+        randomBotName = botNames[randIndex];
     }
 
     void FixedUpdate()
@@ -249,7 +245,7 @@ public class OppentCar : MonoBehaviour
         }
 
         // Nếu va chạm với xe khác
-        if (collision.gameObject.CompareTag("Car") || collision.gameObject.GetComponent<OppentCar>() != null)
+        if (collision.gameObject.CompareTag("Player") || collision.gameObject.GetComponent<OppentCar>() != null)
         {
             // Giảm lực tác động lên trục Y
             Vector3 velocity = rb.velocity;
@@ -266,7 +262,7 @@ public class OppentCar : MonoBehaviour
     private void OnCollisionStay(Collision collision)
     {
         // Nếu đang va chạm liên tục với xe khác
-        if (collision.gameObject.CompareTag("Car") || collision.gameObject.GetComponent<OppentCar>() != null)
+        if (collision.gameObject.CompareTag("Player") || collision.gameObject.GetComponent<OppentCar>() != null)
         {
             // Giảm tốc độ để tránh xung đột
             currentSpeed = Mathf.Lerp(currentSpeed, maxSpeed * 0.5f, Time.fixedDeltaTime);

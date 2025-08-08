@@ -16,4 +16,6 @@ MonoBehaviour:
   questType: 3
   timeLimit: 100
   coinReward: 1000
-  description: "Nhi\u1EC7m v\u1EE5 m\u1EB7c \u0111\u1ECBnh"
+  description: "Thu th\u1EADp xu\u1EA5t hi\u1EC7n ng\u1EABu nhi\xEAn tr\xEAn b\u1EA3n
+    \u0111\u1ED3 (h\u1ED9p qu\xE0)!"
+  lapCount: 3

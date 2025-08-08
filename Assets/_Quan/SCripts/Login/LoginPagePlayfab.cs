@@ -55,7 +55,7 @@ public class LoginPagePlayfab : MonoBehaviour
         // Ki?m tra ?? dài m?t kh?u
         if (PassworRegisterInput.text.Length < 6)
         {
-            MessageText.text = "Password is too short";
+            MessageText.text = "Mật khẩu quá ngắn";
             return;
         }
 
@@ -91,7 +91,7 @@ public class LoginPagePlayfab : MonoBehaviour
     {
         string name = result.InfoResultPayload?.PlayerProfile?.DisplayName ?? "Player";
         WelcomeObject.SetActive(true);
-        WelcomeText.text = "Welcome " + name;
+        WelcomeText.text = "Chào mừng " + name;
 
         if (gameManager != null)
         {
@@ -122,25 +122,25 @@ public class LoginPagePlayfab : MonoBehaviour
 
     private void OnErrorRecovery(PlayFabError result)
     {
-        MessageText.text = "No Email Found";
+        MessageText.text = "Không tìm thấy email";
     }
 
     private void OnRecoverySucces(SendAccountRecoveryEmailResult obj)
     {
         OpenLoginPage();
-        MessageText.text = "Recovery Mail Sent";
+        MessageText.text = "Đã gửi thư khôi phục";
     }
 
 
     private void OnRegisterSuccess(RegisterPlayFabUserResult result)
     {
-        MessageText.text = "New Account Is Created";
+        MessageText.text = "Tài khoản mới đã được tạo";
         OpenLoginPage();
     }
 
     private void OnError(PlayFabError error)
     {
-        MessageText.text = "Error: " + error.ErrorMessage;
+        MessageText.text = "Lỗi: hãy nhập lại";
     }
 
 
@@ -149,30 +149,30 @@ public class LoginPagePlayfab : MonoBehaviour
         LoginPage.SetActive(true);
         ResgisterPage.SetActive(false);
         RecoveryPage.SetActive(false);
-        TopText.text = "Login";
+        TopText.text = "Đăng nhập";
     }
     public void OpenRegiserPage()
     {
         LoginPage.SetActive(false);
         ResgisterPage.SetActive(true);
         RecoveryPage.SetActive(false);
-        TopText.text = "Register";
+        TopText.text = "Đăng ký";
     }
     public void OpenRecoveryPage()
     {
         LoginPage.SetActive(false);
         ResgisterPage.SetActive(false);
         RecoveryPage.SetActive(true);
-        TopText.text = "Recovery";
+        TopText.text = "Khôi phục mật khẩu";
     }
     #endregion
 
     IEnumerator LoadNextScene()
     {
         yield return new WaitForSeconds(2);
-        MessageText.text = "Login Succes";
+        MessageText.text = "\r\nĐăng nhập thành công";
         //SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex + 1);
-        PlayerPrefs.SetString("SceneToLoad", "Road22");
+        PlayerPrefs.SetString("SceneToLoad", "Menu");
         SceneManager.LoadScene("Loading");
     }
 
