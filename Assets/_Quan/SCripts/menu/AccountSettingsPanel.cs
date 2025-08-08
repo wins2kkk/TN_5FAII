@@ -122,7 +122,8 @@ public class AccountSettingsPanel : MonoBehaviour
 
         var request = new UpdateUserDataRequest
         {
-            Data = new Dictionary<string, string> { { "avatar", selectedAvatar } }
+            Data = new Dictionary<string, string> { { "avatar", selectedAvatar } },
+            Permission = UserDataPermission.Public // ✅ CHỈNH DÒNG NÀY
         };
 
         bool completed = false;
@@ -131,7 +132,7 @@ public class AccountSettingsPanel : MonoBehaviour
         PlayFabClientAPI.UpdateUserData(request,
             result =>
             {
-                Debug.Log("Avatar cập nhật thành công!");
+                Debug.Log("Avatar cập nhật thành công (Public)!");
                 success = true;
                 completed = true;
             },
@@ -147,7 +148,8 @@ public class AccountSettingsPanel : MonoBehaviour
         callback(success);
     }
 
-   IEnumerator FinalizeSave(bool success)
+
+    IEnumerator FinalizeSave(bool success)
 {
     yield return new WaitForSeconds(0.2f);
     isSaving = false;
@@ -275,7 +277,7 @@ public class AccountSettingsPanel : MonoBehaviour
 
         if (avatarPreview != null)
         {
-            Sprite sprite = Resources.Load<Sprite>("Avatars/" + avatarName);
+            Sprite sprite = Resources.Load<Sprite>("Avatars/" + avatarName);    
             if (sprite != null)
             {
                 avatarPreview.sprite = sprite;

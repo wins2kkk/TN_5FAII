@@ -12,6 +12,8 @@ public class UserInfor : MonoBehaviour
     public TextMeshProUGUI displayNameText;
     public TextMeshProUGUI playerIdText;
     public TextMeshProUGUI emailText;
+  
+
     public Image avatarImage;
     public static string displayNameCached = "Người chơi";
 
@@ -32,35 +34,28 @@ public class UserInfor : MonoBehaviour
     void OnGetAccountSuccess(GetAccountInfoResult result)
     {
         string displayName = result.AccountInfo.TitleInfo.DisplayName ?? "Chưa đặt";
-
-        // Lưu lại để script khác có thể lấy
         displayNameCached = displayName;
-
-        // Thông báo cho các script khác rằng tên đã sẵn sàng
         OnDisplayNameReady?.Invoke(displayName);
 
         string playerId = result.AccountInfo.PlayFabId;
         string email = result.AccountInfo.PrivateInfo?.Email ?? "Không có";
 
-        // Hiển thị ra UI
         displayNameText.text = displayName;
         playerIdText.text = "ID: " + playerId;
         emailText.text = "Email: " + email;
 
-        // Gán hình ảnh từ thư mục Resources
         Sprite avatarSprite = Resources.Load<Sprite>("Avatars/avatar1");
         if (avatarSprite != null)
         {
             avatarImage.sprite = avatarSprite;
         }
-        else
-        {
-            Debug.LogWarning("Không tìm thấy hình ảnh avatar trong Resources.");
-        }
 
         GetAvatarFromUserData();
+        
+
         Debug.Log("Thông tin người chơi đã được tải.");
     }
+
 
     void GetAvatarFromUserData()
     {
@@ -86,4 +81,6 @@ public class UserInfor : MonoBehaviour
     {
         GetAccountInfoFromPlayFab(); // gọi lại như khi Start()
     }
+    
+
 }
