@@ -1359,12 +1359,12 @@ GameObject:
   - component: {fileID: 6601468526134792202}
   - component: {fileID: 1479823389528745302}
   m_Layer: 7
-  m_Name: Text (TMP) (1)
+  m_Name: CheckpointText
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &6032836987287997101
 RectTransform:
   m_ObjectHideFlags: 0
@@ -1966,7 +1966,7 @@ GameObject:
   - component: {fileID: 5390127801689566010}
   - component: {fileID: 1201017136758100860}
   m_Layer: 7
-  m_Name: cup
+  m_Name: CoinRewardText
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -3150,7 +3150,7 @@ GameObject:
   - component: {fileID: 7665655633051709509}
   - component: {fileID: 1347044707506622597}
   m_Layer: 7
-  m_Name: Top1
+  m_Name: Top1Text
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -3631,12 +3631,12 @@ GameObject:
   - component: {fileID: 4013585454334526409}
   - component: {fileID: 2084377947073098960}
   m_Layer: 7
-  m_Name: Text (TMP)
+  m_Name: FinalTimeText
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &2445893560905602913
 RectTransform:
   m_ObjectHideFlags: 0
@@ -3770,7 +3770,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &1497446874795675352
 RectTransform:
   m_ObjectHideFlags: 0
@@ -4492,7 +4492,7 @@ GameObject:
   - component: {fileID: 7872016816855568860}
   - component: {fileID: 5261537217278760049}
   m_Layer: 7
-  m_Name: cup
+  m_Name: CupRewardText
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -5819,7 +5819,7 @@ GameObject:
   - component: {fileID: 7962838251279989741}
   - component: {fileID: 788827341887399257}
   m_Layer: 7
-  m_Name: top2
+  m_Name: Top2Text
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -6280,7 +6280,7 @@ GameObject:
   - component: {fileID: 6882690788223091051}
   - component: {fileID: 1010184001546946628}
   m_Layer: 7
-  m_Name: Top3
+  m_Name: Top3Text
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -7184,7 +7184,7 @@ GameObject:
   - component: {fileID: 383317481223854680}
   - component: {fileID: 4498474809212539396}
   m_Layer: 7
-  m_Name: RaceTimer
+  m_Name: TimerText
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -8092,12 +8092,12 @@ GameObject:
   - component: {fileID: 1527211027954467280}
   - component: {fileID: 6623544966716357173}
   m_Layer: 7
-  m_Name: PanelResultRace
+  m_Name: ResultPanel
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &8219466610314538017
 RectTransform:
   m_ObjectHideFlags: 0

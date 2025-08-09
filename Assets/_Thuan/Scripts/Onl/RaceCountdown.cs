@@ -1,10 +1,9 @@
 ﻿using UnityEngine;
 using TMPro;
 using System.Collections;
-using UnityEngine.UI;
+using System.Linq;
 using DG.Tweening;
-using UnityEngine.Rendering; // Thêm DOTween
-using System.Linq; // Để dùng FirstOrDefault
+
 public class RaceCountdown : MonoBehaviour
 {
     public TextMeshProUGUI[] countdownTexts;
@@ -13,32 +12,39 @@ public class RaceCountdown : MonoBehaviour
     private Car_script[] playerCar;
     private OppentCar[] oppentCars;
     private OppentCarWaypoint[] waypoints;
+
     [Header("Countdown Audio")]
     public AudioSource audioSource;
     public AudioClip countdownClip; // File 3-2-1-GO
 
-    void Awake()
+    private void Awake()
     {
-        // Tìm tất cả Car_script kể cả bị disable
-        playerCar = Resources.FindObjectsOfTypeAll<Car_script>();
-
-        // Tìm tất cả OppentCar kể cả bị disable
-        oppentCars = Resources.FindObjectsOfTypeAll<OppentCar>();
-
-        // Tìm tất cả OppentCarWaypoint kể cả bị disable
-        waypoints = Resources.FindObjectsOfTypeAll<OppentCarWaypoint>();
-
-        // Tìm các text countdown kể cả bị disable
-        if (countdownTexts == null || countdownTexts.Length == 0)
-        {
-            countdownTexts = Resources.FindObjectsOfTypeAll<TextMeshProUGUI>()
-                .Where(t => t != null && t.name == "CountdownText")
-                .ToArray();
-        }
-
+        FindReferences();
         StartCoroutine(StartCountdownRoutine());
     }
-    IEnumerator StartCountdownRoutine()
+
+    private void FindReferences()
+    {
+        // Tìm Car_script kể cả object ẩn
+        playerCar = Resources.FindObjectsOfTypeAll<Car_script>();
+
+        // Tìm OppentCar kể cả object ẩn
+        oppentCars = Resources.FindObjectsOfTypeAll<OppentCar>();
+
+        // Tìm OppentCarWaypoint kể cả object ẩn
+        waypoints = Resources.FindObjectsOfTypeAll<OppentCarWaypoint>();
+
+        // Tìm countdownTexts theo tên giống LapSystem
+        if (countdownTexts == null || countdownTexts.Length == 0)
+        {
+            var found = Resources.FindObjectsOfTypeAll<TextMeshProUGUI>()
+                .Where(t => t != null && t.name == "CountdownText")
+                .ToArray();
+            countdownTexts = found;
+        }
+    }
+
+    private IEnumerator StartCountdownRoutine()
     {
         DisableScript();
 
@@ -60,81 +66,64 @@ public class RaceCountdown : MonoBehaviour
         SetCountdownTextActive(false);
     }
 
-
-    void DisableScript()
+    private void DisableScript()
     {
-        foreach (OppentCar oppentCar in oppentCars)
-        {
+        foreach (var oppentCar in oppentCars)
             oppentCar.enabled = false;
-        }
-        foreach (OppentCarWaypoint waypoint in waypoints)
-        {
+
+        foreach (var waypoint in waypoints)
             waypoint.enabled = false;
-        }
 
-       foreach (Car_script car in playerCar)
-        {
+        foreach (var car in playerCar)
             car.enabled = false;
-        }
     }
 
-    void EnableScript()
+    private void EnableScript()
     {
-        foreach (OppentCar oppentCar in oppentCars)
-        {
+        foreach (var oppentCar in oppentCars)
             oppentCar.enabled = true;
-        }
-        foreach (OppentCarWaypoint waypoint in waypoints)
-        {
-            waypoint.enabled = true;
-        }
 
-        foreach (Car_script car in playerCar)
-        {
+        foreach (var waypoint in waypoints)
+            waypoint.enabled = true;
+
+        foreach (var car in playerCar)
             car.enabled = true;
-        }
     }
 
-    void UpdateCountdown(string text)
+    private void UpdateCountdown(string text)
     {
-        foreach (TextMeshProUGUI countdownText in countdownTexts)
+        foreach (var countdownText in countdownTexts)
         {
             countdownText.text = text;
             PlayScaleEffect(countdownText);
         }
     }
 
-    void UpdateCountdown(float time)
+    private void UpdateCountdown(float time)
     {
-        foreach (TextMeshProUGUI countdownText in countdownTexts)
+        foreach (var countdownText in countdownTexts)
         {
             countdownText.text = time.ToString("0");
             PlayScaleEffect(countdownText);
         }
     }
 
-    void SetCountdownTextActive(bool isActive)
+    private void SetCountdownTextActive(bool isActive)
     {
-        foreach (TextMeshProUGUI countdownText in countdownTexts)
+        foreach (var countdownText in countdownTexts)
         {
             countdownText.gameObject.SetActive(isActive);
         }
     }
 
-    void PlayScaleEffect(TextMeshProUGUI text)
+    private void PlayScaleEffect(TextMeshProUGUI text)
     {
         Transform t = text.transform;
-
-        // Dừng animation cũ nếu đang chạy
         t.DOKill();
-
-        // Reset scale
         t.localScale = Vector3.one;
 
-        // Sequence mượt
         Sequence s = DOTween.Sequence();
         s.Append(t.DOScale(Vector3.one * 1.5f, 0.25f).SetEase(Ease.OutQuad));
         s.Append(t.DOScale(Vector3.one, 0.25f).SetEase(Ease.InQuad));
     }
-
 }

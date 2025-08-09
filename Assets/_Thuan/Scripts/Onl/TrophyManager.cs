@@ -2,6 +2,8 @@
 using PlayFab;
 using PlayFab.ClientModels;
 using TMPro;
+using UnityEngine.SceneManagement;
+using System.Linq;
 
 public class TrophyManager : MonoBehaviour
 {
@@ -20,6 +22,7 @@ public class TrophyManager : MonoBehaviour
         {
             Instance = this;
             DontDestroyOnLoad(gameObject);
+            SceneManager.sceneLoaded += OnSceneLoaded;
         }
         else
         {
@@ -28,14 +31,42 @@ public class TrophyManager : MonoBehaviour
         }
     }
 
+    private void OnDestroy()
+    {
+        if (Instance == this)
+            SceneManager.sceneLoaded -= OnSceneLoaded;
+    }
+
+    private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
+    {
+        Debug.Log($"🔄 TrophyManager: tìm lại UI trong scene {scene.name}");
+        StartCoroutine(DelayedFindUI());
+    }
+
+    private System.Collections.IEnumerator DelayedFindUI()
+    {
+        yield return new WaitForEndOfFrame();
+        FindUIReferences();
+        UpdateCupUI();
+    }
+
     private void Start()
     {
+        FindUIReferences();
         LoadCupFromPlayFab();
+    }
+
+    private void FindUIReferences()
+    {
+        if (cupText == null)
+        {
+            cupText = Resources.FindObjectsOfTypeAll<TextMeshProUGUI>()
+                .FirstOrDefault(t => t.name == "CupText");
+        }
     }
 
     public void AddCup(int amount)
     {
-        // Chờ data được load trước khi cộng
         if (!isDataLoaded)
         {
             Debug.LogWarning("⏳ Đang chờ tải dữ liệu từ PlayFab...");
@@ -63,7 +94,7 @@ public class TrophyManager : MonoBehaviour
         }
         else
         {
-            Debug.LogWarning("⚠️ cupText UI chưa được gán trong Inspector!");
+            Debug.LogWarning("⚠️ cupText UI chưa được tìm thấy!");
         }
     }
 
@@ -89,7 +120,6 @@ public class TrophyManager : MonoBehaviour
             error =>
             {
                 Debug.LogError("❌ Lỗi cập nhật Leaderboard: " + error.GenerateErrorReport());
-                // Thử gửi lại sau 2 giây
                 Invoke(nameof(RetrySendCup), 2f);
             });
     }
@@ -118,12 +148,10 @@ public class TrophyManager : MonoBehaviour
                     }
                 }
 
-                // Nếu chưa có dữ liệu cúp, khởi tạo bằng 0
                 if (!foundCupData)
                 {
                     currentCupCount = 0;
                     Debug.Log("🆕 Chưa có dữ liệu cúp, khởi tạo với 0 cúp");
-                    // Gửi dữ liệu khởi tạo lên PlayFab
                     SendCupToLeaderboard(currentCupCount);
                 }
 
@@ -134,14 +162,12 @@ public class TrophyManager : MonoBehaviour
             error =>
             {
                 Debug.LogError("❌ Lỗi tải dữ liệu cúp từ PlayFab: " + error.GenerateErrorReport());
-                // Nếu lỗi, vẫn cho phép chơi với 0 cúp
                 currentCupCount = 0;
                 isDataLoaded = true;
                 UpdateCupUI();
             });
     }
 
-    // Method để reset cúp (chỉ dùng cho testing)
     [System.Obsolete("Chỉ dùng cho testing")]
     public void ResetCups()
     {
@@ -151,7 +177,6 @@ public class TrophyManager : MonoBehaviour
         Debug.Log("🔄 Đã reset cúp về 0");
     }
 
-    // Method để thêm cúp trực tiếp (dùng cho testing hoặc admin)
     public void SetCups(int amount)
     {
         currentCupCount = amount;
