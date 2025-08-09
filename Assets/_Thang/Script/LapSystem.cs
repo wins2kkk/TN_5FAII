@@ -4,6 +4,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 using System.Linq;
+using UnityEngine.SceneManagement;
 
 public class LapSystem : MonoBehaviour
 {
@@ -19,6 +20,7 @@ public class LapSystem : MonoBehaviour
     public TextMeshProUGUI resultText;
     public TextMeshProUGUI finalTimeText;
     public TextMeshProUGUI cupRewardText;
+    public TextMeshProUGUI coinRewardText;
 
     public TextMeshProUGUI top1Text;
     public TextMeshProUGUI top2Text;
@@ -28,14 +30,106 @@ public class LapSystem : MonoBehaviour
     public int winReward = 5;
     public int loseReward = 1;
 
+    [Header("Coin Reward Settings")]
+    public int winCoinReward = 20;
+    public int loseCoinReward = 5;
+
+    [Header("Checkpoint Settings")]
+    public TextMeshProUGUI checkpointText;
+    public int checkpointsRequiredPerLap = 4;
+    private int playerCheckpointCount = 0;
+
     private List<RacerResult> results = new List<RacerResult>();
     private List<string> botNames = new List<string> { "Bot Alpha", "Bot Beta", "Bot Gamma", "Bot Delta", "Bot Zeta" };
     private bool hasPlayerFinished = false;
-    //private Checkpointwin checkpointManager;
-    public TextMeshProUGUI checkpointText;
-    [Header("Checkpoint Settings")]
-    public int checkpointsRequiredPerLap = 4; // Số checkpoint cần qua để tính 1 lap
-    private int playerCheckpointCount = 0;
+
+    private void Awake()
+    {
+        // Nghe sự kiện load scene để tìm lại UI
+        SceneManager.sceneLoaded += OnSceneLoaded;
+    }
+    private void OnEnable()
+    {
+        // Đăng ký sự kiện khi scene mới load xong
+        SceneManager.sceneLoaded += OnSceneLoaded;
+    }
+
+    private void OnDestroy()
+    {
+        SceneManager.sceneLoaded -= OnSceneLoaded;
+    }
+    private void OnDisable()
+    {
+        // Hủy đăng ký khi script bị disable/destroy
+        SceneManager.sceneLoaded -= OnSceneLoaded;
+    }
+    private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
+    {
+        Debug.Log($"🔄 Đang tìm lại UI trong scene {scene.name}");
+        StartCoroutine(DelayedFindUI());
+    }
+
+    private IEnumerator DelayedFindUI()
+    {
+        yield return new WaitForEndOfFrame();
+        FindUIReferences();
+    }
+
+    private void Start()
+    {
+        FindUIReferences();
+        UpdateLapUI();
+        StartCoroutine(UpdateTimer());
+    }
+
+    private void FindUIReferences()
+    {
+        // Tìm cả object đang ẩn bằng Resources.FindObjectsOfTypeAll
+        if (lapText == null)
+            lapText = Resources.FindObjectsOfTypeAll<TextMeshProUGUI>()
+                .FirstOrDefault(t => t.name == "LapText");
+
+        if (timerText == null)
+            timerText = Resources.FindObjectsOfTypeAll<TextMeshProUGUI>()
+                .FirstOrDefault(t => t.name == "TimerText");
+
+        if (resultPanel == null)
+            resultPanel = Resources.FindObjectsOfTypeAll<GameObject>()
+                .FirstOrDefault(g => g.name == "ResultPanel");
+
+        if (resultText == null)
+            resultText = Resources.FindObjectsOfTypeAll<TextMeshProUGUI>()
+                .FirstOrDefault(t => t.name == "ResultText");
+
+        if (finalTimeText == null)
+            finalTimeText = Resources.FindObjectsOfTypeAll<TextMeshProUGUI>()
+                .FirstOrDefault(t => t.name == "FinalTimeText");
+
+        if (cupRewardText == null)
+            cupRewardText = Resources.FindObjectsOfTypeAll<TextMeshProUGUI>()
+                .FirstOrDefault(t => t.name == "CupRewardText");
+
+        if (coinRewardText == null)
+            coinRewardText = Resources.FindObjectsOfTypeAll<TextMeshProUGUI>()
+                .FirstOrDefault(t => t.name == "CoinRewardText");
+
+        if (top1Text == null)
+            top1Text = Resources.FindObjectsOfTypeAll<TextMeshProUGUI>()
+                .FirstOrDefault(t => t.name == "Top1Text");
+
+        if (top2Text == null)
+            top2Text = Resources.FindObjectsOfTypeAll<TextMeshProUGUI>()
+                .FirstOrDefault(t => t.name == "Top2Text");
+
+        if (top3Text == null)
+            top3Text = Resources.FindObjectsOfTypeAll<TextMeshProUGUI>()
+                .FirstOrDefault(t => t.name == "Top3Text");
+
+        if (checkpointText == null)
+            checkpointText = Resources.FindObjectsOfTypeAll<TextMeshProUGUI>()
+                .FirstOrDefault(t => t.name == "CheckpointText");
+    }
+
 
     public void PlayerPassedCheckpoint()
     {
@@ -46,19 +140,6 @@ public class LapSystem : MonoBehaviour
         }
     }
 
-    private void Start()
-    {
-        //checkpointManager = FindObjectOfType<Checkpointwin>();
-        UpdateLapUI();
-        StartCoroutine(UpdateTimer());
-    }
-    //private void Update()
-    //{
-    //    if (checkpointManager != null && checkpointText != null)
-    //    {
-    //        checkpointText.text = $"Checkpoint: {checkpointManager.CheckpointsPassedCount}/5";
-    //    }
-    //}
     private void OnTriggerEnter(Collider other)
     {
         OppentCar opponentCar = other.GetComponent<OppentCar>();
@@ -80,10 +161,8 @@ public class LapSystem : MonoBehaviour
                     opponentCar.botName = botName;
                 }
 
-                // ✅ Ghi đúng thời điểm bot về đích
                 results.Add(new RacerResult(botName, Time.timeSinceLevelLoad));
 
-                // ✅ Nếu player đã về đích => cập nhật UI
                 if (hasPlayerFinished)
                 {
                     UpdateResultPanel();
@@ -94,11 +173,10 @@ public class LapSystem : MonoBehaviour
         // PLAYER về đích
         if (playerCar != null && currentLap < maxLap)
         {
-            // ✅ Chỉ tăng lap nếu đã qua đủ checkpoint
             if (playerCheckpointCount >= checkpointsRequiredPerLap)
             {
                 currentLap++;
-                playerCheckpointCount = 0; // Reset cho lap mới
+                playerCheckpointCount = 0;
                 UpdateLapUI();
 
                 if (currentLap >= maxLap && !hasPlayerFinished)
@@ -113,8 +191,8 @@ public class LapSystem : MonoBehaviour
                 Debug.Log("⚠ Chưa qua đủ checkpoint, không tính lap!");
             }
         }
-
     }
+
     private void EndMission()
     {
         raceEnded = true;
@@ -123,20 +201,33 @@ public class LapSystem : MonoBehaviour
 
         bool playerWon = results[0].name == "You";
         resultText.text = playerWon ? "Victory!" : "Defeat!";
-        cupRewardText.text = playerWon ? $" +{winReward} Cup" : $" +{loseReward} Cup";
+
+        int cupReward = playerWon ? winReward : loseReward;
+        int coinReward = playerWon ? winCoinReward : loseCoinReward;
+
+        if (cupRewardText != null)
+            cupRewardText.text = $"+{cupReward} Cup";
+
+        if (coinRewardText != null)
+            coinRewardText.text = $"+{coinReward} Coin";
 
         if (TrophyManager.Instance != null)
         {
-            TrophyManager.Instance.AddCup(playerWon ? winReward : loseReward);
+            TrophyManager.Instance.AddCup(cupReward);
         }
 
+        if (CoinManager.Instance != null)
+        {
+            CoinManager.Instance.AddCoins(coinReward);
+            Debug.Log($"🎉 Đã cộng {coinReward} Coin cho người chơi ({(playerWon ? "thắng" : "thua")})");
+        }
         RacerResult playerResult = results.FirstOrDefault(r => r.name == "You");
         if (playerResult != null)
         {
             finalTimeText.text = "Your Time: " + FormatTime(playerResult.finishTime);
         }
 
-        UpdateResultPanel(); // 👈 ban đầu có thể chỉ có "You"
+        UpdateResultPanel();
         resultPanel.SetActive(true);
     }
 
@@ -215,6 +306,7 @@ public class LapSystem : MonoBehaviour
             this.finishTime = time;
         }
     }
+
     public void PlayerPassedFinishLine()
     {
         if (raceEnded || currentLap >= maxLap) return;
@@ -228,8 +320,7 @@ public class LapSystem : MonoBehaviour
         {
             hasPlayerFinished = true;
             results.Add(new RacerResult("You", Time.timeSinceLevelLoad));
-            EndMission(); // Hiện kết quả
+            EndMission();
         }
     }
-
 }

@@ -2374,8 +2374,6 @@ GameObject:
   - component: {fileID: 7312244483127638970}
   - component: {fileID: 3335786530072388210}
   - component: {fileID: 8645515423871655736}
-  - component: {fileID: 3551066617741712522}
-  - component: {fileID: 8562926827765836079}
   m_Layer: 7
   m_Name: ShowSettingsButton
   m_TagString: Untagged
@@ -2498,34 +2496,6 @@ MonoBehaviour:
           m_BoolArgument: 0
         m_CallState: 2
 --- !u!114 &8645515423871655736
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3356408886317434175}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: c4cc5c7456fecda4abf2080edd548253, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  scaleMultiplier: 1.1
-  animationSpeed: 10
---- !u!114 &3551066617741712522
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3356408886317434175}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: c4cc5c7456fecda4abf2080edd548253, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  scaleMultiplier: 1.1
-  animationSpeed: 10
---- !u!114 &8562926827765836079
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -3777,8 +3747,6 @@ GameObject:
   - component: {fileID: 2296433009767502695}
   - component: {fileID: 4219757938147990896}
   - component: {fileID: 2795326690213668357}
-  - component: {fileID: 5850926164027657136}
-  - component: {fileID: 7096507725869929084}
   - component: {fileID: 7002475617165062438}
   m_Layer: 7
   m_Name: Reset_Car
@@ -3985,34 +3953,6 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
---- !u!114 &5850926164027657136
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4936459933989402962}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: c4cc5c7456fecda4abf2080edd548253, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  scaleMultiplier: 1.1
-  animationSpeed: 10
---- !u!114 &7096507725869929084
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4936459933989402962}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: c4cc5c7456fecda4abf2080edd548253, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  scaleMultiplier: 1.1
-  animationSpeed: 10
 --- !u!114 &7002475617165062438
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -5897,7 +5837,6 @@ GameObject:
   - component: {fileID: 7272956409239525220}
   - component: {fileID: 6675143315948700835}
   - component: {fileID: 8743127606796987229}
-  - component: {fileID: 6592434651730025102}
   - component: {fileID: 4955632793496698798}
   m_Layer: 7
   m_Name: boost
@@ -6023,20 +5962,6 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls: []
---- !u!114 &6592434651730025102
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7244399406340197793}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: c4cc5c7456fecda4abf2080edd548253, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  scaleMultiplier: 1.1
-  animationSpeed: 10
 --- !u!114 &4955632793496698798
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -6274,8 +6199,6 @@ GameObject:
   - component: {fileID: 6294930443792505226}
   - component: {fileID: 651303953417690623}
   - component: {fileID: 3168469399533749801}
-  - component: {fileID: 5617515592460911168}
-  - component: {fileID: 9125218611042556841}
   m_Layer: 7
   m_Name: Home
   m_TagString: Untagged
@@ -6417,34 +6340,6 @@ MonoBehaviour:
   bounceSpeed: 2
   letterDelay: 0.1
 --- !u!114 &3168469399533749801
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7883824528460542199}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: c4cc5c7456fecda4abf2080edd548253, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  scaleMultiplier: 1.1
-  animationSpeed: 10
---- !u!114 &5617515592460911168
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7883824528460542199}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: c4cc5c7456fecda4abf2080edd548253, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  scaleMultiplier: 1.1
-  animationSpeed: 10
---- !u!114 &9125218611042556841
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}

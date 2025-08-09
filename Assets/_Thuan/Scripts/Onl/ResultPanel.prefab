@@ -147,7 +147,7 @@ GameObject:
   - component: {fileID: 5420585210166740324}
   - component: {fileID: 6139959617259438391}
   m_Layer: 6
-  m_Name: PanelResultRace
+  m_Name: ResultPanel
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

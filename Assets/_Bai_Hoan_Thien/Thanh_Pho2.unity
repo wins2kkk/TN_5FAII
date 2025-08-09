@@ -5426,7 +5426,7 @@ PrefabInstance:
     - target: {fileID: 2057960, guid: 98e2b8a7d6de642f8ae08a3cbb957b7a, type: 3}
       propertyPath: m_TargetTexture
       value: 
-      objectReference: {fileID: 899056061}
+      objectReference: {fileID: 1553314540}
     - target: {fileID: 2057960, guid: 98e2b8a7d6de642f8ae08a3cbb957b7a, type: 3}
       propertyPath: orthographic size
       value: 50.7
@@ -28598,44 +28598,6 @@ Transform:
   - {fileID: 1115219336}
   m_Father: {fileID: 672530322}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!84 &899056061
-RenderTexture:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_Name: 
-  m_ImageContentsHash:
-    serializedVersion: 2
-    Hash: 00000000000000000000000000000000
-  m_ForcedFallbackFormat: 4
-  m_DownscaleFallback: 0
-  m_IsAlphaChannelOptional: 0
-  serializedVersion: 5
-  m_Width: 257
-  m_Height: 257
-  m_AntiAliasing: 1
-  m_MipCount: -1
-  m_DepthStencilFormat: 94
-  m_ColorFormat: 4
-  m_MipMap: 0
-  m_GenerateMips: 1
-  m_SRGB: 1
-  m_UseDynamicScale: 0
-  m_BindMS: 0
-  m_EnableCompatibleFormat: 1
-  m_EnableRandomWrite: 0
-  m_TextureSettings:
-    serializedVersion: 2
-    m_FilterMode: 1
-    m_Aniso: 1
-    m_MipBias: 0
-    m_WrapU: 1
-    m_WrapV: 1
-    m_WrapW: 1
-  m_Dimension: 2
-  m_VolumeDepth: 1
-  m_ShadowSamplingMode: 2
 --- !u!4 &899251502 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 204990360591817230, guid: 9605c27108b94d84692a07422eb5dc90, type: 3}
@@ -51055,6 +51017,44 @@ Transform:
   m_Children: []
   m_Father: {fileID: 1257078285}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!84 &1553314540
+RenderTexture:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: 
+  m_ImageContentsHash:
+    serializedVersion: 2
+    Hash: 00000000000000000000000000000000
+  m_ForcedFallbackFormat: 4
+  m_DownscaleFallback: 0
+  m_IsAlphaChannelOptional: 0
+  serializedVersion: 5
+  m_Width: 257
+  m_Height: 257
+  m_AntiAliasing: 1
+  m_MipCount: -1
+  m_DepthStencilFormat: 94
+  m_ColorFormat: 4
+  m_MipMap: 0
+  m_GenerateMips: 1
+  m_SRGB: 1
+  m_UseDynamicScale: 0
+  m_BindMS: 0
+  m_EnableCompatibleFormat: 1
+  m_EnableRandomWrite: 0
+  m_TextureSettings:
+    serializedVersion: 2
+    m_FilterMode: 1
+    m_Aniso: 1
+    m_MipBias: 0
+    m_WrapU: 1
+    m_WrapV: 1
+    m_WrapW: 1
+  m_Dimension: 2
+  m_VolumeDepth: 1
+  m_ShadowSamplingMode: 2
 --- !u!114 &1554549185 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 7789767017150768132, guid: ecc3fee9738a3f041bb4f2f64728144c, type: 3}
@@ -292740,22 +292740,6 @@ PrefabInstance:
       propertyPath: energySlider
       value: 
       objectReference: {fileID: 1465413440084558376}
-    - target: {fileID: 1406594110138850395, guid: 49218bcfeaba4c94d8fea65ba2257745, type: 3}
-      propertyPath: size.x
-      value: 30
-      objectReference: {fileID: 0}
-    - target: {fileID: 1406594110138850395, guid: 49218bcfeaba4c94d8fea65ba2257745, type: 3}
-      propertyPath: size.y
-      value: 30
-      objectReference: {fileID: 0}
-    - target: {fileID: 1406594110138850395, guid: 49218bcfeaba4c94d8fea65ba2257745, type: 3}
-      propertyPath: upAxis.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 1406594110138850395, guid: 49218bcfeaba4c94d8fea65ba2257745, type: 3}
-      propertyPath: rotateWithObject
-      value: 1
-      objectReference: {fileID: 0}
     - target: {fileID: 1619351243592346571, guid: 49218bcfeaba4c94d8fea65ba2257745, type: 3}
       propertyPath: fuelImage
       value: 
@@ -292808,26 +292792,6 @@ PrefabInstance:
       propertyPath: m_Name
       value: Player
       objectReference: {fileID: 0}
-    - target: {fileID: 1851169712632965772, guid: 49218bcfeaba4c94d8fea65ba2257745, type: 3}
-      propertyPath: m_IsActive
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 2326084726214286720, guid: 49218bcfeaba4c94d8fea65ba2257745, type: 3}
-      propertyPath: size.x
-      value: 30
-      objectReference: {fileID: 0}
-    - target: {fileID: 2326084726214286720, guid: 49218bcfeaba4c94d8fea65ba2257745, type: 3}
-      propertyPath: size.y
-      value: 30
-      objectReference: {fileID: 0}
-    - target: {fileID: 2326084726214286720, guid: 49218bcfeaba4c94d8fea65ba2257745, type: 3}
-      propertyPath: upAxis.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 2326084726214286720, guid: 49218bcfeaba4c94d8fea65ba2257745, type: 3}
-      propertyPath: rotateWithObject
-      value: 1
-      objectReference: {fileID: 0}
     - target: {fileID: 2647097824047849360, guid: 49218bcfeaba4c94d8fea65ba2257745, type: 3}
       propertyPath: energySlider
       value: 
@@ -292852,34 +292816,10 @@ PrefabInstance:
       propertyPath: refuelButton
       value: 
       objectReference: {fileID: 1313226744607979748}
-    - target: {fileID: 3524312430168519912, guid: 49218bcfeaba4c94d8fea65ba2257745, type: 3}
-      propertyPath: size.x
-      value: 30
-      objectReference: {fileID: 0}
-    - target: {fileID: 3524312430168519912, guid: 49218bcfeaba4c94d8fea65ba2257745, type: 3}
-      propertyPath: size.y
-      value: 30
-      objectReference: {fileID: 0}
-    - target: {fileID: 3524312430168519912, guid: 49218bcfeaba4c94d8fea65ba2257745, type: 3}
-      propertyPath: upAxis.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 3524312430168519912, guid: 49218bcfeaba4c94d8fea65ba2257745, type: 3}
-      propertyPath: rotateWithObject
-      value: 1
-      objectReference: {fileID: 0}
     - target: {fileID: 3562538739229894269, guid: 49218bcfeaba4c94d8fea65ba2257745, type: 3}
       propertyPath: energySlider
       value: 
       objectReference: {fileID: 1465413440084558376}
-    - target: {fileID: 3826613161529259578, guid: 49218bcfeaba4c94d8fea65ba2257745, type: 3}
-      propertyPath: m_IsActive
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 4912415854380689612, guid: 49218bcfeaba4c94d8fea65ba2257745, type: 3}
-      propertyPath: m_IsActive
-      value: 0
-      objectReference: {fileID: 0}
     - target: {fileID: 5180354359807992496, guid: 49218bcfeaba4c94d8fea65ba2257745, type: 3}
       propertyPath: fuelImage
       value: 
@@ -292900,38 +292840,6 @@ PrefabInstance:
       propertyPath: energySlider
       value: 
       objectReference: {fileID: 1465413440084558376}
-    - target: {fileID: 5491565984414083732, guid: 49218bcfeaba4c94d8fea65ba2257745, type: 3}
-      propertyPath: size.x
-      value: 30
-      objectReference: {fileID: 0}
-    - target: {fileID: 5491565984414083732, guid: 49218bcfeaba4c94d8fea65ba2257745, type: 3}
-      propertyPath: size.y
-      value: 30
-      objectReference: {fileID: 0}
-    - target: {fileID: 5491565984414083732, guid: 49218bcfeaba4c94d8fea65ba2257745, type: 3}
-      propertyPath: upAxis.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 5491565984414083732, guid: 49218bcfeaba4c94d8fea65ba2257745, type: 3}
-      propertyPath: rotateWithObject
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 6453022423067034470, guid: 49218bcfeaba4c94d8fea65ba2257745, type: 3}
-      propertyPath: size.x
-      value: 30
-      objectReference: {fileID: 0}
-    - target: {fileID: 6453022423067034470, guid: 49218bcfeaba4c94d8fea65ba2257745, type: 3}
-      propertyPath: size.y
-      value: 30
-      objectReference: {fileID: 0}
-    - target: {fileID: 6453022423067034470, guid: 49218bcfeaba4c94d8fea65ba2257745, type: 3}
-      propertyPath: upAxis.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 6453022423067034470, guid: 49218bcfeaba4c94d8fea65ba2257745, type: 3}
-      propertyPath: rotateWithObject
-      value: 1
-      objectReference: {fileID: 0}
     - target: {fileID: 6677406733702120078, guid: 49218bcfeaba4c94d8fea65ba2257745, type: 3}
       propertyPath: fuelImage
       value: 
@@ -292948,26 +292856,6 @@ PrefabInstance:
       propertyPath: refuelButton
       value: 
       objectReference: {fileID: 1313226744607979748}
-    - target: {fileID: 6736957963287076588, guid: 49218bcfeaba4c94d8fea65ba2257745, type: 3}
-      propertyPath: size.x
-      value: 30
-      objectReference: {fileID: 0}
-    - target: {fileID: 6736957963287076588, guid: 49218bcfeaba4c94d8fea65ba2257745, type: 3}
-      propertyPath: size.y
-      value: 30
-      objectReference: {fileID: 0}
-    - target: {fileID: 6736957963287076588, guid: 49218bcfeaba4c94d8fea65ba2257745, type: 3}
-      propertyPath: upAxis.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 6736957963287076588, guid: 49218bcfeaba4c94d8fea65ba2257745, type: 3}
-      propertyPath: rotateWithObject
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 6939863963096760685, guid: 49218bcfeaba4c94d8fea65ba2257745, type: 3}
-      propertyPath: m_Enabled
-      value: 1
-      objectReference: {fileID: 0}
     - target: {fileID: 7052646642293849297, guid: 49218bcfeaba4c94d8fea65ba2257745, type: 3}
       propertyPath: m_LocalPosition.x
       value: 2059.16
@@ -293006,26 +292894,6 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7052646642293849297, guid: 49218bcfeaba4c94d8fea65ba2257745, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 7069627916945021711, guid: 49218bcfeaba4c94d8fea65ba2257745, type: 3}
-      propertyPath: size.x
-      value: 30
-      objectReference: {fileID: 0}
-    - target: {fileID: 7069627916945021711, guid: 49218bcfeaba4c94d8fea65ba2257745, type: 3}
-      propertyPath: size.y
-      value: 30
-      objectReference: {fileID: 0}
-    - target: {fileID: 7069627916945021711, guid: 49218bcfeaba4c94d8fea65ba2257745, type: 3}
-      propertyPath: upAxis.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 7069627916945021711, guid: 49218bcfeaba4c94d8fea65ba2257745, type: 3}
-      propertyPath: rotateWithObject
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 8032667501234335053, guid: 49218bcfeaba4c94d8fea65ba2257745, type: 3}
-      propertyPath: m_IsActive
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 8157222999150196623, guid: 49218bcfeaba4c94d8fea65ba2257745, type: 3}

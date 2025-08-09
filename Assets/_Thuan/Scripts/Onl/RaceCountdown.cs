@@ -4,7 +4,7 @@ using System.Collections;
 using UnityEngine.UI;
 using DG.Tweening;
 using UnityEngine.Rendering; // Thêm DOTween
-
+using System.Linq; // Để dùng FirstOrDefault
 public class RaceCountdown : MonoBehaviour
 {
     public TextMeshProUGUI[] countdownTexts;
@@ -19,13 +19,25 @@ public class RaceCountdown : MonoBehaviour
 
     void Awake()
     {
-        playerCar = FindObjectsOfType<Car_script>();
-        oppentCars = FindObjectsOfType<OppentCar>();
-        waypoints = FindObjectsOfType<OppentCarWaypoint>();
+        // Tìm tất cả Car_script kể cả bị disable
+        playerCar = Resources.FindObjectsOfTypeAll<Car_script>();
+
+        // Tìm tất cả OppentCar kể cả bị disable
+        oppentCars = Resources.FindObjectsOfTypeAll<OppentCar>();
+
+        // Tìm tất cả OppentCarWaypoint kể cả bị disable
+        waypoints = Resources.FindObjectsOfTypeAll<OppentCarWaypoint>();
+
+        // Tìm các text countdown kể cả bị disable
+        if (countdownTexts == null || countdownTexts.Length == 0)
+        {
+            countdownTexts = Resources.FindObjectsOfTypeAll<TextMeshProUGUI>()
+                .Where(t => t != null && t.name == "CountdownText")
+                .ToArray();
+        }
 
         StartCoroutine(StartCountdownRoutine());
     }
-
     IEnumerator StartCountdownRoutine()
     {
         DisableScript();

@@ -144,4 +144,10 @@ public class LoadingManager : MonoBehaviour
         PlayerPrefs.SetString("SceneToLoad", "ChayLap");
         SceneManager.LoadScene("Loading");
     }
+
+    public void Loadlevel_1()
+    {
+        PlayerPrefs.SetString("SceneToLoad", "Level_1");
+        SceneManager.LoadScene("Loading");
+    }
 }
