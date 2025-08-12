@@ -9,6 +9,7 @@ public class MapSelector : MonoBehaviour
         PlayerPrefs.SetString("SceneToLoad", mapName);
         SceneManager.LoadScene("Loading", LoadSceneMode.Single); // Single để xóa hết scene trước
     }
+
     public void BackToMenu()
     {
         Time.timeScale = 1f;

@@ -31,6 +31,14 @@ public class Xang_Script : MonoBehaviour
     [Header("Audio Settings")]
     public AudioSource audioSource;
     public AudioClip energyPickupSound;
+    //an thanh het xag
+    [Header("Low Fuel Audio")]
+    public AudioClip lowFuelWarningSound;   // Âm thanh cảnh báo gần hết xăng
+    public float lowFuelSoundCooldown = 5f; // Thời gian giữa mỗi lần phát âm thanh
+    private float lastLowFuelSoundTime;
+    
+
+
     // Thay đổi từ private thành public để CayXang có thể truy cập
     [HideInInspector] public bool isOutOfFuel = false;
 
@@ -54,9 +62,9 @@ public class Xang_Script : MonoBehaviour
         if (noFuelPanel != null)
             noFuelPanel.SetActive(false);
 
+        // Sửa nút thành xem quảng cáo
         if (refuelButton != null)
-            refuelButton.onClick.AddListener(() => Refuel(50));
-
+            refuelButton.onClick.AddListener(ShowRefuelAd);
     }
 
     void Update()
@@ -87,14 +95,24 @@ public class Xang_Script : MonoBehaviour
 
         if (currentFuel <= lowFuelThreshold)
         {
+            // Hiệu ứng nhấp nháy
             float alpha = Mathf.Abs(Mathf.Sin(Time.time * flashSpeed));
             fuelImage.color = Color.Lerp(originalColor, warningColor, alpha);
+
+            // Phát âm thanh cảnh báo nếu cooldown đã hết
+            if (audioSource != null && lowFuelWarningSound != null && Time.time - lastLowFuelSoundTime >= lowFuelSoundCooldown)
+            {
+                audioSource.volume = AudioManager.Instance != null ? AudioManager.Instance.effectsVolume : 1f;
+                audioSource.PlayOneShot(lowFuelWarningSound);
+                lastLowFuelSoundTime = Time.time;
+            }
         }
         else
         {
             fuelImage.color = originalColor;
         }
     }
+
 
     void HandleOutOfFuel()
     {
@@ -172,6 +190,22 @@ public class Xang_Script : MonoBehaviour
         fuelObject.SetActive(true);
         Debug.Log("⛽ Bình xăng đã xuất hiện lại!");
     }
+    private void ShowRefuelAd()
+    {
+        if (AdsManager.Instance != null)
+        {
+            // Khi xem xong quảng cáo sẽ gọi Refuel
+            AdsManager.Instance.OnRewardedAdWatched += OnAdWatched_Refuel;
+            AdsManager.Instance.ShowRewardedAd();
+        }
+    }
+    private void OnAdWatched_Refuel()
+    {
+        Refuel(0); // Đổ đầy xăng, không trừ coin
+        Debug.Log("✅ Xem xong quảng cáo - đã đổ đầy xăng!");
 
-
+        // Hủy đăng ký để tránh gọi nhiều lần
+        if (AdsManager.Instance != null)
+            AdsManager.Instance.OnRewardedAdWatched -= OnAdWatched_Refuel;
+    }
 }

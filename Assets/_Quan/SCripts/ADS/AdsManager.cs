@@ -161,43 +161,7 @@ public class AdsManager : MonoBehaviour
         }
     }
 
-    /* public void ShowRewardedAd()
-     {
-         const string rewardMsg = "Rewarded ad rewarded the user. Type: {0}, amount: {1}.";
 
-         if (_rewardedAd != null && _rewardedAd.CanShowAd())
-         {
-             // Reset timer và flags
-             isRewardedAdShowing = true;
-             canCloseRewardedAd = false;
-             rewardedAdTimer = 0f;
-             rewardEarned = false;
-             //
-
-             _rewardedAd.Show((Reward reward) =>
-             {
-                 Debug.Log(String.Format(rewardMsg, reward.Type, reward.Amount));
-
-                 // Chỉ gọi sự kiện nếu đã xem đủ thời gian
-                 if (canCloseRewardedAd)
-                 {
-                     OnRewardedAdWatched?.Invoke();
-                 }
-                 else
-                 {
-                     Debug.Log("Quảng cáo bị đóng quá sớm, không nhận phần thưởng");
-                 }
-
-                 //Debug.Log(String.Format(rewardMsg, reward.Type, reward.Amount));
-                 //// GỌI SỰ KIỆN khi xem xong quảng cáo
-                 //OnRewardedAdWatched?.Invoke();
-             });
-         }
-         else
-         {
-             Debug.LogWarning("Rewarded ad not ready.");
-         }
-     }*/
     private void RegisterEventHandlers(RewardedAd ad)
     {
         // Raised when the ad is estimated to have earned money.
@@ -221,7 +185,11 @@ public class AdsManager : MonoBehaviour
         ad.OnAdFullScreenContentOpened += () =>
         {
             Debug.Log("Rewarded ad full screen content opened.");
-            //
+
+            // ⏸ Dừng game và âm thanh
+            Time.timeScale = 0f;
+            AudioListener.pause = true;
+
             isRewardedAdShowing = true;
             rewardedAdTimer = 0f;
             rewardEarned = false;
@@ -231,14 +199,16 @@ public class AdsManager : MonoBehaviour
         // Raised when the ad closed full screen content.
         ad.OnAdFullScreenContentClosed += () =>
         {
+            // ▶ Tiếp tục game và âm thanh
+            Time.timeScale = 1f;
+            AudioListener.pause = false;
+
             isRewardedAdShowing = false;
             double actualWatchTime = (DateTime.Now - adStartTime).TotalSeconds;
 
             Debug.Log($"Thời gian xem thực tế: {actualWatchTime:F1}s");
             Debug.Log($"Đã nhận reward: {rewardEarned}");
 
-            // Chỉ cần kiểm tra có nhận được reward từ Google hay không
-            // Nếu Google đã gọi reward callback thì có nghĩa là đã xem đủ thời gian theo quy định của Google
             if (rewardEarned)
             {
                 OnRewardedAdWatched?.Invoke();
@@ -248,7 +218,6 @@ public class AdsManager : MonoBehaviour
             {
                 Debug.Log("✗ Không nhận được reward từ Google Ads (có thể do tắt quá sớm)");
             }
-
 
             LoadRewardedAd();
             Debug.Log("Rewarded ad full screen content closed.");
@@ -263,6 +232,7 @@ public class AdsManager : MonoBehaviour
                            "with error : " + error);
         };
     }
+
     ///QC thưởng---
 
 

@@ -6,7 +6,7 @@ public class QuestData : ScriptableObject
     public string questName = "Tên nhiệm vụ";      
     public QuestType questType;
     public float timeLimit = 60f;
-    public int coinReward = 50;
+    public int coinReward = 250;
     public string description = "Nhiệm vụ mặc định";
     public int lapCount = 3;
 }

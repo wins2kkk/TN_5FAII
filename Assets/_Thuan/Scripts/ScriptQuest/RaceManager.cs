@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 using System.Collections;
@@ -97,7 +98,7 @@ public class RaceManager : MonoBehaviour
                     questName = "Lap Race",
                     lapCount = PlayerPrefs.GetInt("LapMission_Laps", 3),
                     timeLimit = PlayerPrefs.GetFloat("LapMission_Time", 90f),
-                    coinReward = PlayerPrefs.GetInt("LapMission_Reward", 50),
+                    coinReward = PlayerPrefs.GetInt("LapMission_Reward", 1000),
                     questType = QuestType.DuaAI
                 };
                 currentQuestData = quest;

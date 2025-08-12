@@ -90,7 +90,7 @@ public class TrophyManager : MonoBehaviour
     {
         if (cupText != null)
         {
-            cupText.text = $"Cúp: {currentCupCount}";
+            cupText.text = $" {currentCupCount}";
         }
         else
         {

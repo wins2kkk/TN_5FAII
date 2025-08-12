@@ -107,7 +107,41 @@ public class LoginPagePlayfab : MonoBehaviour
             Debug.LogWarning("CoinManager chưa được tạo! Không thể tải coin.");
         }
 
+        // 🔹 Load dữ liệu map từ PlayFab
+        LoadMapDataFromPlayFab();
+
         StartCoroutine(LoadNextScene());
+    }
+
+    private void LoadMapDataFromPlayFab()
+    {
+        PlayFabClientAPI.GetUserData(new GetUserDataRequest(), result =>
+        {
+            if (result.Data != null && result.Data.ContainsKey("UnlockedMaps"))
+            {
+                Debug.Log("Dữ liệu map tải từ PlayFab: " + result.Data["UnlockedMaps"].Value);
+                // Ở đây bạn có thể parse dữ liệu và truyền vào MapUnlockManager
+                PlayerPrefs.SetString("UnlockedMaps", result.Data["UnlockedMaps"].Value);
+            }
+            else
+            {
+                Debug.Log("Không có dữ liệu map -> tạo mặc định Level_1");
+                var request = new UpdateUserDataRequest
+                {
+                    Data = new Dictionary<string, string>
+                {
+                    { "UnlockedMaps", "Level_1" }
+                }
+                };
+                PlayFabClientAPI.UpdateUserData(request,
+                    r => Debug.Log("Tạo dữ liệu map mặc định thành công"),
+                    e => Debug.LogError("Lỗi tạo dữ liệu map: " + e.GenerateErrorReport()));
+            }
+        },
+        error =>
+        {
+            Debug.LogError("Lỗi tải dữ liệu map: " + error.GenerateErrorReport());
+        });
     }
 
     public void RecoveryUser()
