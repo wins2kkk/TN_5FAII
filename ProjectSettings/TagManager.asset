@@ -23,6 +23,8 @@ TagManager:
   - Waypoint
   - FinishLine
   - okpoint
+  - PickupPoint
+  - DropoffPoint
   layers:
   - Default
   - TransparentFX

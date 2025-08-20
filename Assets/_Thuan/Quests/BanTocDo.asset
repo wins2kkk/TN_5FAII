@@ -15,7 +15,7 @@ MonoBehaviour:
   questName: "Ch\u1EA1y t\u1ED1c \u0111\u1ED9 cao"
   questType: 4
   timeLimit: 60
-  coinReward: 300
+  coinReward: 1200
   description: " Ch\u1EA1y t\u1ED1c \u0111\u1ED9 cao qua v\u1ECB tr\xED tr\xEAn b\u1EA3n
     \u0111\u1ED3 ch\u1EC9 \u0111\u1ECBnh v\u1EDBi t\u1ED1c \u0111\u1ED9 tr\xEAn 150Km/h"
   lapCount: 3

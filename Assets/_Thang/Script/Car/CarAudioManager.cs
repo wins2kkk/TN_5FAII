@@ -224,7 +224,7 @@ public class CarAudioManager : MonoBehaviour
         // TEST: Force play khi nhấn Space (debug)
         if (Input.GetKeyDown(KeyCode.Space))
         {
-            Debug.Log("=== SPACE KEY TEST - BRAKE SOUND ===");
+            //Debug.Log("=== SPACE KEY TEST - BRAKE SOUND ===");
 
             float finalVolume = brakeVolume;
             if (AudioManager.Instance != null)
@@ -237,7 +237,7 @@ public class CarAudioManager : MonoBehaviour
         {
             if (shouldPlayBrake)
             {
-                Debug.Log("=== PLAYING BRAKE SOUND via AudioManager ===");
+                //Debug.Log("=== PLAYING BRAKE SOUND via AudioManager ===");
                 AudioManager.Instance.PlayEffect(brakeClip);
             }
         }
@@ -246,7 +246,7 @@ public class CarAudioManager : MonoBehaviour
             // Dùng AudioSource trực tiếp với volume sync
             if (isDrifting && !brakeSource.isPlaying)
             {
-                Debug.Log("=== PLAYING BRAKE SOUND via AudioSource ===");
+                //Debug.Log("=== PLAYING BRAKE SOUND via AudioSource ===");
 
                 // Sync volume với AudioManager
                 float finalVolume = brakeVolume;
@@ -258,7 +258,7 @@ public class CarAudioManager : MonoBehaviour
             }
             else if (!isDrifting && brakeSource.isPlaying)
             {
-                Debug.Log("=== STOPPING BRAKE SOUND ===");
+                //Debug.Log("=== STOPPING BRAKE SOUND ===");
                 brakeSource.Stop();
             }
             else if (brakeSource.isPlaying)

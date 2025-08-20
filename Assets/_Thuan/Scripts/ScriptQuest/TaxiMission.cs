@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 using TMPro;
+using DG.Tweening;
 
 public class TaxiMission : MonoBehaviour
 {
@@ -16,56 +17,137 @@ public class TaxiMission : MonoBehaviour
     public TextMeshProUGUI distanceText;
 
     [Header("Points")]
-    public Transform pickupPoint;
-    public Transform dropoffPoint;
-    public Transform npcSpawnPoint;
-    public Transform npcSeatPosition;
+    public Transform[] possiblePickupPoints;
+    public Transform[] possibleDropoffPoints;
     public Transform npcExitPosition;
     public Transform npcWalkAwayPoint;
+
+    [Header("Extra Spawn Point")]
+    public Transform[] possibleSpawnPoints;
+
+    [Header("Pickup Paths")]
+    public Transform[] pickupPathLeft;
+    public Transform[] pickupPathRight;
 
     [Header("NPC")]
     public GameObject npcPrefab;
 
     private enum TaxiState { WaitingForPickup, PickingUp, GoingToDropoff, DroppingOff, Completed }
-
     private TaxiState currentState = TaxiState.WaitingForPickup;
+
     private Transform carTransform;
     private Rigidbody carRigidbody;
     private GameObject currentNPC;
-    private Renderer[] npcRenderers;
     private TaxiNPC taxiNPCComponent;
     private Vector3 lastCarPosition;
     private bool isActive = false;
     private bool missionCompleted = false;
+    private bool missionFailed = false;
     private float carSpeed;
 
-    void Start() => FindActiveCar();
+    private Transform pickupPoint;
+    private Transform dropoffPoint;
+
+    private bool npcTouchedCar = false;
+    private Coroutine currentMovementCoroutine;
+
+    void Start()
+    {
+        FindActiveCar();
+    }
 
     void Update()
     {
-        if (!isActive || missionCompleted || carTransform == null) return;
+        if (!isActive || missionCompleted || missionFailed || currentState == TaxiState.Completed || carTransform == null)
+            return;
 
         CalculateCarSpeed();
 
         switch (currentState)
         {
-            case TaxiState.WaitingForPickup: HandleWaitingForPickup(); break;
-            case TaxiState.GoingToDropoff: HandleGoingToDropoff(); break;
+            case TaxiState.WaitingForPickup:
+                HandleWaitingForPickup();
+                break;
+            case TaxiState.GoingToDropoff:
+                HandleGoingToDropoff();
+                break;
         }
     }
 
     public void StartMission()
     {
+        if (missionFailed) return;
+
         FindActiveCar();
         if (carTransform == null) return;
 
+        pickupPoint = GetNearestPoint(possiblePickupPoints);
+
+        Transform spawnPoint = GetNearestPoint(possibleSpawnPoints);
+        if (spawnPoint != null)
+            SpawnNPCAt(spawnPoint.position);
+        else
+            SpawnNPCAt(pickupPoint.position);
+
+        dropoffPoint = possibleDropoffPoints[Random.Range(0, possibleDropoffPoints.Length)];
+
         isActive = true;
         missionCompleted = false;
+        missionFailed = false;
         currentState = TaxiState.WaitingForPickup;
+        npcTouchedCar = false;
 
-        SpawnNPC();
-        WaypointManager.Instance?.CreatePointer(pickupPoint.position, null);
+        taxiNPCComponent?.SetWalking(false);
         UpdateStatusText("Đi đón khách tại điểm đã chỉ định");
+
+        WaypointManager.Instance?.CreatePointer(pickupPoint.position, null);
+
+        if (distanceText) distanceText.gameObject.SetActive(true);
+    }
+
+    public void FailMission()
+    {
+        StopAllCoroutines();
+
+        if (currentNPC != null)
+        {
+            DOTween.Kill(currentNPC.transform);
+            Destroy(currentNPC);
+            currentNPC = null;
+        }
+
+        WaypointManager.Instance?.RemoveWaypoint();
+
+        isActive = false;
+        missionCompleted = false;
+        missionFailed = true;
+        currentState = TaxiState.Completed;
+        npcTouchedCar = false;
+
+        if (statusText) statusText.gameObject.SetActive(false);
+        if (distanceText) distanceText.gameObject.SetActive(false);
+
+        // 🔥 Gọi QuestManager để xử lý thất bại
+        QuestManager.instance?.FailQuest("Nhiệm vụ Taxi thất bại!");
+    }
+
+    Transform GetNearestPoint(Transform[] points)
+    {
+        if (points == null || points.Length == 0) return null;
+
+        Transform nearest = points[0];
+        float minDist = Vector3.Distance(carTransform.position, nearest.position);
+
+        foreach (var p in points)
+        {
+            float d = Vector3.Distance(carTransform.position, p.position);
+            if (d < minDist)
+            {
+                minDist = d;
+                nearest = p;
+            }
+        }
+        return nearest;
     }
 
     void FindActiveCar()
@@ -83,25 +165,67 @@ public class TaxiMission : MonoBehaviour
     {
         carSpeed = carRigidbody ? carRigidbody.velocity.magnitude :
                    Vector3.Distance(carTransform.position, lastCarPosition) / Time.deltaTime;
-
         lastCarPosition = carTransform.position;
     }
 
     bool IsCarStopped() => carSpeed < carSpeedThreshold;
 
-    void SpawnNPC()
+    void SpawnNPCAt(Vector3 position)
     {
-        currentNPC = Instantiate(npcPrefab, npcSpawnPoint.position, npcSpawnPoint.rotation);
+        if (currentNPC != null)
+        {
+            DOTween.Kill(currentNPC.transform);
+            Destroy(currentNPC);
+        }
+
+        currentNPC = Instantiate(npcPrefab, position, Quaternion.identity);
         taxiNPCComponent = currentNPC.GetComponent<TaxiNPC>();
 
-        var model = currentNPC.transform.Find("Model");
-        npcRenderers = model ? model.GetComponentsInChildren<Renderer>() : currentNPC.GetComponentsInChildren<Renderer>();
+        var detector = currentNPC.GetComponent<TaxiNPC>();
+        if (detector == null) detector = currentNPC.AddComponent<TaxiNPC>();
+        detector.Initialize(this);
+
+        taxiNPCComponent?.SetWalking(false);
+
+        var rb = currentNPC.GetComponent<Rigidbody>();
+        if (rb) rb.velocity = Vector3.zero;
+
+        var agent = currentNPC.GetComponent<UnityEngine.AI.NavMeshAgent>();
+        if (agent) agent.enabled = false;
+
+        npcTouchedCar = false;
+    }
+
+    public void OnNPCTouchedCar()
+    {
+        if (currentState != TaxiState.PickingUp || npcTouchedCar) return;
+        npcTouchedCar = true;
+
+        if (currentMovementCoroutine != null)
+        {
+            StopCoroutine(currentMovementCoroutine);
+            DOTween.Kill(currentNPC.transform);
+        }
+
+        StartCoroutine(CompletePickupAfterTouch());
+    }
+
+    IEnumerator CompletePickupAfterTouch()
+    {
+        taxiNPCComponent?.SetWalking(false);
+        yield return new WaitForSeconds(0.2f);
+        Destroy(currentNPC);
+        CompletePickup();
     }
 
     void HandleWaitingForPickup()
     {
         float dist = Vector3.Distance(carTransform.position, pickupPoint.position);
-        distanceText.text = $"Khoảng cách đến khách: {dist:F1}m";
+        if (distanceText)
+        {
+            distanceText.text = $"Khoảng cách đến khách: {dist:F1}m";
+            distanceText.gameObject.SetActive(true);
+        }
 
         if (dist <= pickupRadius)
         {
@@ -114,7 +238,11 @@ public class TaxiMission : MonoBehaviour
     void HandleGoingToDropoff()
     {
         float dist = Vector3.Distance(carTransform.position, dropoffPoint.position);
-        distanceText.text = $"Khoảng cách đến điểm trả: {dist:F1}m";
+        if (distanceText)
+        {
+            distanceText.text = $"Khoảng cách đến điểm trả: {dist:F1}m";
+            distanceText.gameObject.SetActive(true);
+        }
 
         if (dist <= dropoffRadius)
         {
@@ -128,43 +256,40 @@ public class TaxiMission : MonoBehaviour
     {
         currentState = TaxiState.PickingUp;
         UpdateStatusText("Đang đón khách...");
-        StartCoroutine(PickupSequence());
+        currentMovementCoroutine = StartCoroutine(PickupSequence());
     }
 
     IEnumerator PickupSequence()
     {
-        taxiNPCComponent?.LookAtTarget(carTransform);
         taxiNPCComponent?.SetWalking(false);
-        taxiNPCComponent?.PlayGreeting();
+        yield return new WaitForSeconds(0.5f);
 
-        taxiNPCComponent?.animator?.SetTrigger("Wave");
+        if (npcTouchedCar) yield break;
 
-        yield return new WaitForSeconds(2f); // Wait for wave
-
-        if (npcExitPosition != null)
-            yield return MoveNPC(currentNPC.transform.position, npcExitPosition.position);
-
-        HideNPC();
-
-        if (npcSeatPosition != null)
+        Transform[] path = null;
+        if (pickupPathLeft.Length > 0 && pickupPathRight.Length > 0)
         {
-            currentNPC.transform.position = npcSeatPosition.position;
-            currentNPC.transform.rotation = npcSeatPosition.rotation;
+            float distLeft = Vector3.Distance(currentNPC.transform.position, pickupPathLeft[0].position);
+            float distRight = Vector3.Distance(currentNPC.transform.position, pickupPathRight[0].position);
+            path = distLeft <= distRight ? pickupPathLeft : pickupPathRight;
+        }
+        else if (pickupPathLeft.Length > 0) path = pickupPathLeft;
+        else if (pickupPathRight.Length > 0) path = pickupPathRight;
+
+        if (path != null && path.Length > 0)
+            yield return MoveNPC_Path(path);
+        else
+        {
+            Vector3 doorPos = carTransform.position + carTransform.right * 1.2f;
+            yield return MoveNPC_DOTween(doorPos);
         }
 
-        CompletePickup();
-    }
-
-    void HideNPC()
-    {
-        foreach (var r in npcRenderers)
-            if (r) r.enabled = false;
-    }
-
-    void ShowNPC()
-    {
-        foreach (var r in npcRenderers)
-            if (r) r.enabled = true;
+        if (!npcTouchedCar)
+        {
+            yield return new WaitForSeconds(0.3f);
+            Destroy(currentNPC);
+            CompletePickup();
+        }
     }
 
     void StartDropoff()
@@ -176,53 +301,56 @@ public class TaxiMission : MonoBehaviour
 
     IEnumerator DropoffSequence()
     {
-        ShowNPC();
-
-        Vector3 exitPos = npcExitPosition ? npcExitPosition.position : dropoffPoint.position;
-        currentNPC.transform.position = exitPos;
-        taxiNPCComponent?.LookAtTarget(carTransform);
-        taxiNPCComponent?.PlayFarewell();
-
-        taxiNPCComponent?.animator?.SetTrigger("Wave");
+        SpawnNPCAt(npcExitPosition.position);
+        yield return new WaitForSeconds(1f);
+        yield return MoveNPC_DOTween(npcWalkAwayPoint.position);
         yield return new WaitForSeconds(2f);
-
-        if (npcWalkAwayPoint != null)
-            yield return MoveNPC(exitPos, npcWalkAwayPoint.position);
-        else
-        {
-            Vector3 dir = (exitPos - carTransform.position).normalized;
-            yield return MoveNPC(exitPos, exitPos + dir * 10f);
-        }
-
-        taxiNPCComponent?.SetIdle();
-
-        yield return new WaitForSeconds(2.5f); // 🔁 Đợi lâu hơn trước khi Destroy
-
         Destroy(currentNPC);
         CompleteDropoff();
     }
 
-    IEnumerator MoveNPC(Vector3 from, Vector3 to)
+    IEnumerator MoveNPC_DOTween(Vector3 targetPos)
     {
+        if (!currentNPC || npcTouchedCar) yield break;
         taxiNPCComponent?.SetWalking(true);
-        float dist = Vector3.Distance(from, to);
-        float time = dist / npcMoveSpeed;
-        float t = 0f;
 
-        Quaternion rot = Quaternion.LookRotation(to - from);
-        currentNPC.transform.rotation = rot;
+        float dist = Vector3.Distance(currentNPC.transform.position, targetPos);
+        float duration = dist / npcMoveSpeed;
 
-        while (t < time)
-        {
-            if (!currentNPC) yield break;
-            t += Time.deltaTime;
-            float progress = Mathf.Clamp01(t / time);
-            currentNPC.transform.position = Vector3.Lerp(from, to, progress);
-            yield return null;
-        }
+        Vector3 dir = (targetPos - currentNPC.transform.position).normalized;
+        if (dir != Vector3.zero)
+            currentNPC.transform.rotation = Quaternion.LookRotation(dir);
 
-        currentNPC.transform.position = to;
-        taxiNPCComponent?.SetWalking(false);
+        bool done = false;
+        currentNPC.transform.DOMove(targetPos, duration).SetEase(Ease.Linear).OnComplete(() => done = true);
+        yield return new WaitUntil(() => done || npcTouchedCar);
+
+        if (!npcTouchedCar)
+            taxiNPCComponent?.SetWalking(false);
+    }
+
+    IEnumerator MoveNPC_Path(Transform[] pathPoints)
+    {
+        if (!currentNPC || pathPoints.Length == 0 || npcTouchedCar) yield break;
+        taxiNPCComponent?.SetWalking(true);
+
+        Vector3[] waypoints = new Vector3[pathPoints.Length];
+        for (int i = 0; i < pathPoints.Length; i++) waypoints[i] = pathPoints[i].position;
+
+        float totalDist = 0f;
+        for (int i = 0; i < waypoints.Length - 1; i++) totalDist += Vector3.Distance(waypoints[i], waypoints[i + 1]);
+        float duration = totalDist / npcMoveSpeed;
+
+        Vector3 initialDir = (waypoints[0] - currentNPC.transform.position).normalized;
+        if (initialDir != Vector3.zero) currentNPC.transform.rotation = Quaternion.LookRotation(initialDir);
+
+        bool done = false;
+        currentNPC.transform.DOPath(waypoints, duration, PathType.Linear).SetEase(Ease.Linear).SetLookAt(0.1f).OnComplete(() => done = true);
+
+        yield return new WaitUntil(() => done || npcTouchedCar);
+
+        if (!npcTouchedCar)
+            taxiNPCComponent?.SetWalking(false);
     }
 
     void CompletePickup()
@@ -241,7 +369,8 @@ public class TaxiMission : MonoBehaviour
 
         WaypointManager.Instance?.RemoveWaypoint();
         UpdateStatusText("Nhiệm vụ hoàn thành!");
-        distanceText?.gameObject.SetActive(false);
+
+        if (distanceText) distanceText.gameObject.SetActive(false);
 
         CoinManager.Instance?.AddCoins(300);
         QuestManager.instance?.CompleteQuest();

@@ -9,6 +9,9 @@ EditorBuildSettings:
     path: Assets/_Bai_Hoan_Thien/Login.unity
     guid: 3f5480120a55dcd4db888ced9be6659e
   - enabled: 1
+    path: Assets/_Thuan/Scene/TPTesst.unity
+    guid: 85539de81cc187e4fa10ab8385b96f46
+  - enabled: 1
     path: Assets/_Bai_Hoan_Thien/Menu.unity
     guid: 4db57bb73cd757e438ab05943d0df0bc
   - enabled: 1
@@ -29,6 +32,9 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/_Bai_Hoan_Thien/Level_3.unity
     guid: cae5eb9a870b2d54bbcebedb3b0033ee
+  - enabled: 1
+    path: Assets/_Thuan/Scene/Testhehe.unity
+    guid: d384608b19b1238478d18fc7902c0c17
   - enabled: 1
     path: Assets/_Thang/Loading.unity
     guid: ebb73a53c08d15549a62e3706f22f966

@@ -530,8 +530,8 @@ public class QuestManager : MonoBehaviour
             case QuestType.Delivery:
                 FindObjectOfType<DeliveryQuest>()?.StartQuest();
                 break;
-            case QuestType.raceCity:
-                FindObjectOfType<RaceCity>()?.StartMission();
+            case QuestType.GioiHanTocDo:
+                FindObjectOfType<TocDoToiDa>()?.StartMission();
                 break;
             case QuestType.ThuThapCoin:
                 FindObjectOfType<ThuThapVatPham>()?.StartQuest();
@@ -550,6 +550,15 @@ public class QuestManager : MonoBehaviour
                 break;
             case QuestType.Taxi:
                 FindObjectOfType<TaxiMission>()?.StartMission();
+                break;
+            case QuestType.BatTrom:
+                FindObjectOfType<BatCuop>()?.StartMission();
+                break;
+            case QuestType.BaoVeHangHoa:
+                FindObjectOfType<BaoVeHangHoa>()?.StartMission();
+                break;
+            case QuestType.ChayCheckPoint:
+                FindObjectOfType<SurvivalRaceMission>()?.StartMission();
                 break;
         }
     }
@@ -675,15 +684,43 @@ public class QuestManager : MonoBehaviour
 
         WaypointManager.Instance?.RemoveWaypoint();
 
-        // CÁCH ĐỔI ĐỔN GIẢN: Chỉ thêm đoạn này vào FailQuest() sau dòng WaypointManager.Instance?.RemoveWaypoint();
-
-        // Dọn dẹp nhiệm vụ thu thập nếu đang active
-        if (currentQuest != null && currentQuest.questType == QuestType.ThuThapCoin)
+        // 🧹 Dọn dẹp từng loại nhiệm vụ nếu đang chạy
+        if (currentQuest != null)
         {
-            var thuThapQuest = FindObjectOfType<ThuThapVatPham>();
-            if (thuThapQuest != null)
-                thuThapQuest.StopQuest();
+            switch (currentQuest.questType)
+            {
+                case QuestType.ThuThapCoin:
+                    var thuThapQuest = FindObjectOfType<ThuThapVatPham>();
+                    thuThapQuest?.StopQuest();
+                    break;
+
+                case QuestType.Taxi:
+                    var taxiMission = FindObjectOfType<TaxiMission>();
+                    taxiMission?.FailMission();
+                    break;
+
+                //case QuestType.BanTocDo:
+                //    var banTocDo = FindObjectOfType<BanTocDo>();
+                //    banTocDo?.Fa();
+                //    break;
+
+                case QuestType.GioiHanTocDo:
+                    var tocDo = FindObjectOfType<TocDoToiDa>();
+                    tocDo?.StopMission();
+                    break;
+
+                case QuestType.BaoVeHangHoa:
+                    var baoVe = FindObjectOfType<BaoVeHangHoa>();
+                    if (baoVe != null)
+                    {
+                        // gọi FailMission để dọn UI + waypoint
+                        var failMethod = baoVe.GetType().GetMethod("FailMission", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
+                        failMethod?.Invoke(baoVe, null);
+                    }
+                    break;
+            }
         }
+
         if (PanelFaile != null)
         {
             PanelFaile.SetActive(true);

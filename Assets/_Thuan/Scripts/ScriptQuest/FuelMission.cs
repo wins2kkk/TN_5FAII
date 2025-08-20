@@ -9,7 +9,7 @@ public class FuelMission : MonoBehaviour
     public GameObject confirmPanel;
     public Button confirmButton;
     public Button cancelButton;
-    public int fuelCost = 50;
+    public int fuelCost = 0;
 
     [Header("Settings")]
     public string carTag = "Player";

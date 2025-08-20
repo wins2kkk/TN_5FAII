@@ -5555,22 +5555,22 @@ MonoBehaviour:
   m_GameObject: {fileID: 853917709105537813}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 030170acf65500443b6dcd48686610ee, type: 3}
+  m_Script: {fileID: 11500000, guid: 5daa7bccbe0d1094fa59afb4107edc07, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  maxSpeed: 110
-  acceleration: 3
-  brakeForce: 5000
+  maxSpeed: 15
+  acceleration: 10
+  brakeForce: 20
   maxSteerAngle: 45
   steerSpeed: 8
-  frontLeftWheel: {fileID: 331036470872353208}
-  frontRightWheel: {fileID: 3118257803259776852}
-  rearLeftWheel: {fileID: 1651336262357254493}
-  rearRightWheel: {fileID: 5763366943184733963}
+  frontLeftWheel: {fileID: 2690857630633499239}
+  frontRightWheel: {fileID: 7391630072711500753}
+  rearLeftWheel: {fileID: 861957854749267131}
+  rearRightWheel: {fileID: 2647642694585258987}
   wheelRotationSpeed: 360
   aiTag: AI
-  avoidDistance: 13
-  avoidSlowFactor: 5
+  avoidDistance: 6
+  avoidSlowFactor: 0.5
 --- !u!114 &4909013896466595744
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -5587,7 +5587,7 @@ MonoBehaviour:
   trackWaypoints: []
   waypointReachDistance: 13
   totalLaps: 3
-  showDebugInfo: 0
+  showDebugInfo: 1
 --- !u!114 &-7029942953056378755
 MonoBehaviour:
   m_ObjectHideFlags: 0

@@ -7,6 +7,9 @@
     BanTocDo,
     duaxe,
     DuaAI,
-    raceCity,
-    Taxi
+    GioiHanTocDo,
+    Taxi,
+    BatTrom,
+    BaoVeHangHoa,
+    ChayCheckPoint
 }

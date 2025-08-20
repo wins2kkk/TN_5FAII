@@ -1,0 +1,20 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9c0ce29fd7bac3d47a8335d9a9d00f2f, type: 3}
+  m_Name: BatTrom
+  m_EditorClassIdentifier: 
+  questName: "B\u1EAFt xe \u0111\xE3 b\u1ECB tr\u1ED9m"
+  questType: 9
+  timeLimit: 60
+  coinReward: 2000
+  description: "H\xE3y nh\xECn tr\xEAn MiniMap v\xE0 b\u1EAFt t\xEAn tr\u1ED9m l\u1EA1i"
+  lapCount: 3
