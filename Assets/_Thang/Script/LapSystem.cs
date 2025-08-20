@@ -8,6 +8,7 @@ using UnityEngine.SceneManagement;
 using PlayFab;
 using PlayFab.ClientModels;
 using System;
+using DG.Tweening; // Cần import DOTween (bạn có thể tải từ Package Manager hoặc Asset Store)
 
 public class LapSystem : MonoBehaviour
 {
@@ -29,12 +30,15 @@ public class LapSystem : MonoBehaviour
     public TextMeshProUGUI top2Text;
     public TextMeshProUGUI top3Text;
 
+  
+
+
     [Header("Reward Settings")]
     public int winReward = 5;
     public int loseReward = 1;
 
     [Header("Coin Reward Settings")]
-    public int winCoinReward = 20;
+    public int winCoinReward = 100;
     public int loseCoinReward = 5;
 
     [Header("Checkpoint Settings")]
@@ -43,10 +47,13 @@ public class LapSystem : MonoBehaviour
     private int playerCheckpointCount = 0;
 
     private List<RacerResult> results = new List<RacerResult>();
-    private List<string> botNames = new List<string> { "Bot Alpha", "Bot Beta", "Bot Gamma", "Bot Delta", "Bot Zeta" };
+    private List<string> botNames = new List<string> { "Thuận", "Tư", "Khởi anh", "Quân", "Thắng" };
     private bool hasPlayerFinished = false;
 
     private Coroutine timerCoroutine;
+
+    // Thêm biến để lưu maxUnlockedLevel hiện tại
+    private int currentMaxUnlockedLevel = 1;
 
     private void Awake()
     {
@@ -73,7 +80,27 @@ public class LapSystem : MonoBehaviour
         yield return new WaitForEndOfFrame();
         FindUIReferences();
         ResetRaceState();
+        LoadCurrentMaxUnlockedLevel(); // Load level hiện tại từ PlayFab
     }
+
+    // Thêm method để load maxUnlockedLevel hiện tại
+    private void LoadCurrentMaxUnlockedLevel()
+    {
+        PlayFabClientAPI.GetUserData(new GetUserDataRequest(),
+            result =>
+            {
+                if (result.Data != null && result.Data.ContainsKey("MaxUnlockedLevel"))
+                    currentMaxUnlockedLevel = Convert.ToInt32(result.Data["MaxUnlockedLevel"].Value);
+                else
+                    currentMaxUnlockedLevel = 1;
+            },
+            error =>
+            {
+                Debug.LogError("❌ Load Error: " + error.GenerateErrorReport());
+                currentMaxUnlockedLevel = 1;
+            });
+    }
+
     private void ResetRaceState()
     {
         raceEnded = false;
@@ -89,11 +116,14 @@ public class LapSystem : MonoBehaviour
 
         if (resultPanel != null)
             resultPanel.SetActive(false);
+
+   
     }
     private void Start()
     {
         FindUIReferences();
         ResetRaceState();
+        LoadCurrentMaxUnlockedLevel(); // Load level hiện tại
     }
     private void FindUIReferences()
     {
@@ -136,7 +166,7 @@ public class LapSystem : MonoBehaviour
     {
         playerCheckpointCount++;
         if (checkpointText != null)
-            checkpointText.text = $"Checkpoint: {playerCheckpointCount}/{checkpointsRequiredPerLap}";
+            checkpointText.text = $"Vị trí: {playerCheckpointCount}/{checkpointsRequiredPerLap}";
     }
 
     private void OnTriggerEnter(Collider other)
@@ -171,7 +201,7 @@ public class LapSystem : MonoBehaviour
                 if (currentLap >= maxLap && !hasPlayerFinished)
                 {
                     hasPlayerFinished = true;
-                    results.Add(new RacerResult("You", Time.timeSinceLevelLoad));
+                    results.Add(new RacerResult("Bạn", Time.timeSinceLevelLoad));
                     EndMission();
                 }
             }
@@ -182,40 +212,65 @@ public class LapSystem : MonoBehaviour
     {
         raceEnded = true;
         results = results.OrderBy(r => r.finishTime).ToList();
-        bool playerWon = results.Count > 0 && results[0].name == "You";
+        bool playerWon = results.Count > 0 && results[0].name == "Bạn";
 
-        resultText.text = playerWon ? "Victory!" : "Defeat!";
+        // Xác định level hiện tại
+        string currentScene = SceneManager.GetActiveScene().name;
+        int currentLevel = 1;
+        if (currentScene.StartsWith("Level_"))
+            int.TryParse(currentScene.Substring("Level_".Length), out currentLevel);
 
-        int cupReward = playerWon ? winReward : loseReward;
-        int coinReward = playerWon ? winCoinReward : loseCoinReward;
+        // -----------------------
+        // Logic thưởng
+        int cupReward;
+        int coinReward;
 
+        if (playerWon && currentLevel == currentMaxUnlockedLevel)
+        {
+            // 👉 Thắng màn mới -> nhận thưởng set trong Inspector
+            cupReward = winReward;
+            coinReward = winCoinReward;
+        }
+        else
+        {
+            // 👉 Thua hoặc chơi lại màn cũ -> chỉ nhận 1 cúp, 100 xu
+            cupReward = 1;
+            coinReward = 100;
+        }
+
+        // -----------------------
+        // Update UI
+        resultText.text = playerWon ? "Chiến thắng!" : "Thất bại!";
         if (cupRewardText != null) cupRewardText.text = $"+{cupReward}";
         if (coinRewardText != null) coinRewardText.text = $"+{coinReward}";
 
+        // Cộng thưởng
         TrophyManager.Instance?.AddCup(cupReward);
         CoinManager.Instance?.AddCoins(coinReward);
 
-        RacerResult playerResult = results.FirstOrDefault(r => r.name == "You");
+        // Hiển thị thời gian
+        RacerResult playerResult = results.FirstOrDefault(r => r.name == "Bạn");
         if (playerResult != null)
-            finalTimeText.text = "Your Time: " + FormatTime(playerResult.finishTime);
+            finalTimeText.text = "" + FormatTime(playerResult.finishTime);
 
         UpdateResultPanel();
-        resultPanel?.SetActive(true);
+        StartCoroutine(ShowResultPanelWithDelay(1.3f));
 
-        if (playerWon)
+        // -----------------------
+        // Nếu thắng màn mới -> mở khóa màn tiếp theo
+        if (playerWon && currentLevel == currentMaxUnlockedLevel)
         {
-            string currentScene = SceneManager.GetActiveScene().name;
-            int currentLevel = 1;
-            if (currentScene.StartsWith("Level_"))
-                int.TryParse(currentScene.Substring("Level_".Length), out currentLevel);
+            int newUnlockedLevel = currentMaxUnlockedLevel + 1;
 
-            int newUnlockedLevel = currentLevel + 1;
             SaveUnlockedLevelToPlayFab(newUnlockedLevel);
+            currentMaxUnlockedLevel = newUnlockedLevel;
 
             LevelUnlockSystem unlockSystem = FindObjectOfType<LevelUnlockSystem>();
             unlockSystem?.UnlockNextLevel(currentLevel);
         }
     }
+
+
 
     private void SaveUnlockedLevelToPlayFab(int newUnlockedLevel)
     {
@@ -232,15 +287,15 @@ public class LapSystem : MonoBehaviour
     {
         results = results.OrderBy(r => r.finishTime).ToList();
         if (top1Text != null && results.Count > 0)
-            top1Text.text = $"1st. {results[0].name} - {FormatTime(results[0].finishTime)}";
+            top1Text.text = $"Top 1. {results[0].name} - {FormatTime(results[0].finishTime)}";
         if (top2Text != null && results.Count > 1)
-            top2Text.text = $"2nd {results[1].name} - {FormatTime(results[1].finishTime)}";
+            top2Text.text = $"Top 2. {results[1].name} - {FormatTime(results[1].finishTime)}";
         if (top3Text != null && results.Count > 2)
-            top3Text.text = $"3th {results[2].name} - {FormatTime(results[2].finishTime)}";
+            top3Text.text = $"Top 3. {results[2].name} - {FormatTime(results[2].finishTime)}";
     }
     private void UpdateLapUI()
     {
-        if (lapText != null) lapText.text = "Lap: " + currentLap + "/" + maxLap;
+        if (lapText != null) lapText.text = "Vòng đua: " + currentLap + "/" + maxLap;
     }
     private IEnumerator UpdateTimer()
     {
@@ -261,7 +316,7 @@ public class LapSystem : MonoBehaviour
     }
     private string GetRandomBotName()
     {
-        if (botNames.Count == 0) return "Bot";
+        if (botNames.Count == 0) return "Máy";
         int index = UnityEngine.Random.Range(0, botNames.Count);
         string name = botNames[index];
         botNames.RemoveAt(index);
@@ -272,5 +327,20 @@ public class LapSystem : MonoBehaviour
         public string name;
         public float finishTime;
         public RacerResult(string name, float time) { this.name = name; this.finishTime = time; }
+    }
+    private IEnumerator ShowResultPanelWithDelay(float delay)
+    {
+        yield return new WaitForSeconds(delay);
+
+        if (resultPanel != null)
+        {
+            resultPanel.SetActive(true);
+
+            // Reset scale để chuẩn bị hiệu ứng
+            resultPanel.transform.localScale = Vector3.zero;
+
+            // Hiệu ứng bật ra mượt (scale to 1 với "punch")
+            resultPanel.transform.DOScale(1f, 0.5f).SetEase(Ease.OutBack);
+        }
     }
 }

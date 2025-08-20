@@ -1447,7 +1447,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: User Name
+  m_Text: "T\xEAn ng\u01B0\u1EDDi d\xF9ng"
 --- !u!222 &153699487
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -8513,9 +8513,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: 'Password
-
-'
+  m_Text: "M\u1EADt kh\u1EA9u\n"
 --- !u!222 &835783346
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -11288,9 +11286,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: 'Password
-
-'
+  m_Text: "M\u1EADt kh\u1EA9u"
 --- !u!222 &1095538040
 CanvasRenderer:
   m_ObjectHideFlags: 0

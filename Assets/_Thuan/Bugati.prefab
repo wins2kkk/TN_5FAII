@@ -23409,6 +23409,26 @@ MonoBehaviour:
   frontRightWheel: {fileID: 3040115703303888743}
   rearLeftWheel: {fileID: 5621500934836826360}
   rearRightWheel: {fileID: 4629023591909560493}
+  downForce: 100
+  maxYVelocity: 5
+  groundCheckDistance: 1.5
+  groundMask:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  collisionForceLimit: 10
+  stabilityForce: 50
+  currentCheckpoints: 0
+  finishTime: 0
+  finished: 0
+  botNames:
+  - Bot_Sara
+  - Bot_Max
+  - Bot_Tom
+  - Bot_Eva
+  - Bot_Jin
+  randomBotName: 
+  hasFinished: 0
+  botName: 
 --- !u!114 &9129921917028164768
 MonoBehaviour:
   m_ObjectHideFlags: 0

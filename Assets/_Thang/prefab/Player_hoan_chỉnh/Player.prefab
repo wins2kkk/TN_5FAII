@@ -7603,7 +7603,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 742361093949544147}
-  m_Enabled: 0
+  m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 712b1a17a6b990244ac94bb153bc0ca4, type: 3}
   m_Name: 
@@ -7677,6 +7677,8 @@ MonoBehaviour:
   refuelButton: {fileID: 0}
   audioSource: {fileID: 6808234334089741525}
   energyPickupSound: {fileID: 8300000, guid: be087abc1c1639e45910edf299a85cd5, type: 3}
+  lowFuelWarningSound: {fileID: 0}
+  lowFuelSoundCooldown: 5
   isOutOfFuel: 0
 --- !u!65 &8003347984310415624
 BoxCollider:
@@ -8052,7 +8054,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 761172527178970212}
-  m_Enabled: 0
+  m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 712b1a17a6b990244ac94bb153bc0ca4, type: 3}
   m_Name: 
@@ -8155,6 +8157,8 @@ MonoBehaviour:
   refuelButton: {fileID: 0}
   audioSource: {fileID: 5022107935672549323}
   energyPickupSound: {fileID: 8300000, guid: be087abc1c1639e45910edf299a85cd5, type: 3}
+  lowFuelWarningSound: {fileID: 0}
+  lowFuelSoundCooldown: 5
   isOutOfFuel: 0
 --- !u!114 &6736957963287076588
 MonoBehaviour:
@@ -29365,7 +29369,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 3246836344380954177}
-  m_Enabled: 0
+  m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 712b1a17a6b990244ac94bb153bc0ca4, type: 3}
   m_Name: 
@@ -29437,6 +29441,8 @@ MonoBehaviour:
   refuelButton: {fileID: 0}
   audioSource: {fileID: 2393969876278446580}
   energyPickupSound: {fileID: 8300000, guid: be087abc1c1639e45910edf299a85cd5, type: 3}
+  lowFuelWarningSound: {fileID: 0}
+  lowFuelSoundCooldown: 5
   isOutOfFuel: 0
 --- !u!114 &2326084726214286720
 MonoBehaviour:
@@ -32005,7 +32011,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 3826613161529259578}
-  m_Enabled: 0
+  m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 712b1a17a6b990244ac94bb153bc0ca4, type: 3}
   m_Name: 
@@ -32079,6 +32085,8 @@ MonoBehaviour:
   refuelButton: {fileID: 0}
   audioSource: {fileID: 7346665794051509746}
   energyPickupSound: {fileID: 8300000, guid: be087abc1c1639e45910edf299a85cd5, type: 3}
+  lowFuelWarningSound: {fileID: 0}
+  lowFuelSoundCooldown: 5
   isOutOfFuel: 0
 --- !u!114 &1406594110138850395
 MonoBehaviour:
@@ -61379,7 +61387,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 4912415854380689612}
-  m_Enabled: 0
+  m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 712b1a17a6b990244ac94bb153bc0ca4, type: 3}
   m_Name: 
@@ -61518,6 +61526,8 @@ MonoBehaviour:
   refuelButton: {fileID: 0}
   audioSource: {fileID: 1168090336033207415}
   energyPickupSound: {fileID: 8300000, guid: be087abc1c1639e45910edf299a85cd5, type: 3}
+  lowFuelWarningSound: {fileID: 0}
+  lowFuelSoundCooldown: 5
   isOutOfFuel: 0
 --- !u!114 &5330222438924135346
 MonoBehaviour:
@@ -79728,7 +79738,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 6767038150060300003}
-  m_Enabled: 0
+  m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 712b1a17a6b990244ac94bb153bc0ca4, type: 3}
   m_Name: 
@@ -79848,6 +79858,8 @@ MonoBehaviour:
   refuelButton: {fileID: 0}
   audioSource: {fileID: 4008379353620779726}
   energyPickupSound: {fileID: 8300000, guid: be087abc1c1639e45910edf299a85cd5, type: 3}
+  lowFuelWarningSound: {fileID: 0}
+  lowFuelSoundCooldown: 5
   isOutOfFuel: 0
 --- !u!114 &7069627916945021711
 MonoBehaviour:
@@ -85822,7 +85834,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 8032667501234335053}
-  m_Enabled: 0
+  m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 712b1a17a6b990244ac94bb153bc0ca4, type: 3}
   m_Name: 
@@ -85934,6 +85946,8 @@ MonoBehaviour:
   refuelButton: {fileID: 0}
   audioSource: {fileID: 2814138701899945617}
   energyPickupSound: {fileID: 8300000, guid: be087abc1c1639e45910edf299a85cd5, type: 3}
+  lowFuelWarningSound: {fileID: 0}
+  lowFuelSoundCooldown: 5
   isOutOfFuel: 0
 --- !u!114 &5139734697526901574
 MonoBehaviour:

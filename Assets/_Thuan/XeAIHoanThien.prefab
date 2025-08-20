@@ -10556,6 +10556,18 @@ MonoBehaviour:
     m_Bits: 4294967295
   collisionForceLimit: 10
   stabilityForce: 50
+  currentCheckpoints: 0
+  finishTime: 0
+  finished: 0
+  botNames:
+  - Bot_Sara
+  - Bot_Max
+  - Bot_Tom
+  - Bot_Eva
+  - Bot_Jin
+  randomBotName: 
+  hasFinished: 0
+  botName: 
 --- !u!114 &2886147527211387822
 MonoBehaviour:
   m_ObjectHideFlags: 0

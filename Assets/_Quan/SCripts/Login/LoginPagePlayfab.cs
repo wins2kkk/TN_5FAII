@@ -104,7 +104,7 @@ public class LoginPagePlayfab : MonoBehaviour
         }
         else
         {
-            Debug.LogWarning("CoinManager chưa được tạo! Không thể tải coin.");
+            Debug.LogWarning("Coin chưa được tạo! Không thể tải coin.");
         }
 
         // 🔹 Load dữ liệu map từ PlayFab

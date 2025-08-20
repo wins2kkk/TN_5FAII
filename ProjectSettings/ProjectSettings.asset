@@ -12,9 +12,9 @@ PlayerSettings:
   targetDevice: 2
   useOnDemandResources: 0
   accelerometerFrequency: 60
-  companyName: DefaultCompany
-  productName: TN_5fai
-  defaultCursor: {fileID: 2800000, guid: e02e307b806ed5f4e9dd2bd584b7b9dd, type: 3}
+  companyName: EOS
+  productName: Nhiem Vu Than Toc
+  defaultCursor: {fileID: 2800000, guid: 37cd66b967996b54b94192486d9444f2, type: 3}
   cursorHotspot: {x: 0, y: 0}
   m_SplashScreenBackgroundColor: {r: 0.13725491, g: 0.12156863, b: 0.1254902, a: 1}
   m_ShowUnitySplashScreen: 1
@@ -162,7 +162,7 @@ PlayerSettings:
   androidMaxAspectRatio: 2.1
   applicationIdentifier:
     Android: com.DefaultCompany.TN_5fai
-    Standalone: com.DefaultCompany.TN-5fai
+    Standalone: com.EOS.Nhiem-Vu-Than-Toc
   buildNumber:
     Standalone: 0
     VisionOS: 0
@@ -284,7 +284,14 @@ PlayerSettings:
   AndroidMinifyDebug: 0
   AndroidValidateAppBundleSize: 1
   AndroidAppBundleSizeToValidate: 150
-  m_BuildTargetIcons: []
+  m_BuildTargetIcons:
+  - m_BuildTarget: 
+    m_Icons:
+    - serializedVersion: 2
+      m_Icon: {fileID: 2800000, guid: 37cd66b967996b54b94192486d9444f2, type: 3}
+      m_Width: 128
+      m_Height: 128
+      m_Kind: 0
   m_BuildTargetPlatformIcons:
   - m_BuildTarget: Android
     m_Icons:

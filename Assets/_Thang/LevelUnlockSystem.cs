@@ -23,7 +23,6 @@ public class LevelUnlockSystem : MonoBehaviour
                     maxUnlockedLevel = Convert.ToInt32(result.Data["MaxUnlockedLevel"].Value);
                 else
                     maxUnlockedLevel = 1;
-
                 UpdateLevelButtons();
             },
             error =>
@@ -45,10 +44,11 @@ public class LevelUnlockSystem : MonoBehaviour
 
     public void UnlockNextLevel(int completedLevel)
     {
-        if (completedLevel >= maxUnlockedLevel && completedLevel < levelButtons.Length)
+        // SỬA: Chỉ unlock nếu level mới cao hơn maxUnlockedLevel hiện tại
+        int newUnlockedLevel = completedLevel + 1;
+        if (newUnlockedLevel > maxUnlockedLevel && completedLevel < levelButtons.Length)
         {
-            maxUnlockedLevel = completedLevel + 1;
-
+            maxUnlockedLevel = newUnlockedLevel;
             var request = new UpdateUserDataRequest
             {
                 Data = new System.Collections.Generic.Dictionary<string, string>
@@ -59,7 +59,6 @@ public class LevelUnlockSystem : MonoBehaviour
             PlayFabClientAPI.UpdateUserData(request,
                 result => Debug.Log($"✅ Unlocked Level {maxUnlockedLevel} on PlayFab"),
                 error => Debug.LogError("❌ Save Error: " + error.GenerateErrorReport()));
-
             UpdateLevelButtons();
         }
     }

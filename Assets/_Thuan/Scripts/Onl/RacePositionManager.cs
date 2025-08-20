@@ -65,7 +65,7 @@ public class RacePositionManager : MonoBehaviour
         int playerIndex = sorted.FindIndex(r => r.isPlayer);
         if (playerIndex != -1 && positionText != null)
         {
-            positionText.text = $"Position: {playerIndex + 1}/{racers.Count}";
+            positionText.text = $"Vị trí: {playerIndex + 1}/{racers.Count}";
         }
     }
 }

@@ -148,7 +148,7 @@ public class SpiningManager : MonoBehaviour
         int prizeIndex = (int)(finalAngle / totalAngle) % section;
 
         int prizeCoin = PrizeCoins[prizeIndex];
-        winText.text = $"Bạn nhận được: {prizeCoin} coins";
+        winText.text = $"Bạn nhận được: {prizeCoin} Xu";
         winText.gameObject.SetActive(true);
         CoinManager.Instance.AddCoins(prizeCoin);
 
