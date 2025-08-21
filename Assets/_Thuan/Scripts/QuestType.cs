@@ -11,5 +11,6 @@
     Taxi,
     BatTrom,
     BaoVeHangHoa,
-    ChayCheckPoint
+    ChayCheckPoint,
+    ChayCheckPoint2
 }

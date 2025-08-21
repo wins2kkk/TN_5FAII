@@ -11,7 +11,7 @@ public class RacerProgressWaypoint : MonoBehaviour
     public float waypointReachDistance = 5f;
 
     private int currentWaypointIndex = 0;
-    private int currentLap = 1;
+    private int currentLap = 0;
     public int totalLaps = 3;
     private bool finished = false;
     private bool hasStarted = false;
@@ -34,7 +34,7 @@ public class RacerProgressWaypoint : MonoBehaviour
 
     public void ResetProgress()
     {
-        currentLap = 1;
+        currentLap = 0;
         currentWaypointIndex = 0;
         finished = false;
         hasStarted = false;
@@ -84,32 +84,34 @@ public class RacerProgressWaypoint : MonoBehaviour
     // 🆕 Hàm riêng để xử lý hoàn thành lap
     void CompleteCurrentLap()
     {
-        isProcessingLapCompletion = true; // 🆕 Đánh dấu đang xử lý lap completion
+        isProcessingLapCompletion = true;
 
-        if (showDebugInfo)
-            Debug.Log($"[{racerName}] 🏁 Completed lap {currentLap}! Moving to lap {currentLap + 1}");
-
-        // 🆕 Thông báo đến RaceManager về việc hoàn thành lap TRƯỚC KHI thay đổi currentLap
+        // Thông báo lap hoàn thành
         RaceManager.Instance.OnRacerCompletedLap(racerName, currentLap);
 
-        // Tăng lap và reset waypoint
+        // Tăng lap
         currentLap++;
+
+        if (showDebugInfo)
+            Debug.Log($"[{racerName}] 🏁 Completed lap {currentLap}/{totalLaps}");
+
+        // Reset waypoint
         currentWaypointIndex = 0;
 
         // Cập nhật UI cho Player
         if (racerName == "Player")
             RaceManager.Instance.UpdateLapUI(currentLap);
 
-        // Kiểm tra xem đã hoàn thành cuộc đua chưa
-        if (currentLap > totalLaps)
+        // Kiểm tra hoàn tất cuộc đua
+        if (currentLap >= totalLaps)
         {
             FinishRace();
             return;
         }
 
-        // 🆕 Cho phép xử lý waypoint sau một delay ngắn
         Invoke(nameof(ResumeWaypointProcessing), 0.1f);
     }
+
 
     // 🆕 Hàm để resume waypoint processing
     void ResumeWaypointProcessing()
@@ -143,30 +145,27 @@ public class RacerProgressWaypoint : MonoBehaviour
         if (trackWaypoints == null || trackWaypoints.Length == 0) return 0f;
         if (!hasStarted) return 0f;
 
-        // 🆕 Nếu đã hoàn thành cuộc đua, trả về giá trị tối đa
+        // Nếu đã hoàn thành cuộc đua thì trả về max
         if (finished) return (float)totalLaps;
 
-        // Tính số lap đã hoàn thành (lap hiện tại - 1)
-        float completedLaps = (float)(currentLap - 1);
+        // Lap đã hoàn thành = currentLap (vì lap bắt đầu từ 0)
+        float completedLaps = (float)currentLap;
 
         // Tiến độ trong lap hiện tại
         float currentLapProgress = 0f;
 
         if (trackWaypoints.Length > 0)
         {
-            // Tiến độ cơ bản từ waypoint đã qua
             currentLapProgress = (float)currentWaypointIndex / trackWaypoints.Length;
 
-            // 🆕 Thêm tiến độ nhỏ dựa trên khoảng cách đến waypoint tiếp theo
             if (currentWaypointIndex < trackWaypoints.Length && !isProcessingLapCompletion)
             {
                 Transform targetWaypoint = trackWaypoints[currentWaypointIndex];
                 float distanceToWaypoint = Vector3.Distance(transform.position, targetWaypoint.position);
 
-                // Tính tiến độ micro trong khoảng waypoint hiện tại
                 float maxReachDistance = waypointReachDistance * 2f;
                 float microProgress = Mathf.Clamp01(1f - (distanceToWaypoint / maxReachDistance));
-                microProgress = microProgress / trackWaypoints.Length; // Scale theo số waypoint
+                microProgress = microProgress / trackWaypoints.Length;
 
                 currentLapProgress += microProgress;
             }
@@ -174,16 +173,17 @@ public class RacerProgressWaypoint : MonoBehaviour
 
         float totalProgress = completedLaps + currentLapProgress;
 
-        // 🆕 Debug log để kiểm tra
         if (showDebugInfo && racerName == "Player")
         {
-            Debug.Log($"[{racerName}] Progress: {totalProgress:F3} (Lap: {currentLap}, WP: {currentWaypointIndex}/{trackWaypoints.Length})");
+            Debug.Log($"[{racerName}] Progress: {totalProgress:F3} (Lap: {currentLap}/{totalLaps}, WP: {currentWaypointIndex}/{trackWaypoints.Length})");
         }
 
         return totalProgress;
     }
 
+
     // Debug visualization
+#if UNITY_EDITOR
     void OnDrawGizmos()
     {
         if (trackWaypoints == null || trackWaypoints.Length == 0) return;
@@ -192,23 +192,23 @@ public class RacerProgressWaypoint : MonoBehaviour
         Transform targetWaypoint = trackWaypoints[currentWaypointIndex];
         if (targetWaypoint == null) return;
 
-        // Vẽ đường đến waypoint tiếp theo
+        // Vẽ đường đến waypoint
         Gizmos.color = racerName == "Player" ? Color.green : Color.blue;
         Gizmos.DrawLine(transform.position, targetWaypoint.position);
 
-        // Vẽ vòng tròn quanh waypoint tiếp theo
+        // Vẽ vòng tròn quanh waypoint
         Gizmos.color = Color.red;
         Gizmos.DrawWireSphere(targetWaypoint.position, waypointReachDistance);
 
-#if UNITY_EDITOR
         if (showDebugInfo)
         {
             Gizmos.color = Color.white;
             UnityEditor.Handles.Label(transform.position + Vector3.up * 2,
-                $"{racerName}\nLap: {currentLap}\nWP: {currentWaypointIndex}\nProgress: {GetDetailedProgress():F2}");
+                $"{racerName}\nLap: {currentLap}/{totalLaps}\nWP: {currentWaypointIndex}\nProgress: {GetDetailedProgress():F2}");
         }
-#endif
     }
+#endif
+
 
     public Transform GetLastCheckpoint()
     {

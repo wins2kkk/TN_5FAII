@@ -98,7 +98,7 @@ public class RaceManager : MonoBehaviour
                     questName = "Lap Race",
                     lapCount = PlayerPrefs.GetInt("LapMission_Laps", 3),
                     timeLimit = PlayerPrefs.GetFloat("LapMission_Time", 90f),
-                    coinReward = PlayerPrefs.GetInt("LapMission_Reward", 1000),
+                    coinReward = PlayerPrefs.GetInt("LapMission_Reward", 2222),
                     questType = QuestType.DuaAI
                 };
                 currentQuestData = quest;
@@ -261,7 +261,7 @@ public class RaceManager : MonoBehaviour
             loseResultText = FindTextInPanel(losePanel, "LoseResultText", "ResultText", "LoseText", "MessageText");
         }
 
-        Debug.Log($"✅ UI Found: Timer:{timerText != null}, Lap:{lapText != null}, Position:{positionText != null}, Countdown:{countdownText != null}");
+        Debug.Log($"✅ UI Found: Thời gian còn lại:{timerText != null}, Vòng:{lapText != null}, Vị trí:{positionText != null}, Countdown:{countdownText != null}");
         Debug.Log($"✅ Panels Found: Win:{winPanel != null}, Lose:{losePanel != null}");
         Debug.Log($"✅ Result Text Found: Win:{winResultText != null}, Lose:{loseResultText != null}");
     }
@@ -624,7 +624,7 @@ public class RaceManager : MonoBehaviour
         if (lapText != null) lapText.gameObject.SetActive(true);
         if (positionText != null) positionText.gameObject.SetActive(true);
 
-        UpdateLapUI(1);
+        UpdateLapUI(0);
 
         if (player != null)
         {
@@ -807,7 +807,7 @@ public class RaceManager : MonoBehaviour
     {
         if (lapText != null)
         {
-            lapText.text = $"Lap: {currentLap}/{totalLaps}";
+            lapText.text = $"Vòng: {currentLap}/{totalLaps}";
         }
     }
 
@@ -820,7 +820,7 @@ public class RaceManager : MonoBehaviour
 
         if (playerPos > 0)
         {
-            positionText.text = $"POS {playerPos}/{allRacers.Count}";
+            positionText.text = $"Vị trí {playerPos}/{allRacers.Count}";
         }
     }
 

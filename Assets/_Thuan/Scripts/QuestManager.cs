@@ -560,6 +560,9 @@ public class QuestManager : MonoBehaviour
             case QuestType.ChayCheckPoint:
                 FindObjectOfType<SurvivalRaceMission>()?.StartMission();
                 break;
+            case QuestType.ChayCheckPoint2:
+                FindObjectOfType<SurvialCheckPoint>()?.StartMission();
+                break;
         }
     }
 

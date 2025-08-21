@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   questName: "\u0110ua xe v\u1EDBi m\xE1y"
   questType: 6
-  timeLimit: 200
-  coinReward: 1000
+  timeLimit: 160
+  coinReward: 2222
   description: "\u0110ua xe d\xE0nh top 1 \u0111\u1EC3 chi\u1EBFn th\u1EAFng!"
   lapCount: 3
