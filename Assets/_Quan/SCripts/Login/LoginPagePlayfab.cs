@@ -206,7 +206,7 @@ public class LoginPagePlayfab : MonoBehaviour
         yield return new WaitForSeconds(2);
         MessageText.text = "\r\nĐăng nhập thành công";
         //SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex + 1);
-        PlayerPrefs.SetString("SceneToLoad", "TPTesst");
+        PlayerPrefs.SetString("SceneToLoad", "Thanh_Pho2");
         SceneManager.LoadScene("Loading");
     }
 

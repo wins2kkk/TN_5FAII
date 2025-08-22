@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   questName: "Ch\u1EA1y checkpoint"
   questType: 11
-  timeLimit: 50
+  timeLimit: 200
   coinReward: 1000
   description: "B\u1EA1n h\xE3y ch\u1EA1y t\u1EDBi checkpoint trong th\u1EDDi gian
     10s"

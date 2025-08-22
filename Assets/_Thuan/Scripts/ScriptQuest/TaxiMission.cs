@@ -54,6 +54,19 @@ public class TaxiMission : MonoBehaviour
     void Start()
     {
         FindActiveCar();
+        // 🔎 Tự tìm npcExitPosition nếu chưa có
+        if (npcExitPosition == null)
+        {
+            GameObject exitObj = GameObject.Find("NPC_Exit");
+            if (exitObj != null) npcExitPosition = exitObj.transform;
+        }
+
+        // 🔎 Tự tìm npcWalkAwayPoint nếu chưa có
+        if (npcWalkAwayPoint == null)
+        {
+            GameObject walkObj = GameObject.Find("NPC_WalkAway");
+            if (walkObj != null) npcWalkAwayPoint = walkObj.transform;
+        }
     }
 
     void Update()
