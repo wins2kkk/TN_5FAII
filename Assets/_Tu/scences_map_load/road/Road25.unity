@@ -674,6 +674,14 @@ PrefabInstance:
       propertyPath: m_LocalRotation.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 2300002, guid: b8d74ba85238860418c16d990d7cd406, type: 3}
+      propertyPath: m_Materials.Array.data[0]
+      value: 
+      objectReference: {fileID: 2100000, guid: 83a42a2626aabd5418d7543f3babacc3, type: 2}
+    - target: {fileID: 2300114, guid: b8d74ba85238860418c16d990d7cd406, type: 3}
+      propertyPath: m_Materials.Array.data[1]
+      value: 
+      objectReference: {fileID: 2100000, guid: 83a42a2626aabd5418d7543f3babacc3, type: 2}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []

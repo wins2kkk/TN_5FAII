@@ -165,4 +165,34 @@ public class LoadingManager : MonoBehaviour
         PlayerPrefs.SetString("SceneToLoad", "Level_4");
         SceneManager.LoadScene("Loading");
     }
+    public void Loadlevel_5()
+    {
+        PlayerPrefs.SetString("SceneToLoad", "Level_5");
+        SceneManager.LoadScene("Loading");
+    }
+    public void Loadlevel_6()
+    {
+        PlayerPrefs.SetString("SceneToLoad", "Level_6");
+        SceneManager.LoadScene("Loading");
+    }
+    public void Loadlevel_7()
+    {
+        PlayerPrefs.SetString("SceneToLoad", "Level_7");
+        SceneManager.LoadScene("Loading");
+    }
+    public void Loadlevel_8()
+    {
+        PlayerPrefs.SetString("SceneToLoad", "Level_8");
+        SceneManager.LoadScene("Loading");
+    }
+    public void Loadlevel_9()
+    {
+        PlayerPrefs.SetString("SceneToLoad", "Level_9");
+        SceneManager.LoadScene("Loading");
+    }
+    public void Loadlevel_10()
+    {
+        PlayerPrefs.SetString("SceneToLoad", "Level_10");
+        SceneManager.LoadScene("Loading");
+    }
 }

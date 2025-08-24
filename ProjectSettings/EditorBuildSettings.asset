@@ -9,9 +9,6 @@ EditorBuildSettings:
     path: Assets/_Bai_Hoan_Thien/Login.unity
     guid: 3f5480120a55dcd4db888ced9be6659e
   - enabled: 1
-    path: Assets/_Thuan/Scene/TPTesst.unity
-    guid: 85539de81cc187e4fa10ab8385b96f46
-  - enabled: 1
     path: Assets/_Bai_Hoan_Thien/Menu.unity
     guid: 4db57bb73cd757e438ab05943d0df0bc
   - enabled: 1
@@ -21,20 +18,35 @@ EditorBuildSettings:
     path: Assets/_Bai_Hoan_Thien/ChayLap.unity
     guid: f641e9b7783f96b43b36e53954a66c8b
   - enabled: 1
-    path: Assets/_Bai_Hoan_Thien/DuaAi.unity
-    guid: 5ba87aaad78d11e4093228a5a47ae793
-  - enabled: 1
     path: Assets/_Bai_Hoan_Thien/Level_1.unity
     guid: 03517ed07c75b6d4c9bb82a65126367d
   - enabled: 1
     path: Assets/_Bai_Hoan_Thien/Level_2.unity
-    guid: 0d4ec094a5bb10846abc102399b2a29d
+    guid: 6f58e70cd169d33499bbf589638af606
   - enabled: 1
     path: Assets/_Bai_Hoan_Thien/Level_3.unity
-    guid: cae5eb9a870b2d54bbcebedb3b0033ee
+    guid: 0d4ec094a5bb10846abc102399b2a29d
   - enabled: 1
-    path: Assets/_Thuan/Scene/Testhehe.unity
-    guid: d384608b19b1238478d18fc7902c0c17
+    path: Assets/_Bai_Hoan_Thien/Level_4.unity
+    guid: 32cbdc326d4bd1a4588027a592fdfd03
+  - enabled: 1
+    path: Assets/_Bai_Hoan_Thien/Level_5.unity
+    guid: 98286067d72b3a24bafd92f6a1b0f381
+  - enabled: 1
+    path: Assets/_Bai_Hoan_Thien/Level_6.unity
+    guid: 93e919515c28cb845914dbe9eeb0fcdf
+  - enabled: 1
+    path: Assets/_Bai_Hoan_Thien/Level_7.unity
+    guid: 5051d9aa8c4baaa48be1b120fad6ed3f
+  - enabled: 1
+    path: Assets/_Bai_Hoan_Thien/Level_8.unity
+    guid: c6d3f159ee2d0dd4383c995530a1fe83
+  - enabled: 1
+    path: Assets/_Bai_Hoan_Thien/Level_9.unity
+    guid: 08a0163be22aa9249add29ee13406a29
+  - enabled: 1
+    path: Assets/_Bai_Hoan_Thien/Level_10.unity
+    guid: 5526bfe8c82733f4294345189d0a45f2
   - enabled: 1
     path: Assets/_Thang/Loading.unity
     guid: ebb73a53c08d15549a62e3706f22f966
