@@ -14,7 +14,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   questName: "\u0110\u1ED5 X\u0103ng"
   questType: 2
-  timeLimit: 60
+  timeLimit: 30
   coinReward: 200
-  description: "\u0110i t\u1EDBi c\xE2y x\u0103ng v\xE0 \u0111\u1ED5 x\u0103ng"
+  description: "\u0110i t\u1EDBi c\xE2y x\u0103ng v\xE0 \u0111\u1ED5 x\u0103ng v\u1EDBi
+    20 xu!"
   lapCount: 3

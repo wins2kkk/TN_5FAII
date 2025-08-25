@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   questName: Taxi
   questType: 8
-  timeLimit: 60
+  timeLimit: 45
   coinReward: 1000
-  description: "T\u1EDBi \u0111i\u1EC3m \u0111\xF3n kh\xE1ch v\xE0 tr\u1EA3 kh\xE1ch"
+  description: "T\u1EDBi \u0111i\u1EC3m \u0111\xF3n kh\xE1ch v\xE0 tr\u1EA3 kh\xE1ch!"
   lapCount: 3

@@ -14,8 +14,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   questName: "Ch\u1EA1y t\u1ED1c \u0111\u1ED9 cho ph\xE9p"
   questType: 7
-  timeLimit: 60
-  coinReward: 1000
+  timeLimit: 40
+  coinReward: 700
   description: "Ch\u1EA1y t\u1EDBi v\u1ECB tr\xED v\u1EDBi t\u1ED1c \u0111\u1ED9
-    d\u01B0\u1EDBi 80km/h"
+    d\u01B0\u1EDBi 80km/h!"
   lapCount: 3

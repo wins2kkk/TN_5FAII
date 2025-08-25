@@ -14,7 +14,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   questName: "B\u1EAFt xe \u0111\xE3 b\u1ECB tr\u1ED9m"
   questType: 9
-  timeLimit: 50
+  timeLimit: 35
   coinReward: 2000
-  description: "H\xE3y nh\xECn tr\xEAn MiniMap v\xE0 b\u1EAFt t\xEAn tr\u1ED9m l\u1EA1i"
+  description: "H\xE3y nh\xECn tr\xEAn MiniMap v\xE0 b\u1EAFt t\xEAn tr\u1ED9m l\u1EA1i
+    (b\u1EB1ng c\xE1c \xE1p s\xE1t xe)!"
   lapCount: 3
