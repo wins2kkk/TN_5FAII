@@ -14369,44 +14369,6 @@ MonoBehaviour:
   currentLap: 0
   currentWaypointIndex: 0
   completedFullLap: 0
---- !u!84 &377000385
-RenderTexture:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_Name: 
-  m_ImageContentsHash:
-    serializedVersion: 2
-    Hash: 00000000000000000000000000000000
-  m_ForcedFallbackFormat: 4
-  m_DownscaleFallback: 0
-  m_IsAlphaChannelOptional: 0
-  serializedVersion: 5
-  m_Width: 257
-  m_Height: 257
-  m_AntiAliasing: 1
-  m_MipCount: -1
-  m_DepthStencilFormat: 94
-  m_ColorFormat: 4
-  m_MipMap: 0
-  m_GenerateMips: 1
-  m_SRGB: 1
-  m_UseDynamicScale: 0
-  m_BindMS: 0
-  m_EnableCompatibleFormat: 1
-  m_EnableRandomWrite: 0
-  m_TextureSettings:
-    serializedVersion: 2
-    m_FilterMode: 1
-    m_Aniso: 1
-    m_MipBias: 0
-    m_WrapU: 1
-    m_WrapV: 1
-    m_WrapW: 1
-  m_Dimension: 2
-  m_VolumeDepth: 1
-  m_ShadowSamplingMode: 2
 --- !u!114 &385030243
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -19460,7 +19422,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   currentLap: 0
-  currentWaypointIndex: 0
+  currentWaypointIndex: -1
   totalWaypoints: 0
   passedWaypoints: 
   distanceAlongTrack: 0
@@ -21226,7 +21188,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   currentLap: 0
-  currentWaypointIndex: 0
+  currentWaypointIndex: -1
   totalWaypoints: 0
   passedWaypoints: 
   distanceAlongTrack: 0
@@ -22716,7 +22678,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   currentLap: 0
-  currentWaypointIndex: 0
+  currentWaypointIndex: -1
   totalWaypoints: 0
   passedWaypoints: 
   distanceAlongTrack: 0
@@ -24864,7 +24826,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   currentLap: 0
-  currentWaypointIndex: 0
+  currentWaypointIndex: -1
   totalWaypoints: 0
   passedWaypoints: 
   distanceAlongTrack: 0
@@ -30564,7 +30526,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   currentLap: 0
-  currentWaypointIndex: 0
+  currentWaypointIndex: -1
   totalWaypoints: 0
   passedWaypoints: 
   distanceAlongTrack: 0
@@ -31144,6 +31106,44 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: cdc7ddb0cebd3214d9bba7c02c9efd5a, type: 3}
+--- !u!84 &1220389183
+RenderTexture:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: 
+  m_ImageContentsHash:
+    serializedVersion: 2
+    Hash: 00000000000000000000000000000000
+  m_ForcedFallbackFormat: 4
+  m_DownscaleFallback: 0
+  m_IsAlphaChannelOptional: 0
+  serializedVersion: 5
+  m_Width: 257
+  m_Height: 257
+  m_AntiAliasing: 1
+  m_MipCount: -1
+  m_DepthStencilFormat: 94
+  m_ColorFormat: 4
+  m_MipMap: 0
+  m_GenerateMips: 1
+  m_SRGB: 1
+  m_UseDynamicScale: 0
+  m_BindMS: 0
+  m_EnableCompatibleFormat: 1
+  m_EnableRandomWrite: 0
+  m_TextureSettings:
+    serializedVersion: 2
+    m_FilterMode: 1
+    m_Aniso: 1
+    m_MipBias: 0
+    m_WrapU: 1
+    m_WrapV: 1
+    m_WrapW: 1
+  m_Dimension: 2
+  m_VolumeDepth: 1
+  m_ShadowSamplingMode: 2
 --- !u!1 &1235182576
 GameObject:
   m_ObjectHideFlags: 0
@@ -39053,7 +39053,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   currentLap: 0
-  currentWaypointIndex: 0
+  currentWaypointIndex: -1
   totalWaypoints: 0
   passedWaypoints: 
   distanceAlongTrack: 0
@@ -45972,7 +45972,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 1658936744}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: af85b4ff4cae3744c8446da78a0aff22, type: 3}
+  m_Script: {fileID: 11500000, guid: e3e6185493d980a4192b0aafef2a3af3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   countdownTexts:
@@ -56564,7 +56564,7 @@ PrefabInstance:
     - target: {fileID: 2057960, guid: 98e2b8a7d6de642f8ae08a3cbb957b7a, type: 3}
       propertyPath: m_TargetTexture
       value: 
-      objectReference: {fileID: 377000385}
+      objectReference: {fileID: 1220389183}
     - target: {fileID: 2057960, guid: 98e2b8a7d6de642f8ae08a3cbb957b7a, type: 3}
       propertyPath: orthographic size
       value: 80.9

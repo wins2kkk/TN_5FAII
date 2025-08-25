@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-public class NPCWaypointCar : MonoBehaviour
+public class NPCTrom : MonoBehaviour
 {
     [HideInInspector] public Transform[] waypoints; // Gán từ code nhiệm vụ
     public float speed = 10f;
@@ -27,11 +27,14 @@ public class NPCWaypointCar : MonoBehaviour
         rb = GetComponent<Rigidbody>();
         rb.interpolation = RigidbodyInterpolation.Interpolate;
 
-        if (waypoints != null && waypoints.Length > 0)
+        if (waypoints == null || waypoints.Length == 0)
         {
-            transform.position = waypoints[0].position;
-            currentWaypointIndex = 1;
+            Debug.LogWarning("Waypoints chưa được gán!");
+            return;
         }
+
+        transform.position = waypoints[0].position;
+        currentWaypointIndex = 1;
     }
 
     private void FixedUpdate()

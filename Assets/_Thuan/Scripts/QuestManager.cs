@@ -711,6 +711,11 @@ public class QuestManager : MonoBehaviour
                     var tocDo = FindObjectOfType<TocDoToiDa>();
                     tocDo?.StopMission();
                     break;
+                case QuestType.BatTrom:
+                    var batCuop = FindObjectOfType<BatCuop>();
+                    batCuop?.FailMission();
+                    break;
+
 
                 case QuestType.BaoVeHangHoa:
                     var baoVe = FindObjectOfType<BaoVeHangHoa>();

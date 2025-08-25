@@ -89,7 +89,23 @@ public class TaxiMission : MonoBehaviour
 
     public void StartMission()
     {
-        if (missionFailed) return;
+        // Reset trạng thái để chơi lại nhiều lần
+        StopAllCoroutines();
+
+        if (currentNPC != null)
+        {
+            DOTween.Kill(currentNPC.transform);
+            Destroy(currentNPC);
+            currentNPC = null;
+        }
+
+        WaypointManager.Instance?.RemoveWaypoint();
+
+        missionCompleted = false;
+        missionFailed = false;
+        isActive = true;
+        currentState = TaxiState.WaitingForPickup;
+        npcTouchedCar = false;
 
         FindActiveCar();
         if (carTransform == null) return;
@@ -103,12 +119,6 @@ public class TaxiMission : MonoBehaviour
             SpawnNPCAt(pickupPoint.position);
 
         dropoffPoint = possibleDropoffPoints[Random.Range(0, possibleDropoffPoints.Length)];
-
-        isActive = true;
-        missionCompleted = false;
-        missionFailed = false;
-        currentState = TaxiState.WaitingForPickup;
-        npcTouchedCar = false;
 
         taxiNPCComponent?.SetWalking(false);
         UpdateStatusText("Đi đón khách tại điểm đã chỉ định");
@@ -142,6 +152,10 @@ public class TaxiMission : MonoBehaviour
 
         // 🔥 Gọi QuestManager để xử lý thất bại
         QuestManager.instance?.FailQuest("Nhiệm vụ Taxi thất bại!");
+
+        // ✅ Cho phép làm lại
+        missionFailed = false;
+        currentState = TaxiState.WaitingForPickup;
     }
 
     Transform GetNearestPoint(Transform[] points)
@@ -387,7 +401,12 @@ public class TaxiMission : MonoBehaviour
 
         CoinManager.Instance?.AddCoins(300);
         QuestManager.instance?.CompleteQuest();
+
+        // ✅ Cho phép làm lại
+        missionCompleted = false;
+        currentState = TaxiState.WaitingForPickup;
     }
+
 
     void UpdateStatusText(string msg)
     {
