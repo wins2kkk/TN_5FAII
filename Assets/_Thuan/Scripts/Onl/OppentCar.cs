@@ -20,7 +20,7 @@ public class OppentCar : MonoBehaviour
 
     [Header("Respawn")]
     public float respawnTimer = 0f;
-    public const float respawnTimeThreshold = 10f;
+    public const float respawnTimeThreshold = 11.5f;
 
     [Header("Lap")]
     public int maxLaps = 3;
